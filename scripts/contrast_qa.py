@@ -57,6 +57,7 @@ PAIRS = [
     ("--inkInv","--ink",    "反色文字 on 强调块"),
     ("--tCoreFg","--tCoreBg","徽章·核心"),
     ("--tMidFg", "--tMidBg", "徽章·进阶"),
+    ("--ink3",   "--paper3", "徽章·默认底色上的文字"),
     ("--tStableFg","--tStableBg","徽章·稳定"),
     ("--tMainFg", "--tMainBg", "徽章·主流"),
     ("--tOptFg",  "--tOptBg",  "徽章·可选"),

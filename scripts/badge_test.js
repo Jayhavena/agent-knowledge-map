@@ -134,6 +134,32 @@ const rulesOnly = css.slice(css.lastIndexOf("color-scheme: dark"));
 const dead = defined.filter((v) => !new RegExp("var\\(" + v + "\\)").test(rulesOnly));
 ok("无未引用的徽章背景变量", dead.length === 0, dead.join(","));
 
+// 4. chip geometry: the shortest label (2 CJK chars) must stay a tag, not a circle.
+//    A pill radius plus a tiny font made 2-char badges render taller than wide.
+const base = css.match(/\.badge\{([^}]*)\}/);
+ok("存在 .badge 基础规则", !!base);
+if (base) {
+  const b = base[1];
+  const fs = parseFloat((b.match(/font-size:\s*([\d.]+)px/) || [])[1]);
+  const lh = parseFloat((b.match(/line-height:\s*([\d.]+)/) || [])[1]);
+  const pad = b.match(/padding:\s*(\d+)px\s+(\d+)px/);
+  const rad = parseFloat((b.match(/border-radius:\s*([\d.]+)px/) || [])[1]);
+
+  ok("badge 字号 >= 10px", fs >= 10, fs + "px");
+  ok("badge line-height 为数值且 < 1.6", !isNaN(lh) && lh < 1.6, String(lh));
+  ok("badge 圆角 <= 6px（避免压成圆形）", !isNaN(rad) && rad <= 6, rad + "px");
+  ok("badge 用 inline-flex 居中", /display:\s*inline-flex/.test(b) && /align-items:\s*center/.test(b));
+
+  if (pad && !isNaN(fs) && !isNaN(lh)) {
+    const h = fs * lh + 2 * parseInt(pad[1], 10) + 2;          // + borders
+    const w2 = 2 * fs + 2 * parseInt(pad[2], 10) + 2;          // two CJK chars
+    ok("两字徽章宽高比 > 1.5（不是圆）", w2 / h > 1.5,
+       `w=${w2.toFixed(1)} h=${h.toFixed(1)} ratio=${(w2 / h).toFixed(2)}`);
+  }
+  ok("徽章容器垂直居中（不拉伸）",
+     /\.dw-badges\{[^}]*align-items:\s*center/.test(css), "dw-badges 缺 align-items");
+}
+
 console.log("\nclass mapping:");
 console.log("  tier:", JSON.stringify(tierClasses));
 console.log("  maturity:", JSON.stringify(matClasses));
