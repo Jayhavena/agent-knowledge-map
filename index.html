@@ -182,14 +182,14 @@ main{max-width:1600px;margin:0 auto;padding:20px 24px 80px;min-height:70vh}
   padding:2px 7px; border-radius:5px; border:1px solid var(--line);
   background:var(--paper3); color:var(--ink3); white-space:nowrap;
 }
-.badge.core{color:var(--tCoreFg);border-color:var(--tCoreBd);background:var(--tCoreBg)}
-.badge.mid{color:var(--tMidFg);border-color:var(--tMidBd);background:var(--tMidBg)}
-.badge.opt{color:var(--tOptFg);border-color:var(--tOptBd);background:var(--tOptBg)}
-.badge.stable{color:var(--tStableFg);border-color:var(--tStableBd);background:var(--tStableBg)}
-.badge.main{color:var(--tMainFg);border-color:var(--tMainBd);background:var(--tMainBg)}
-.badge.front{color:var(--tFrontFg);border-color:var(--tFrontBd);background:var(--tFrontBg)}
-.badge.contra{color:var(--tContraFg);border-color:var(--tContraBd);background:var(--tContraBg)}
-.badge.st{color:var(--tStFg);border-color:var(--tStBd);background:var(--tStBg)}
+.badge.b-core{color:var(--tCoreFg);border-color:var(--tCoreBd);background:var(--tCoreBg)}
+.badge.b-mid{color:var(--tMidFg);border-color:var(--tMidBd);background:var(--tMidBg)}
+.badge.b-opt{color:var(--tOptFg);border-color:var(--tOptBd);background:var(--tOptBg)}
+.badge.b-stable{color:var(--tStableFg);border-color:var(--tStableBd);background:var(--tStableBg)}
+.badge.b-main{color:var(--tMainFg);border-color:var(--tMainBd);background:var(--tMainBg)}
+.badge.b-front{color:var(--tFrontFg);border-color:var(--tFrontBd);background:var(--tFrontBg)}
+.badge.b-contra{color:var(--tContraFg);border-color:var(--tContraBd);background:var(--tContraBg)}
+.badge.b-st{color:var(--tStFg);border-color:var(--tStBd);background:var(--tStBg)}
 
 /* locator */
 .loc{max-width:960px}
@@ -344,7 +344,7 @@ table.dpath td.o{color:var(--tMidFg);width:190px}
   border:1px solid var(--line);background:var(--paper2);color:var(--ink2)}
 .dw-sec.deepsec button:hover{border-color:var(--ink);color:var(--ink)}
 
-.badge.deep{color:var(--tStFg);border-color:var(--tStBd);background:var(--tStBg)}
+.badge.b-deep{color:var(--tStFg);border-color:var(--tStBd);background:var(--tStBg)}
 .chip .cd{color:var(--l1);font-size:9px;margin-left:3px;opacity:.85}
 
 @media (max-width:900px){
@@ -681,16 +681,16 @@ footer b{color:var(--ink2)}
   // Every enum value maps to its own class. No implicit fallthrough: a value that is
   // missing a mapping would silently render identically to an unrelated one (that bug
   // made 稳定 and 主流 look identical, and 可选 loss its background).
-  const TIER_CLASS = { "核心":"core", "进阶":"mid", "可选":"opt" };
-  const MAT_CLASS  = { "稳定":"stable", "主流":"main", "前沿":"front", "争议":"contra" };
+  const TIER_CLASS = { "核心":"b-core", "进阶":"b-mid", "可选":"b-opt" };
+  const MAT_CLASS  = { "稳定":"b-stable", "主流":"b-main", "前沿":"b-front", "争议":"b-contra" };
 
   function badgeHTML(n){
-    const tc = TIER_CLASS[n.tier] || "opt";
+    const tc = TIER_CLASS[n.tier] || "b-opt";
     const mc = MAT_CLASS[n.maturity] || "";
     let s = '<span class="badge '+tc+'">'+n.tier+'</span>';
     s += '<span class="badge '+mc+'">'+n.maturity+'</span>';
-    if (STATUS[n.id]) s += '<span class="badge st">'+STATUS[n.id]+'</span>';
-    if (DEEP[n.id]) s += '<span class="badge deep">深读</span>';
+    if (STATUS[n.id]) s += '<span class="badge b-st">'+STATUS[n.id]+'</span>';
+    if (DEEP[n.id]) s += '<span class="badge b-deep">深读</span>';
     return s;
   }
   function renderOutline(){
