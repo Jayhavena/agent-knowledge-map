@@ -1,0 +1,51 @@
+name: 概念修正
+description: 某个概念的定位、解释或谱系有误
+title: "[概念] "
+labels: ["content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。如果方便，附上页面链接（地址栏里的 `#node=...`）会更好定位。
+
+  - type: input
+    id: concept
+    attributes:
+      label: 是哪个概念
+      description: 概念名，或分享链接
+      placeholder: 例如：记忆巩固，或 #node=memory-consolidation
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: kind
+    attributes:
+      label: 问题类型
+      options:
+        - label: 坐标放错了（层 / 环不对）
+        - label: 一句话定义不准
+        - label: 「它新在哪」说得不对
+        - label: 谱系错了（前身 / 后继关系）
+        - label: 「常见误判」写得不对
+        - label: 缺少重要概念
+        - label: 其他
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: 具体说明
+      description: 现在是怎么写的，你认为应该怎么写，为什么
+      placeholder: |
+        现在：...
+        我认为：...
+        理由：...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 依据（可选）
+      description: 文档、论文、实践经验的链接或描述
+    validations:
+      required: false

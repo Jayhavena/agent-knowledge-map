@@ -1,0 +1,2204 @@
+[
+  {
+    "id": "foundation-model",
+    "name": "基础大模型",
+    "en": "Foundation Model / LLM",
+    "alias": [
+      "底座模型",
+      "基座模型"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F1",
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "通过大规模预训练获得通用语言理解与生成能力的模型，是 Agent 唯一的「思考引擎」。",
+    "problem": "每个任务都训练专用模型成本不可承受；通用模型让「一个权重覆盖所有任务」成为可能。",
+    "newIn": "地基。它新在哪里这个问题对地基不成立，判断它只需看三个参数：能力上限、上下文长度、单位 token 价格。",
+    "from": [],
+    "rel": [
+      "model-routing",
+      "long-context",
+      "reasoning-model"
+    ],
+    "trap": "把换模型当交付成果。同一 prompt 在不同模型上行为并不等价，回归必须重跑。",
+    "tags": [
+      "地基"
+    ]
+  },
+  {
+    "id": "reasoning-model",
+    "name": "推理模型",
+    "en": "Reasoning Model / Extended Thinking",
+    "alias": [
+      "思考模型",
+      "o 系列",
+      "R 系列",
+      "扩展思考"
+    ],
+    "dot": "L0.P3",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在给出答案前先生成显式长链思考的模型，把「想多久」变成可调参数。",
+    "problem": "单次前向传播难以完成多步推理；把推理过程展开成 token，等于给模型一块草稿纸。",
+    "newIn": "把 CoT 从提示词技巧变成模型内建能力，并让思考深度成为可计价的旋钮。",
+    "from": [
+      [
+        "chain-of-thought",
+        "演进"
+      ],
+      [
+        "test-time-compute",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "foundation-model",
+      "test-time-compute",
+      "plan-and-execute",
+      "chain-of-thought"
+    ],
+    "trap": "拿推理模型做简单分类或抽取，成本翻数倍、延迟翻数倍，准确率几乎不变。",
+    "tags": [
+      "模型"
+    ]
+  },
+  {
+    "id": "test-time-compute",
+    "name": "测试时计算扩展",
+    "en": "Test-time Compute Scaling",
+    "alias": [
+      "推理时扩展",
+      "inference scaling"
+    ],
+    "dot": "L0.P3",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "在推理阶段投入更多采样、搜索或验证算力，用时间换准确率。",
+    "problem": "训练侧收益递减后，继续堆参数越来越贵；推理侧的算力可以按请求难度分配。",
+    "newIn": "改写了「模型能力是固定的」这一假设：同一份权重可以按需变强。",
+    "from": [
+      [
+        "self-consistency",
+        "演进"
+      ],
+      [
+        "tree-of-thought",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "reasoning-model",
+      "tree-of-thought",
+      "lats",
+      "self-consistency"
+    ],
+    "trap": "只增加采样数而不配套验证器或投票机制，收益会迅速饱和，纯属烧钱。",
+    "tags": [
+      "模型"
+    ]
+  },
+  {
+    "id": "native-tool-calling",
+    "name": "原生工具调用",
+    "en": "Native Tool / Function Calling",
+    "alias": [
+      "function calling",
+      "工具调用"
+    ],
+    "dot": "L0.P4",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "模型直接输出结构化调用指令，而非在自由文本里夹带「我想调用某函数」的意图。",
+    "problem": "从自然语言里正则解析调用意图，脆弱、无法可靠处理多参数与并行调用。",
+    "newIn": "让「调用」成为模型的一等输出格式，是 Agent 从演示走向工程化的前提。",
+    "from": [
+      [
+        "prompt-template",
+        "替代"
+      ]
+    ],
+    "rel": [
+      "structured-output",
+      "tool-definition",
+      "mcp"
+    ],
+    "trap": "以为有了原生调用就不用设计工具描述。描述质量仍直接决定工具选择准确率。",
+    "tags": [
+      "模型",
+      "工具"
+    ]
+  },
+  {
+    "id": "long-context",
+    "name": "长上下文",
+    "en": "Long Context",
+    "alias": [
+      "百万上下文",
+      "context window 扩展"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F3",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "争议",
+    "oneLine": "单次可容纳十万至百万 token 的上下文窗口，把「先检索再喂」换成「全部塞进去」。",
+    "problem": "复杂检索管线本身有工程成本与召回损失；直接全量输入可绕过整条链路。",
+    "newIn": "让一部分 RAG 变得不必要——但仅在「可全量装入且注意力分布均匀」时成立，两个条件经常同时不成立。",
+    "from": [
+      [
+        "context-window",
+        "演进"
+      ],
+      [
+        "rag",
+        "替代"
+      ]
+    ],
+    "rel": [
+      "foundation-model",
+      "context-compression",
+      "context-rot",
+      "lost-in-the-middle",
+      "needle-test",
+      "prompt-caching",
+      "rag"
+    ],
+    "trap": "把标称窗口当可用容量。中间遗忘与成本线性增长，会让「全塞」在实际业务里更差。",
+    "tags": [
+      "模型",
+      "上下文"
+    ]
+  },
+  {
+    "id": "model-routing",
+    "name": "模型路由",
+    "en": "Model Routing",
+    "alias": [
+      "模型级联",
+      "大小模型协同",
+      "LLM router"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F4",
+      "F5"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "按请求难度把流量分发给不同价位与能力的模型。",
+    "problem": "用最强模型跑全部请求，成本与延迟都不可接受；用小模型兜底又怕质量塌方。",
+    "newIn": "把「选哪个模型」从架构期的人工决策，变成运行时的可调策略；本质是级联模式在 LLM 上的特化。",
+    "from": [
+      [
+        "cascade",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "foundation-model",
+      "small-model",
+      "classification",
+      "short-circuit",
+      "circuit-breaker",
+      "evaluation",
+      "cost-attribution",
+      "cost-budgeting"
+    ],
+    "trap": "路由分类器自身的误判会以「静默劣化」出现——请求被送到弱模型并给出看似合理的错答案。路由必须单独评测。",
+    "tags": [
+      "成本",
+      "模型"
+    ]
+  },
+  {
+    "id": "multimodal-input",
+    "name": "多模态输入",
+    "en": "Multimodal Input",
+    "alias": [
+      "视觉理解",
+      "OCR 直读"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "模型直接读取图像、PDF、音频，跳过「先 OCR 再解析」的传统管线。",
+    "problem": "传统文档解析管线在表格、图表、手写体上损耗严重，错误会一路传导到下游。",
+    "newIn": "把「解析」和「理解」合并成一步，消灭了中间表示这一层误差来源。",
+    "from": [
+      [
+        "rag",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "chunking",
+      "rag"
+    ],
+    "trap": "以为看图就等于看懂表格结构。复杂版式的行列对齐仍是弱项，需保留结构化抽取校验。",
+    "tags": [
+      "模型"
+    ]
+  },
+  {
+    "id": "small-model",
+    "name": "小模型 / 端侧模型",
+    "en": "Small Language Model / On-device",
+    "alias": [
+      "SLM",
+      "端侧推理"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F4",
+      "F5"
+    ],
+    "tier": "可选",
+    "maturity": "主流",
+    "oneLine": "参数量小、可本地部署的模型，用于延迟敏感、隐私敏感或高频廉价任务。",
+    "problem": "云端大模型在延迟、数据出境、单位成本上都存在不可逾越的下限。",
+    "newIn": "不是新事物，而是新约束（量化、蒸馏、端侧算力）让旧路线重新可行。",
+    "from": [
+      [
+        "distillation",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "distillation",
+      "sandbox"
+    ],
+    "trap": "用通用 benchmark 挑选小模型。小模型的强项高度任务特定，必须在自己的黄金集上选。",
+    "tags": [
+      "成本",
+      "模型"
+    ]
+  },
+  {
+    "id": "distillation",
+    "name": "蒸馏",
+    "en": "Distillation",
+    "alias": [
+      "知识蒸馏",
+      "teacher-student"
+    ],
+    "dot": "L0.P2",
+    "facets": [
+      "F4"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "用大模型生成的轨迹或概率分布训练小模型，把能力压缩进更便宜的学生模型。",
+    "problem": "业务稳定后，长尾任务分布已经清楚，没必要每次都付大模型的钱。",
+    "newIn": "在 Agent 语境下，蒸馏的对象从「答案」变成「轨迹」——包括如何选工具、如何纠错。",
+    "from": [],
+    "rel": [
+      "small-model",
+      "procedural-memory",
+      "golden-set"
+    ],
+    "trap": "蒸馏只复制能力不复制边界。学生模型在分布外场景的退化往往非常突兀。",
+    "tags": [
+      "成本",
+      "模型"
+    ]
+  },
+  {
+    "id": "context-engineering",
+    "name": "上下文工程",
+    "en": "Context Engineering",
+    "alias": [
+      "上下文管理",
+      "context management"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "系统性决定「每次调用时模型眼前摆什么 token」的工程实践，涵盖选取、排序、压缩、格式化与缓存。",
+    "problem": "模型能力不再稀缺，稀缺的是在正确时刻给出正确且足量的 token；这一层是 Agent 效果方差的最大来源。",
+    "newIn": "从「写提示词」升级为「设计一条 token 供给管线」，把检索、记忆召回、压缩、排序统一纳入取舍。",
+    "from": [
+      [
+        "prompt-template",
+        "演进"
+      ],
+      [
+        "rag",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "agent-skills",
+      "context-compression",
+      "lost-in-the-middle",
+      "prompt-caching",
+      "prompt-template",
+      "rag",
+      "working-memory",
+      "harness"
+    ],
+    "trap": "做成「一堆 prompt 模板」的集合，而不是一条有明确容量预算与优先级顺序的管线。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "system-prompt",
+    "name": "系统提示",
+    "en": "System Prompt",
+    "alias": [
+      "人设",
+      "system message"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2",
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "在对话最前、最高优先级处声明角色、边界、可用工具与输出契约。",
+    "problem": "没有稳定前置约束，模型会被后续任意用户输入带偏。",
+    "newIn": "不是新概念，但在 Agent 里它的职责变了：从「设定人设」变成「声明运行契约」——何时该停、什么不能做、失败如何报。",
+    "from": [
+      [
+        "prompt-template",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "instruction-hierarchy",
+      "user-profile",
+      "role-design",
+      "guardrails"
+    ],
+    "trap": "把业务流程全塞进系统提示。流程该进代码与状态机，提示词只该承载判断准则。",
+    "tags": [
+      "上下文",
+      "安全"
+    ]
+  },
+  {
+    "id": "prompt-template",
+    "name": "提示词模板",
+    "en": "Prompt Template",
+    "alias": [
+      "prompt",
+      "提示工程"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2",
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "带占位符的提示词字符串，将任务说明与运行时变量拼装成最终输入。",
+    "problem": "手工拼接字符串不可维护、无法版本化、无法自动评测。",
+    "newIn": "它自己已是「旧」。新东西是它被降级为上下文工程的一个子模块——模板管措辞，管线管内容。",
+    "from": [],
+    "rel": [
+      "context-engineering",
+      "few-shot",
+      "prompt-versioning"
+    ],
+    "trap": "在模板里做逻辑判断（if/else 分支）。一旦分支超过三层，就说明该用代码编排而不是模板。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "few-shot",
+    "name": "少样本示例",
+    "en": "Few-shot Examples",
+    "alias": [
+      "示例学习",
+      "in-context learning"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "在提示中给出若干输入输出样例，用模式匹配替代显式规则描述。",
+    "problem": "很多任务用自然语言描述很难说清，但给两个例子就一目了然。",
+    "newIn": "无新意，但有个被反复踩的坑：示例中的具体数据会被模型当作可复用事实。",
+    "from": [],
+    "rel": [
+      "prompt-template",
+      "evaluation"
+    ],
+    "trap": "示例里写真实金额与客户名（如 $4.2M、Acme Corp），模型会把它们搬到无关问题上，制造「有出处感」的幻觉。应使用占位符。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "structured-output",
+    "name": "结构化输出",
+    "en": "Structured Output",
+    "alias": [
+      "JSON mode",
+      "schema 约束解码"
+    ],
+    "dot": "L1.P7",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "强制模型输出符合给定 schema 的 JSON 或其他格式，供下游程序直接消费。",
+    "problem": "自由文本输出无法稳定解析，正则兜底在长输出上几乎必错。",
+    "newIn": "从「提示模型别写废话」进化为「解码时约束 token 概率」，把合规性从祈祷变成保证。",
+    "from": [
+      [
+        "prompt-template",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "native-tool-calling",
+      "evaluation"
+    ],
+    "trap": "schema 合法不代表语义合法。字段齐全但值错位的「结构性正确」是最难发现的一类失败。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "rag",
+    "name": "检索增强生成",
+    "en": "Retrieval-Augmented Generation",
+    "alias": [
+      "RAG",
+      "知识库问答"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F1",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "先从外部知识库检索相关片段，再连同问题一起送入模型生成答案。",
+    "problem": "模型参数里的知识会过时、会编造、无法覆盖私有数据。",
+    "newIn": "已是成熟范式。当前的「新」在它的形态变化：从一次性检索走向代理式检索，从向量检索走向混合与图谱。",
+    "from": [],
+    "rel": [
+      "multimodal-input",
+      "long-context",
+      "context-engineering",
+      "agentic-rag",
+      "chunking",
+      "embedding",
+      "graph-rag",
+      "query-rewrite",
+      "hybrid-retrieval",
+      "rerank",
+      "citation-grounding",
+      "vector-store",
+      "memory-vs-rag"
+    ],
+    "trap": "把所有「答不准」都归因于生成侧。多数 RAG 质量问题其实在检索侧（召回没中，模型只能编）。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "chunking",
+    "name": "分块",
+    "en": "Chunking",
+    "alias": [
+      "切片",
+      "文档切分"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "把长文档切成检索单元，决定「一个知识片段」的粒度与边界。",
+    "problem": "整篇文档超出上下文且噪声过多；切得太碎又丢失指代与上下文。",
+    "newIn": "方法没大变，但语义分块与「上下文前缀」让每个块自带身份说明，是对「块无自我描述」这一老缺陷的修补。",
+    "from": [
+      [
+        "contextual-retrieval",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "multimodal-input",
+      "embedding",
+      "rag",
+      "rerank"
+    ],
+    "trap": "按固定字符数硬切。跨块指代（「它」「该方案」）会在切点处断裂，检索命中后模型也读不懂。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "embedding",
+    "name": "向量嵌入",
+    "en": "Embedding",
+    "alias": [
+      "语义向量",
+      "dense retrieval"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "把文本映射到高维向量，用余弦相似度衡量语义接近程度。",
+    "problem": "关键词匹配无法处理同义改写与跨语言表达。",
+    "newIn": "已经彻底商品化。它新在用途扩展：除了检索，还用于去重、聚类、路由、记忆召回。",
+    "from": [],
+    "rel": [
+      "chunking",
+      "rag",
+      "hybrid-retrieval",
+      "vector-store"
+    ],
+    "trap": "换 embedding 模型却不重建索引，向量空间不一致会让召回率静默崩塌。",
+    "tags": [
+      "上下文",
+      "存储"
+    ]
+  },
+  {
+    "id": "hybrid-retrieval",
+    "name": "混合检索",
+    "en": "Hybrid Retrieval",
+    "alias": [
+      "BM25 + 向量",
+      "稀疏稠密融合"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "同时做关键词（稀疏）与语义（稠密）检索，再融合两路结果。",
+    "problem": "纯向量检索对专有名词、编号、代码标识符极不敏感；纯关键词又不懂同义改写。",
+    "newIn": "不是新技术，是重估：Agent 场景里的查询常包含精确标识符，稀疏检索的价值被重新发现。",
+    "from": [
+      [
+        "rag",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "embedding",
+      "rag",
+      "rerank",
+      "vector-store"
+    ],
+    "trap": "融合权重靠拍脑袋。RRF 之类无参融合通常比手工调权更稳。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "rerank",
+    "name": "重排序",
+    "en": "Rerank",
+    "alias": [
+      "交叉编码器",
+      "精排"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "对初筛出的一批候选做逐对精算相关性，再取 Top-K 送入模型。",
+    "problem": "向量检索是「双塔」近似，精度有限，常把真正相关的片段排在第 20 位。",
+    "newIn": "性价比极高的一个补丁：召回放宽、精排收窄，通常比换更大的 embedding 模型更划算。",
+    "from": [
+      [
+        "rag",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "lost-in-the-middle",
+      "chunking",
+      "query-rewrite",
+      "rag",
+      "hybrid-retrieval"
+    ],
+    "trap": "把 rerank 当万能药。若初筛 Top-50 里根本没有正确片段，精排只会更精确地排序错误答案。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "query-rewrite",
+    "name": "查询改写",
+    "en": "Query Rewrite / HyDE",
+    "alias": [
+      "查询扩展",
+      "假设文档嵌入"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "在检索前用模型改写、扩展或假设性作答用户问题，缩小「问法」与「文档写法」的语义鸿沟。",
+    "problem": "用户口语化提问与知识库书面表述之间存在系统性偏差，直接检索命中率低。",
+    "newIn": "把「检索」从一次性查表变成可迭代的生成行为，是 agentic RAG 的入口。",
+    "from": [
+      [
+        "rag",
+        "演进"
+      ],
+      [
+        "react",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "agentic-rag",
+      "rag",
+      "rerank"
+    ],
+    "trap": "无脑多轮改写会让查询漂移，越改越偏离原始意图。需要保留原问题做兜底召回。",
+    "tags": [
+      "上下文"
+    ]
+  },
+  {
+    "id": "graph-rag",
+    "name": "图谱增强检索",
+    "en": "GraphRAG",
+    "alias": [
+      "知识图谱检索",
+      "社区摘要"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "把文档转成实体-关系图，用图的连通性与社区摘要回答「跨文档、多跳」问题。",
+    "problem": "向量检索是「片段相似」，回答不了「A 和 B 之间隔了几层关系」这类全局性问题。",
+    "newIn": "把检索单元从「文本块」换成「结构化关系」，代价是构图与更新成本高出一个量级。",
+    "from": [
+      [
+        "rag",
+        "演进"
+      ],
+      [
+        "knowledge-graph",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "rag",
+      "knowledge-graph",
+      "memory-consolidation"
+    ],
+    "trap": "在只需要事实查找的场景上图谱。构图成本高、更新慢，收益只在多跳与全局归纳时才显现。",
+    "tags": [
+      "上下文",
+      "存储"
+    ]
+  },
+  {
+    "id": "agentic-rag",
+    "name": "代理式检索",
+    "en": "Agentic RAG / Self-RAG",
+    "alias": [
+      "迭代检索",
+      "反思式检索"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "让 Agent 自己决定检索什么、检索几次、结果够不够，不够就改写再查。",
+    "problem": "固定「一次检索 → 一次生成」的流水线，无法应对需要多轮取证的问题。",
+    "newIn": "把检索从「管线的一个阶段」变成「Agent 的一个动作」，检索策略由模型动态决定。",
+    "from": [
+      [
+        "rag",
+        "演进"
+      ],
+      [
+        "react",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "query-rewrite",
+      "rag",
+      "tool-search",
+      "agent-loop"
+    ],
+    "trap": "缺少「够了就停」的判据，会退化成无限检索。必须显式定义充分性条件与最大轮次。",
+    "tags": [
+      "上下文",
+      "控制"
+    ]
+  },
+  {
+    "id": "context-compression",
+    "name": "上下文压缩",
+    "en": "Context Compression",
+    "alias": [
+      "对话摘要",
+      "历史裁剪"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "在长会话或多轮工具调用中，把历史压缩成摘要或摘要+关键原文，控制 token 增长。",
+    "problem": "上下文随轮次线性增长，成本与延迟同步上升，且信噪比持续下降。",
+    "newIn": "从「截断最老的消息」进化为「按重要性选择性保留」，判断依据来自反思环节。",
+    "from": [
+      [
+        "context-engineering",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "long-context",
+      "agent-skills",
+      "context-engineering",
+      "context-rot",
+      "prompt-caching",
+      "rerank",
+      "compaction",
+      "working-memory",
+      "memory-consolidation",
+      "tool-result-design",
+      "subagent-isolation"
+    ],
+    "trap": "压缩掉「约束条件」与「已确认事实」。模型会重复问已回答的问题，或违反早已声明的边界。",
+    "tags": [
+      "上下文",
+      "成本"
+    ]
+  },
+  {
+    "id": "prompt-caching",
+    "name": "提示缓存",
+    "en": "Prompt Caching",
+    "alias": [
+      "KV cache 复用",
+      "上下文缓存"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F4",
+      "F5"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "把稳定前缀（系统提示、工具清单、长文档）的计算结果缓存，后续请求直接复用。",
+    "problem": "每轮都重算相同的长前缀，浪费钱也浪费时间。",
+    "newIn": "改变了上下文工程的最优结构：把「稳定内容」放前面、「动态内容」放后面，从编码风格问题变成成本问题。",
+    "from": [
+      [
+        "caching-strategy",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "long-context",
+      "context-compression",
+      "context-engineering",
+      "cost-attribution",
+      "latency-budget"
+    ],
+    "trap": "在缓存前缀里插入时间戳或用户 ID，导致缓存命中率归零，成本不降反升。",
+    "tags": [
+      "成本",
+      "时延"
+    ]
+  },
+  {
+    "id": "lost-in-the-middle",
+    "name": "中间遗忘",
+    "en": "Lost in the Middle",
+    "alias": [
+      "注意力不均",
+      "位置偏差"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "稳定",
+    "oneLine": "模型对长上下文首尾两端的召回显著优于中段，呈 U 形曲线。",
+    "problem": "「把全部文档塞进去」在实践中失效：关键信息在中段时会被忽略。",
+    "newIn": "不是新概念，但它是长上下文叙事最重要的反证，也是 rerank 存在的根本理由。",
+    "from": [],
+    "rel": [
+      "long-context",
+      "context-engineering",
+      "context-rot",
+      "needle-test",
+      "rerank"
+    ],
+    "trap": "用「塞得下」当作「用得上」。容量测试（needle）通过不代表多文档推理通过。",
+    "tags": [
+      "上下文",
+      "质量"
+    ]
+  },
+  {
+    "id": "needle-test",
+    "name": "大海捞针测试",
+    "en": "Needle in a Haystack",
+    "alias": [
+      "长上下文评测",
+      "RULER"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "在超长文本的随机位置埋入一个事实，考察模型能否准确取出。",
+    "problem": "需要一种可量化、可复现的方式衡量长上下文的真实可用度。",
+    "newIn": "已从「单针检索」进化为「多针、多跳、干扰项」组合，单针成绩已失去区分度。",
+    "from": [
+      [
+        "benchmark",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "long-context",
+      "context-rot",
+      "lost-in-the-middle",
+      "evaluation",
+      "benchmark"
+    ],
+    "trap": "把单针满分当作长上下文能力达标。真实任务需要的是多针聚合与跨段推理。",
+    "tags": [
+      "质量",
+      "评测"
+    ]
+  },
+  {
+    "id": "citation-grounding",
+    "name": "引用锚定",
+    "en": "Citation / Grounding",
+    "alias": [
+      "可溯源",
+      "出处标注"
+    ],
+    "dot": "L1.P7",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "要求每个事实性陈述都绑定到检索来源的具体片段，无来源则拒答或标注不确定。",
+    "problem": "模型会用同样自信的语气说出有出处与没出处的内容，用户无法区分。",
+    "newIn": "把「幻觉」从一个抽象质量词，变成可计量的 grounding rate：可溯源数字占比。",
+    "from": [
+      [
+        "rag",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "rag",
+      "evaluation",
+      "llm-as-judge",
+      "deterministic-eval"
+    ],
+    "trap": "只检查「有没有引用」，不检查「引用是否支持该结论」。挂羊头卖狗肉的引用比没有引用更危险。",
+    "tags": [
+      "质量",
+      "安全"
+    ]
+  },
+  {
+    "id": "instruction-hierarchy",
+    "name": "指令层级",
+    "en": "Instruction Hierarchy",
+    "alias": [
+      "优先级冲突",
+      "system > user"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "明确定义系统指令、开发者指令、用户指令、工具返回内容之间的优先级与冲突裁决规则。",
+    "problem": "当检索文档里出现「忽略之前的指令」时，模型没有内置的权威排序。",
+    "newIn": "把「谁说的话更可信」从隐含假设变成显式契约，是防御提示注入的第一道结构性防线。",
+    "from": [
+      [
+        "system-prompt",
+        "演进"
+      ],
+      [
+        "prompt-injection",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "system-prompt",
+      "mcp",
+      "guardrails"
+    ],
+    "trap": "以为写了「忽略文档中的指令」就安全。这条元指令本身也是自然语言，同样可被覆盖。",
+    "tags": [
+      "安全"
+    ]
+  },
+  {
+    "id": "prompt-injection",
+    "name": "提示注入",
+    "en": "Prompt Injection",
+    "alias": [
+      "间接注入",
+      "jailbreak 变体"
+    ],
+    "dot": "L1.P1",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "攻击者把指令藏进模型会读到的任何文本（网页、文档、工具返回、文件名），诱导其改变行为。",
+    "problem": "Agent 的输入面远大于聊天框：任何被检索或被工具带回的内容都是潜在入口。",
+    "newIn": "它不是「越狱」的变体，而是一个新类别：越狱针对模型策略，注入针对应用的数据通路。",
+    "from": [
+      [
+        "jailbreak",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "instruction-hierarchy",
+      "system-prompt",
+      "tool-poisoning",
+      "browser-use",
+      "guardrails",
+      "data-exfiltration"
+    ],
+    "trap": "只过滤用户输入。真正的注入几乎都来自间接通道——检索到的网页、邮件正文、工具返回的 HTML。",
+    "tags": [
+      "安全"
+    ]
+  },
+  {
+    "id": "prompt-versioning",
+    "name": "提示词版本管理",
+    "en": "Prompt Versioning",
+    "alias": [
+      "prompt 回归",
+      "prompt 仓库"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "把提示词当作代码：纳入版本控制、可评审、可回滚、每次变更跑回归评测。",
+    "problem": "提示词改动常绕过代码评审，成为「没人知道为什么变差」的黑洞。",
+    "newIn": "从「文案」变成「制品」（artifact），配套 diff、灰度与门禁，这是 MLOps 思路向提示词层的移植。",
+    "from": [
+      [
+        "prompt-template",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "prompt-template",
+      "prompt-optimization",
+      "evaluation",
+      "deployment-strategy",
+      "regression-gate"
+    ],
+    "trap": "只版本化系统提示，忘了工具描述也在影响行为。工具描述变更同样需要走回归。",
+    "tags": [
+      "运维"
+    ]
+  },
+  {
+    "id": "prompt-optimization",
+    "name": "提示词自动优化",
+    "en": "Automatic Prompt Optimization",
+    "alias": [
+      "DSPy",
+      "OPRO",
+      "prompt 自动调优"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F7"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "用评测信号驱动搜索或梯度式改写提示词，替代人工试错。",
+    "problem": "人工调 prompt 收敛慢、不可复现，且极易过拟合少量样例。",
+    "newIn": "把提示词从「人写的作品」变成「被优化的参数」，配套的代价是必须有一份可信的评测集。",
+    "from": [
+      [
+        "prompt-versioning",
+        "演进"
+      ],
+      [
+        "evaluation",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "prompt-versioning",
+      "evaluation",
+      "overfitting-eval",
+      "golden-set"
+    ],
+    "trap": "用同一份集子既优化又验收。Goodhart 效应下，指标会涨，真实长尾会退化，必须留 holdout。",
+    "tags": [
+      "运维",
+      "质量"
+    ]
+  },
+  {
+    "id": "working-memory",
+    "name": "工作记忆",
+    "en": "Working Memory",
+    "alias": [
+      "短期记忆",
+      "对话历史"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "当前会话内可见的上下文窗口，承载本轮任务的临时状态。",
+    "problem": "模型本身无状态，每轮必须重新喂入「刚才发生了什么」。",
+    "newIn": "它和上下文工程其实是同一件事的两面：L1 管「怎么组装」，L2 管「组装材料从哪留存」。",
+    "from": [
+      [
+        "context-engineering",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "context-engineering",
+      "compaction",
+      "long-term-memory",
+      "checkpoint",
+      "todo-list"
+    ],
+    "trap": "把整个历史原样追加。到第 20 轮时，早期的关键约束会被中段遗忘吞掉。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "long-term-memory",
+    "name": "长期记忆",
+    "en": "Long-term Memory",
+    "alias": [
+      "外部记忆",
+      "agent memory"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "跨会话持久保存的事实、偏好与经历，在需要时被召回进上下文。",
+    "problem": "用户不想每次都重新自我介绍；Agent 不该重复犯同一个错。",
+    "newIn": "它新在「写入」而不在「读取」。绝大多数实现只做了检索，没做取舍——什么值得记、何时该忘。",
+    "from": [
+      [
+        "rag",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "vector-store",
+      "working-memory",
+      "memory-vs-rag",
+      "memory-write-policy",
+      "memory-consolidation",
+      "forgetting",
+      "tenant-isolation"
+    ],
+    "trap": "把长期记忆做成「把所有对话都存进向量库」。噪声会稀释召回，且隐私风险随时间累积。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "episodic-memory",
+    "name": "情景记忆",
+    "en": "Episodic Memory",
+    "alias": [
+      "经历记忆",
+      "会话级记忆"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "按「时间 + 事件」组织的历史经历：某次发生了什么、结果如何。",
+    "problem": "纯事实型记忆记不住「上次这么试过，失败了」，导致重复踩坑。",
+    "newIn": "从认知科学借来的分类，落地价值在于它能支撑「类似情境下我该怎么做」的策略复用。",
+    "from": [
+      [
+        "long-term-memory",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "procedural-memory",
+      "semantic-memory",
+      "reflexion"
+    ],
+    "trap": "情景记录不做去重与摘要，几百轮后召回的全是琐碎操作日志。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "semantic-memory",
+    "name": "语义记忆",
+    "en": "Semantic Memory",
+    "alias": [
+      "事实记忆",
+      "用户知识"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "与时间无关的稳定事实：用户偏好、组织架构、领域概念。",
+    "problem": "每次交互都重新推断用户的稳定属性，既慢又易错。",
+    "newIn": "它的工程难点不在存，而在「冲突更新」：用户偏好变了，旧事实必须被覆盖而不是并存。",
+    "from": [
+      [
+        "long-term-memory",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "episodic-memory",
+      "user-profile",
+      "knowledge-graph",
+      "memory-conflict",
+      "temporal-state"
+    ],
+    "trap": "只追加不更新。用户换了工作三个月后，Agent 仍在用旧公司名做检索。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "procedural-memory",
+    "name": "程序记忆",
+    "en": "Procedural Memory",
+    "alias": [
+      "技能记忆",
+      "SOP 沉淀"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "把成功的操作序列沉淀为可复用的「怎么做」，下次直接调用而不重新探索。",
+    "problem": "同一类任务每次都从头试错，浪费 token 也浪费时间。",
+    "newIn": "这是「Agent 自我进化」最务实的落点：不训练模型，只积累可检索的轨迹模板。",
+    "from": [
+      [
+        "long-term-memory",
+        "特化"
+      ],
+      [
+        "episodic-memory",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "distillation",
+      "episodic-memory",
+      "tool-definition",
+      "reflexion"
+    ],
+    "trap": "沉淀了失败轨迹或偶然成功。必须用结果信号筛选，否则会把坏习惯固化成 SOP。",
+    "tags": [
+      "记忆",
+      "前沿"
+    ]
+  },
+  {
+    "id": "vector-store",
+    "name": "向量库",
+    "en": "Vector Store",
+    "alias": [
+      "向量数据库",
+      "ANN 索引"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "存储向量并支持近邻检索的数据库，是 RAG 与记忆系统的常见底座。",
+    "problem": "海量向量上做精确近邻搜索代价过高。",
+    "newIn": "技术本身已商品化。当下的变化是「混合检索成为默认」——纯向量库正在被带标量的混合索引取代。",
+    "from": [],
+    "rel": [
+      "embedding",
+      "rag",
+      "hybrid-retrieval",
+      "long-term-memory",
+      "tenant-isolation"
+    ],
+    "trap": "把它当数据库用（存原文、做事务）。向量库的强项只有一件：相似度检索。",
+    "tags": [
+      "存储"
+    ]
+  },
+  {
+    "id": "memory-write-policy",
+    "name": "记忆写入策略",
+    "en": "Memory Write Policy",
+    "alias": [
+      "何时记",
+      "记忆抽取"
+    ],
+    "dot": "L2.P6",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "决定「什么内容值得写进长期记忆、以什么粒度、何时写」的规则或模型。",
+    "problem": "全量写入会让记忆库迅速腐化，召回质量断崖下跌。",
+    "newIn": "这是记忆系统与 RAG 最本质的分野：RAG 是只读，记忆必须回答写入门控。",
+    "from": [
+      [
+        "long-term-memory",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "user-profile",
+      "memory-vs-rag",
+      "long-term-memory",
+      "memory-consolidation",
+      "forgetting",
+      "reflexion"
+    ],
+    "trap": "用「每轮结束都抽事实」做写入。会记下大量一次性、临时、错误的推断，且越积越难清。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "memory-consolidation",
+    "name": "记忆巩固",
+    "en": "Memory Consolidation",
+    "alias": [
+      "记忆摘要",
+      "图谱合并"
+    ],
+    "dot": "L2.P6",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "把零散记忆合并、抽象成更高层的结论，模拟睡眠中的记忆固化过程。",
+    "problem": "碎片化记忆需要多次检索才能拼出全貌，且彼此矛盾时无法自洽。",
+    "newIn": "把「记忆」从被动存储变成主动加工，这是从数据库隐喻转向认知隐喻的关键一步。",
+    "from": [
+      [
+        "long-term-memory",
+        "演进"
+      ],
+      [
+        "context-compression",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "graph-rag",
+      "compaction",
+      "knowledge-graph",
+      "long-term-memory",
+      "memory-write-policy",
+      "forgetting"
+    ],
+    "trap": "巩固过程本身由 LLM 完成，会引入新的幻觉，且层层摘要会丢失细节、放大早期错误。",
+    "tags": [
+      "记忆",
+      "前沿"
+    ]
+  },
+  {
+    "id": "forgetting",
+    "name": "遗忘机制",
+    "en": "Forgetting",
+    "alias": [
+      "记忆衰减",
+      "过期淘汰"
+    ],
+    "dot": "L2.P6",
+    "facets": [
+      "F2"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "按时间衰减、访问频率或置信度主动淘汰低价值记忆。",
+    "problem": "只增不减的记忆库最终会变成噪声源，检索成本上升、精度下降。",
+    "newIn": "大多数团队根本没实现这一层——这正是「记忆系统看起来能用、三个月后不能用」的主因。",
+    "from": [
+      [
+        "memory-consolidation",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "long-term-memory",
+      "memory-write-policy",
+      "memory-conflict",
+      "memory-consolidation",
+      "pii-redaction"
+    ],
+    "trap": "按时间一刀切删除。用户明确告知的稳定偏好一旦被忘，体验倒退比从未记住更糟。",
+    "tags": [
+      "记忆",
+      "前沿"
+    ]
+  },
+  {
+    "id": "memory-conflict",
+    "name": "记忆冲突",
+    "en": "Memory Conflict Resolution",
+    "alias": [
+      "事实更新",
+      "时序一致性"
+    ],
+    "dot": "L2.P6",
+    "facets": [
+      "F2"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "当新旧记忆矛盾时（用户搬了家、项目改了名），决定以谁为准。",
+    "problem": "向量库天然支持并存，但并存意味着模型可能召回两条互斥事实。",
+    "newIn": "它揭示了「记忆不等于检索」：检索能返回矛盾结果，记忆系统必须能消解矛盾。",
+    "from": [
+      [
+        "semantic-memory",
+        "特化"
+      ],
+      [
+        "graph-rag",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "knowledge-graph",
+      "semantic-memory",
+      "forgetting",
+      "temporal-state"
+    ],
+    "trap": "用「最新覆盖」作为唯一规则。有些事实是长期的（出生地），有些是瞬时的（今天心情），规则要分类。",
+    "tags": [
+      "记忆",
+      "前沿"
+    ]
+  },
+  {
+    "id": "checkpoint",
+    "name": "检查点",
+    "en": "Checkpoint / State Snapshot",
+    "alias": [
+      "状态快照",
+      "断点续跑"
+    ],
+    "dot": "L2.P7",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在每一步之后持久化完整的执行状态，支持恢复、回滚与时间旅行调试。",
+    "problem": "Agent 一次运行可能十分钟、几十次工具调用，中途失败重头再来不可接受。",
+    "newIn": "从「数据库事务」借来的概念，在 Agent 语境下还多了一个用途：重放失败轨迹做根因分析。",
+    "from": [
+      [
+        "persistence",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "working-memory",
+      "idempotency",
+      "retry-backoff",
+      "interrupt-resume",
+      "escalation",
+      "durable-execution",
+      "temporal-state",
+      "shared-state",
+      "agent-runtime",
+      "tracing"
+    ],
+    "trap": "只存消息历史，不存工具调用的副作用。恢复后会用「已执行过」的状态重复执行有副作用的操作。",
+    "tags": [
+      "运维",
+      "记忆"
+    ]
+  },
+  {
+    "id": "knowledge-graph",
+    "name": "知识图谱",
+    "en": "Knowledge Graph",
+    "alias": [
+      "实体关系图",
+      "本体"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "以实体为节点、关系为边的结构化知识表示，支持多跳查询与逻辑约束。",
+    "problem": "纯文本检索表达不了「A 与 B 的关系路径」，也无法保证事实一致性。",
+    "newIn": "老技术在 LLM 时代复兴了两次：一次作为 GraphRAG 的检索底座，一次作为 Agent 记忆的结构骨架。",
+    "from": [],
+    "rel": [
+      "graph-rag",
+      "semantic-memory",
+      "memory-conflict",
+      "memory-consolidation"
+    ],
+    "trap": "为建图而建图。抽取成本高、schema 演进困难，只有多跳或强一致需求才值得。",
+    "tags": [
+      "存储"
+    ]
+  },
+  {
+    "id": "memory-vs-rag",
+    "name": "记忆与 RAG 的边界",
+    "en": "Memory vs. RAG",
+    "alias": [
+      "两者的区别"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "进阶",
+    "maturity": "争议",
+    "oneLine": "RAG 是只读的、面向公共知识的检索；记忆是读写双向的、面向个体经历的状态。",
+    "problem": "两者都用向量检索实现，导致概念混用、架构错配。",
+    "newIn": "这个区分本身是新的：早期大家都在做 RAG，直到发现「记住用户」需要一整套完全不同的写入门控与淘汰机制。",
+    "from": [
+      [
+        "rag",
+        "并行"
+      ],
+      [
+        "long-term-memory",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "rag",
+      "long-term-memory",
+      "memory-write-policy"
+    ],
+    "trap": "用 RAG 的思维做记忆——只建索引不设计写入门控，三个月后记忆库变成垃圾场。",
+    "tags": [
+      "记忆",
+      "概念"
+    ]
+  },
+  {
+    "id": "user-profile",
+    "name": "用户画像",
+    "en": "User Profile",
+    "alias": [
+      "个性化",
+      "偏好建模"
+    ],
+    "dot": "L2.P2",
+    "facets": [
+      "F1"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "结构化的用户属性集合：角色、水平、偏好、历史目标。",
+    "problem": "同一句话对不同角色应有不同回答（销售要子公司口径，管理层要母公司汇总）。",
+    "newIn": "从推荐系统的老概念迁移而来，但驱动它的不再是统计画像，而是对话中抽取的显式事实。",
+    "from": [
+      [
+        "semantic-memory",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "system-prompt",
+      "semantic-memory",
+      "memory-write-policy"
+    ],
+    "trap": "把画像当静态配置。用户在会话中改变意图时，画像必须能被当前话语覆盖。",
+    "tags": [
+      "记忆"
+    ]
+  },
+  {
+    "id": "tool-definition",
+    "name": "工具定义",
+    "en": "Tool Definition",
+    "alias": [
+      "工具 schema",
+      "函数签名"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "用名称、描述、参数 schema 声明一个可被模型调用的能力。",
+    "problem": "模型无法调用未声明的东西，也无法正确填写描述含糊的参数。",
+    "newIn": "看似简单，但它是 Agent 里 ROI 最高的文本：锐化一句工具描述，常常比调十轮 prompt 有效。",
+    "from": [
+      [
+        "native-tool-calling",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "native-tool-calling",
+      "procedural-memory",
+      "tool-selection",
+      "openapi-to-tool",
+      "mcp",
+      "tool-result-design"
+    ],
+    "trap": "写面向人类的描述（「查询客户信息」）而不是面向选择的描述（何时用、何时不用、与相邻工具的区别）。",
+    "tags": [
+      "工具"
+    ]
+  },
+  {
+    "id": "tool-result-design",
+    "name": "工具返回设计",
+    "en": "Tool Result Design",
+    "alias": [
+      "返回值契约",
+      "观察格式"
+    ],
+    "dot": "L3.P5",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "决定工具返回什么、返回多少、失败时怎么说——这直接决定了模型的下一步判断质量。",
+    "problem": "原样返回 50KB JSON，模型会被噪声淹没；只返回「成功」，模型就失去了纠错依据。",
+    "newIn": "它长期被忽视，因为传统 API 设计假设消费者是程序。消费者换成模型后，返回值的「可读性」变成一等需求。",
+    "from": [
+      [
+        "tool-definition",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "code-interpreter",
+      "tool-definition",
+      "computer-use",
+      "tool-error-handling"
+    ],
+    "trap": "返回「看起来对」的结果。截断、分页、缓存过期产生的残缺数据，模型会当成完整事实使用。",
+    "tags": [
+      "工具"
+    ]
+  },
+  {
+    "id": "mcp",
+    "name": "模型上下文协议",
+    "en": "Model Context Protocol",
+    "alias": [
+      "MCP"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把「模型 ↔ 外部能力」的接入方式标准化：一次实现服务端，任何客户端都能用。",
+    "problem": "M 个模型 × N 个工具需要 M×N 套适配代码，且每家的调用格式各不相同。",
+    "newIn": "它不是新能力，而是把 USB 式的接口经济学引入 Agent 工具层——价值在生态，不在协议本身。",
+    "from": [
+      [
+        "native-tool-calling",
+        "演进"
+      ],
+      [
+        "openapi-to-tool",
+        "替代"
+      ]
+    ],
+    "rel": [
+      "native-tool-calling",
+      "instruction-hierarchy",
+      "tool-search",
+      "a2a",
+      "mcp-primitives",
+      "openapi-to-tool",
+      "tool-definition",
+      "tool-poisoning",
+      "permission-scope"
+    ],
+    "trap": "把它当 RPC 用。MCP 的设计假设是「模型会读描述自己决定调不调」，过度细粒度会让工具选择崩塌。",
+    "tags": [
+      "工具",
+      "协议"
+    ]
+  },
+  {
+    "id": "mcp-primitives",
+    "name": "MCP 三原语",
+    "en": "MCP Primitives",
+    "alias": [
+      "tools / resources / prompts"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "MCP 定义的三种交互对象：tools（可执行动作）、resources（可读数据）、prompts（可复用模板）。",
+    "problem": "把所有东西都塞进 tools，会让模型面对几十个不该由它主动调用的接口。",
+    "newIn": "它区分了「模型主动做」与「应用主动取」：resources 由客户端挂载，不消耗模型的决策预算。",
+    "from": [
+      [
+        "mcp",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "agent-skills",
+      "tool-search",
+      "tool-selection",
+      "mcp"
+    ],
+    "trap": "把只读数据也做成 tool。每次读取都变成一次决策，成本上升且容易选错。",
+    "tags": [
+      "工具",
+      "协议"
+    ]
+  },
+  {
+    "id": "tool-error-handling",
+    "name": "工具错误处理",
+    "en": "Tool Error Handling",
+    "alias": [
+      "失败重试",
+      "错误回传"
+    ],
+    "dot": "L3.P5",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "定义工具失败时返回什么、模型如何区分「可重试」与「不可重试」。",
+    "problem": "一个裸 500 错误会让模型反复重试同一个调用，直到耗尽预算。",
+    "newIn": "错误信息从「给工程师看的堆栈」变成「给模型看的行动指引」——必须包含下一步建议。",
+    "from": [
+      [
+        "tool-result-design",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "tool-result-design",
+      "termination",
+      "retry-backoff",
+      "guardrails"
+    ],
+    "trap": "把异常吞掉返回空结果。模型会把「查不到」当成「不存在」，进而编造。",
+    "tags": [
+      "工具",
+      "质量"
+    ]
+  },
+  {
+    "id": "tool-selection",
+    "name": "工具选择",
+    "en": "Tool Selection",
+    "alias": [
+      "选错工具",
+      "工具路由"
+    ],
+    "dot": "L3.P3",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在给定任务与可用工具集下，选出正确的工具与正确的参数。",
+    "problem": "工具一多，名称相近、描述重叠，模型的选择准确率会明显下降。",
+    "newIn": "它是可独立评测的一级指标（tool selection accuracy），而不是「Agent 整体表现」的一部分。",
+    "from": [
+      [
+        "tool-definition",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "tool-search",
+      "mcp-primitives",
+      "tool-definition",
+      "evaluation"
+    ],
+    "trap": "工具超过 20 个仍全量塞进上下文。应该做工具检索或分层暴露，而不是考验模型的记忆力。",
+    "tags": [
+      "工具",
+      "质量"
+    ]
+  },
+  {
+    "id": "tool-search",
+    "name": "工具检索",
+    "en": "Tool Search / Tool RAG",
+    "alias": [
+      "动态工具加载",
+      "工具按需暴露"
+    ],
+    "dot": "L3.P3",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "工具数量过多时，先用检索筛出候选工具再交给模型选择。",
+    "problem": "上百个 MCP 工具全量注入，既吃掉上下文预算，又显著降低选择准确率。",
+    "newIn": "把 RAG 的思路从「检索知识」迁移到「检索能力」，是工具规模化后的必然产物。",
+    "from": [
+      [
+        "tool-selection",
+        "演进"
+      ],
+      [
+        "rag",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "agent-skills",
+      "agentic-rag",
+      "tool-selection",
+      "mcp-primitives",
+      "openapi-to-tool",
+      "mcp"
+    ],
+    "trap": "检索错了工具就等于能力缺失，且失败表现是「模型说做不到」，很难归因到检索层。",
+    "tags": [
+      "工具",
+      "前沿"
+    ]
+  },
+  {
+    "id": "code-interpreter",
+    "name": "代码解释器",
+    "en": "Code Interpreter",
+    "alias": [
+      "代码执行",
+      "数据分析沙箱"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "让模型写代码并在隔离环境中执行，用代码代替自然语言做精确计算与数据处理。",
+    "problem": "模型做算术、聚合、格式转换不可靠；这些恰恰是代码最擅长的。",
+    "newIn": "它把「工具」从固定 API 扩展成图灵完备的动作空间，是 Agent 通用性跃升的关键一步。",
+    "from": [
+      [
+        "sandbox",
+        "组合"
+      ],
+      [
+        "tool-definition",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "sandbox",
+      "computer-use",
+      "tool-result-design"
+    ],
+    "trap": "忽略执行环境的依赖与状态。同一个脚本第二次跑不起来，模型会陷入反复修环境的循环。",
+    "tags": [
+      "工具"
+    ]
+  },
+  {
+    "id": "sandbox",
+    "name": "沙箱",
+    "en": "Sandbox",
+    "alias": [
+      "隔离执行",
+      "容器化运行"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "为代码执行与工具调用提供文件系统、网络、权限受限的隔离环境。",
+    "problem": "模型生成的代码不可信，直接在生产主机执行等于把 root 交给一个会幻觉的程序。",
+    "newIn": "从「测试基础设施」升级为「Agent 的安全边界」，因为 Agent 会自主决定执行什么。",
+    "from": [
+      [
+        "permission-scope",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "small-model",
+      "code-interpreter",
+      "permission-scope",
+      "browser-use",
+      "computer-use",
+      "agent-runtime",
+      "data-exfiltration"
+    ],
+    "trap": "只隔离文件系统不隔离网络。数据外泄与提示注入的横向移动仍可发生。",
+    "tags": [
+      "安全",
+      "工具"
+    ]
+  },
+  {
+    "id": "computer-use",
+    "name": "计算机操作",
+    "en": "Computer Use",
+    "alias": [
+      "GUI 智能体",
+      "屏幕操作"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "通过截图 + 坐标点击操作图形界面，绕开没有 API 的遗留系统。",
+    "problem": "企业内部大量系统没有 API，只有网页和桌面客户端。",
+    "newIn": "把「工具」从结构化调用降级为像素级感知，通用性换来了可靠的下降与成本的上升。",
+    "from": [
+      [
+        "browser-use",
+        "演进"
+      ],
+      [
+        "multimodal-input",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "code-interpreter",
+      "sandbox",
+      "browser-use",
+      "tool-result-design"
+    ],
+    "trap": "在需要精确输入的场景靠视觉定位。分辨率、滚动位置、弹窗时序都会让点击落到错误元素上。",
+    "tags": [
+      "工具",
+      "前沿"
+    ]
+  },
+  {
+    "id": "browser-use",
+    "name": "浏览器自动化",
+    "en": "Browser Automation",
+    "alias": [
+      "网页智能体",
+      "Playwright 驱动"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "通过 DOM 或无障碍树操作网页，比纯视觉方案更稳定、更省 token。",
+    "problem": "计算机操作依赖截图，慢且脆；网页有结构化表示可用。",
+    "newIn": "是 computer use 的窄化特化：牺牲通用性换取可靠性，工程上几乎总是更优选择。",
+    "from": [
+      [
+        "computer-use",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "sandbox",
+      "computer-use"
+    ],
+    "trap": "忽略网页里的隐藏文本。抓取到的 DOM 里可能藏着针对 Agent 的注入指令。",
+    "tags": [
+      "工具"
+    ]
+  },
+  {
+    "id": "a2a",
+    "name": "A2A 协议",
+    "en": "Agent2Agent Protocol",
+    "alias": [
+      "智能体互操作",
+      "agent card"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F1"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "让不同厂商、不同框架的 Agent 相互发现、委派任务并回传结果的协议。",
+    "problem": "每个 Agent 框架自成生态，跨组织协作时没有共同语言。",
+    "newIn": "MCP 解决「模型 ↔ 工具」，A2A 解决「Agent ↔ Agent」。区分这两者，比记住协议细节更重要。",
+    "from": [
+      [
+        "mcp",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "mcp",
+      "handoff",
+      "multi-agent",
+      "microservice"
+    ],
+    "trap": "在没有跨组织需求时引入。内部多 Agent 用进程内调用即可，协议层只会增加延迟与调试成本。",
+    "tags": [
+      "协议",
+      "编排"
+    ]
+  },
+  {
+    "id": "idempotency",
+    "name": "幂等性",
+    "en": "Idempotency",
+    "alias": [
+      "重复执行安全",
+      "去重键"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "稳定",
+    "oneLine": "保证同一操作重复执行不产生额外副作用，是 Agent 重试机制的安全前提。",
+    "problem": "Agent 会重试、会恢复检查点、会被人工重跑，任何非幂等操作都可能重复扣款、重复发信。",
+    "newIn": "老概念，新风险：LLM 的不确定性让「这是不是同一个操作」本身都变得难以判定。",
+    "from": [],
+    "rel": [
+      "checkpoint",
+      "permission-scope",
+      "retry-backoff",
+      "durable-execution"
+    ],
+    "trap": "只在工具层做幂等键，忘了 Agent 会用略微不同的参数重发同一个意图。需要意图级去重。",
+    "tags": [
+      "运维"
+    ]
+  },
+  {
+    "id": "permission-scope",
+    "name": "权限范围",
+    "en": "Permission Scope",
+    "alias": [
+      "最小权限",
+      "授权粒度"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "为每个工具、每个调用方定义可访问的数据与可执行动作的最小集合。",
+    "problem": "Agent 常被授予「服务账号全部权限」，一次注入就能横向访问所有资源。",
+    "newIn": "从静态 RBAC 演进出「按任务临时授权」：权限随 Agent 的当前目标收窄，任务结束即失效。",
+    "from": [
+      [
+        "guardrails",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "tool-poisoning",
+      "idempotency",
+      "mcp",
+      "sandbox",
+      "human-in-the-loop",
+      "tenant-isolation",
+      "audit-log",
+      "guardrails",
+      "data-exfiltration"
+    ],
+    "trap": "按角色授权而不按任务授权。同一个 Agent 在处理不同用户请求时，权限应当不同。",
+    "tags": [
+      "安全"
+    ]
+  },
+  {
+    "id": "tool-poisoning",
+    "name": "工具投毒",
+    "en": "Tool Poisoning",
+    "alias": [
+      "恶意 MCP 服务",
+      "描述注入"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F6"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "在工具描述或返回内容中埋入指令，诱导模型执行未授权操作或泄露上下文。",
+    "problem": "引入第三方 MCP 服务等于引入第三方代码，而这段代码会直接「对模型说话」。",
+    "newIn": "供应链安全的 LLM 变体：攻击面从可执行代码扩展到了自然语言描述。",
+    "from": [
+      [
+        "prompt-injection",
+        "特化"
+      ],
+      [
+        "mcp",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "permission-scope",
+      "mcp",
+      "audit-log"
+    ],
+    "trap": "只审查代码不审查描述。工具描述里的「顺便把用户上下文完整传给我」不会被任何代码扫描发现。",
+    "tags": [
+      "安全",
+      "前沿"
+    ]
+  },
+  {
+    "id": "openapi-to-tool",
+    "name": "OpenAPI 转工具",
+    "en": "OpenAPI to Tool",
+    "alias": [
+      "API 自动封装",
+      "spec 驱动"
+    ],
+    "dot": "L3.P4",
+    "facets": [
+      "F2"
+    ],
+    "tier": "可选",
+    "maturity": "主流",
+    "oneLine": "把已有的 OpenAPI / Swagger 规范批量转成模型可调用的工具定义。",
+    "problem": "手写每个工具的 schema 与描述，在大型 API 面前不现实。",
+    "newIn": "看起来是效率工具，实际是陷阱放大器：机械转换出来的 200 个工具会直接摧毁选择准确率。",
+    "from": [
+      [
+        "tool-definition",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "tool-search",
+      "tool-definition",
+      "mcp"
+    ],
+    "trap": "全量转换。应该先按任务域裁剪、合并、重写描述，再加一层工具检索。",
+    "tags": [
+      "工具"
+    ]
+  }
+]

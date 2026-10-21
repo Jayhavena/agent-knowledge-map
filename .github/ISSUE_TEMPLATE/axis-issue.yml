@@ -1,0 +1,40 @@
+name: 坐标系问题
+description: 三条坐标轴本身的划分有问题（这比单概念修正更值得讨论）
+title: "[坐标系] "
+labels: ["axis", "discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        这类问题最有价值：如果坐标系本身有缺口，那么所有挂在它下面的概念都会被放歪。
+
+  - type: dropdown
+    id: axis
+    attributes:
+      label: 涉及哪条轴
+      options:
+        - 层轴（L0–L6）
+        - 环轴（P1–P7）
+        - 面轴（F1–F7）
+        - 三轴之间的关系
+        - 整体结构
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题是什么
+      description: 最好举一个「放不进去」或「放进去很别扭」的真实概念作为例子
+      placeholder: |
+        例子：XXX 这个概念，我既想放在 L2，又想放在 L6，因为……
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你建议怎么改
+      description: 加一层？加一环？合并两格？保持现状但改定义？
+    validations:
+      required: false

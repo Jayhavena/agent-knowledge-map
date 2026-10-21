@@ -1,0 +1,16 @@
+# Normalise line endings so builds are byte-identical across Windows/Linux/CI.
+* text=auto eol=lf
+
+# Generated artefacts must stay byte-stable — the CI reproducibility check compares them.
+*.html    text eol=lf
+*.json    text eol=lf diff=json
+*.md      text eol=lf
+*.py      text eol=lf
+*.js      text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+
+# Binary-ish
+*.png     binary
+*.jpg     binary
+*.ico     binary

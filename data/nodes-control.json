@@ -1,0 +1,854 @@
+[
+  {
+    "id": "agent-loop",
+    "name": "Agent 循环",
+    "en": "Agent Loop",
+    "alias": [
+      "主循环",
+      "ReAct 循环",
+      "think-act-observe"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "「思考 → 行动 → 观察」反复迭代直至终止条件满足的主控循环，是所有 Agent 的骨架。",
+    "problem": "单次问答无法完成需要多步外部交互的任务；必须有一个能根据反馈继续决策的循环。",
+    "newIn": "它的结构其实二十年没变（感知-决策-执行）。真正在演化的只有三件事：终止判据、预算控制、失败恢复。",
+    "from": [
+      [
+        "react",
+        "演进"
+      ],
+      [
+        "control-loop",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "agentic-rag",
+      "react",
+      "plan-and-execute",
+      "short-circuit",
+      "termination",
+      "lats",
+      "budget-control",
+      "harness"
+    ],
+    "trap": "没有显式终止条件，只靠模型「觉得完成了」。这是无限循环与预算爆炸的第一大来源。",
+    "tags": [
+      "控制",
+      "地基"
+    ]
+  },
+  {
+    "id": "react",
+    "name": "ReAct 范式",
+    "en": "ReAct",
+    "alias": [
+      "推理-行动交替",
+      "thought-action-observation"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "把推理（Reasoning）与行动（Acting）交织在同一串 token 里，让观察结果实时修正推理。",
+    "problem": "纯 CoT 会脱离事实空想；纯工具调用则缺少显式的推理依据。",
+    "newIn": "不是新东西了，但它是目前 90% Agent 框架的共同祖先。看到任何新范式，第一步就是问它相对 ReAct 改了什么。",
+    "from": [
+      [
+        "chain-of-thought",
+        "组合"
+      ],
+      [
+        "tool-definition",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "agent-loop",
+      "plan-and-execute",
+      "chain-of-thought",
+      "reflexion"
+    ],
+    "trap": "认为 ReAct 已经过时。多数「新范式」只是在 ReAct 外面加了规划器或验证器。",
+    "tags": [
+      "控制",
+      "地基"
+    ]
+  },
+  {
+    "id": "chain-of-thought",
+    "name": "思维链",
+    "en": "Chain of Thought",
+    "alias": [
+      "CoT",
+      "逐步推理"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F1"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "让模型先写出中间推理步骤再给结论，显著提升多步推理任务的准确率。",
+    "problem": "直接要答案会迫使模型在一次前向中完成全部推导，容易跳步出错。",
+    "newIn": "从提示词技巧（「请一步步思考」）演化为模型内建能力（推理模型），这是它最重要的形态迁移。",
+    "from": [],
+    "rel": [
+      "reasoning-model",
+      "react",
+      "plan-and-execute",
+      "self-consistency"
+    ],
+    "trap": "在推理模型上再叠加「一步步思考」。已经内建的推理会被冗余提示干扰，反而变差。",
+    "tags": [
+      "控制",
+      "地基"
+    ]
+  },
+  {
+    "id": "plan-and-execute",
+    "name": "先规划后执行",
+    "en": "Plan-and-Execute",
+    "alias": [
+      "两段式",
+      "计划-执行分离"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "先用一次调用产出完整计划，再逐步执行，执行中按需重规划。",
+    "problem": "ReAct 每一步都重新决策，长任务上容易走偏且成本高。",
+    "newIn": "把「不确定性」从执行时前移到规划时：代价是计划一旦错，后续全错，因此必须配重规划机制。",
+    "from": [
+      [
+        "react",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "reasoning-model",
+      "agent-loop",
+      "react",
+      "task-decomposition",
+      "chain-of-thought",
+      "todo-list",
+      "replanning"
+    ],
+    "trap": "只做一次性规划不重规划。真实环境的反馈会让初始计划在第三步就失效。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "replanning",
+    "name": "重规划",
+    "en": "Replanning",
+    "alias": [
+      "动态调整计划",
+      "计划修复"
+    ],
+    "dot": "L4.P6",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "执行偏离或失败时，基于当前状态重新生成后续计划，而不是硬走原计划。",
+    "problem": "环境反馈与初始假设不符时，机械执行原计划只会放大错误。",
+    "newIn": "它的触发条件设计比算法本身更重要：多数系统失败在「没意识到该重规划」。",
+    "from": [
+      [
+        "plan-and-execute",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "plan-and-execute",
+      "termination",
+      "budget-control",
+      "reflexion"
+    ],
+    "trap": "每次小失败都重规划，会陷入「计划震荡」——反复推翻重来，始终不产生进展。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "task-decomposition",
+    "name": "任务分解",
+    "en": "Task Decomposition",
+    "alias": [
+      "子任务拆分",
+      "分而治之"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把复杂目标拆成可独立验证的子任务，形成可执行的工作分解结构。",
+    "problem": "一次性处理复杂目标容易遗漏约束、无法中途校验。",
+    "newIn": "新在「拆分的粒度由可验证性决定」——每个子任务都要有明确的完成判据，否则拆了也白拆。",
+    "from": [
+      [
+        "plan-and-execute",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "plan-and-execute",
+      "todo-list",
+      "delegation-brief",
+      "multi-agent",
+      "subagent"
+    ],
+    "trap": "按「动作」拆而不是按「可验证的成果」拆。前者会产生几十个无法判断是否完成的步骤。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "reflexion",
+    "name": "反思",
+    "en": "Reflexion / Self-Refine",
+    "alias": [
+      "自我批判",
+      "自纠正"
+    ],
+    "dot": "L4.P6",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "让模型评估自己刚才的输出，找出问题并据此重试或修正。",
+    "problem": "单次生成的错误没有机会被自己发现，尤其在长链条任务中会一路传导。",
+    "newIn": "从「重试」升级为「带诊断的重试」：反思产出的是可复用的教训，而不只是一次重做。",
+    "from": [
+      [
+        "react",
+        "演进"
+      ],
+      [
+        "self-consistency",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "episodic-memory",
+      "procedural-memory",
+      "memory-write-policy",
+      "react",
+      "budget-control",
+      "evaluator-optimizer",
+      "replanning"
+    ],
+    "trap": "让同一个模型用同样的上下文自评。它会系统性地说「看起来没问题」——这正是最危险的失败模式。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "self-consistency",
+    "name": "自洽投票",
+    "en": "Self-Consistency",
+    "alias": [
+      "多路径投票",
+      "majority vote"
+    ],
+    "dot": "L4.P6",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "稳定",
+    "oneLine": "对同一问题采样多条推理路径，取多数一致的答案。",
+    "problem": "单条推理链可能在中间某步偶然出错，导致最终答案偏差。",
+    "newIn": "它是 test-time compute 最早的实用形态，也是「用钱换准确率」的第一个标准答案。",
+    "from": [
+      [
+        "chain-of-thought",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "test-time-compute",
+      "tree-of-thought",
+      "chain-of-thought",
+      "lats",
+      "evaluator-optimizer"
+    ],
+    "trap": "在开放式生成任务上投票。没有唯一答案时，「多数」并不意味着「正确」。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "tree-of-thought",
+    "name": "思维树",
+    "en": "Tree of Thoughts",
+    "alias": [
+      "ToT",
+      "搜索式推理"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "把推理展开成树，对多个分支做评估、剪枝与回溯，而非单线前进。",
+    "problem": "线性推理一旦走错分支就无法回头。",
+    "newIn": "把「搜索」引入推理过程，本质上是把经典 AI 的状态空间搜索移植到 LLM 上，代价是 token 消耗数量级上升。",
+    "from": [
+      [
+        "chain-of-thought",
+        "演进"
+      ],
+      [
+        "self-consistency",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "test-time-compute",
+      "lats",
+      "self-consistency",
+      "evaluator-optimizer"
+    ],
+    "trap": "在工程系统里直接用。分支爆炸让成本不可控，实际落地多为「小分支 + 早剪枝」的简化版。",
+    "tags": [
+      "控制",
+      "前沿"
+    ]
+  },
+  {
+    "id": "lats",
+    "name": "语言智能体树搜索",
+    "en": "LATS",
+    "alias": [
+      "MCTS + LLM",
+      "蒙特卡洛树搜索"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "把蒙特卡洛树搜索与 LLM 结合，在行动空间里做带价值估计的探索。",
+    "problem": "ToT 只处理推理分支，不处理「真实动作」带来的环境反馈。",
+    "newIn": "它把「探索-利用权衡」带进 Agent 决策，是当前最接近「会试错的智能体」的学术形态。",
+    "from": [
+      [
+        "tree-of-thought",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "test-time-compute",
+      "agent-loop",
+      "tree-of-thought",
+      "self-consistency"
+    ],
+    "trap": "在真实有副作用的动作上做搜索。回滚不了的操作（发邮件、下单）不能进搜索树。",
+    "tags": [
+      "控制",
+      "前沿"
+    ]
+  },
+  {
+    "id": "termination",
+    "name": "终止判据",
+    "en": "Termination Criteria",
+    "alias": [
+      "何时停",
+      "停止条件"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F3",
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "明确定义「任务算完成」「该放弃」「该升级给人」的判据，而不依赖模型的自我感觉。",
+    "problem": "模型倾向于一直做下去或过早宣布完成，两种失败都很常见且都很贵。",
+    "newIn": "它是最被低估的设计点：一个 Agent 系统的可靠性上限，常常由终止判据的质量决定，而非模型能力。",
+    "from": [
+      [
+        "agent-loop",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "tool-error-handling",
+      "agent-loop",
+      "short-circuit",
+      "budget-control",
+      "replanning",
+      "escalation",
+      "swarm"
+    ],
+    "trap": "只用「模型输出了 final answer」作为终止。模型会在没做完时也输出 final answer。",
+    "tags": [
+      "控制",
+      "质量"
+    ]
+  },
+  {
+    "id": "budget-control",
+    "name": "预算控制",
+    "en": "Budget Control",
+    "alias": [
+      "步数上限",
+      "token 预算",
+      "成本闸门"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "为每次运行设定步数、token、时间、金额的上限，超限即降级或中止。",
+    "problem": "Agent 的循环特性意味着单次请求的成本理论上无界。",
+    "newIn": "从「限流」变成「预算」：不仅限制数量，还要能按任务价值动态分配。",
+    "from": [
+      [
+        "termination",
+        "演进"
+      ],
+      [
+        "cost-attribution",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "agent-loop",
+      "termination",
+      "reflexion",
+      "replanning",
+      "escalation",
+      "cost-attribution",
+      "cost-budgeting",
+      "latency-budget"
+    ],
+    "trap": "只设总预算不设单步预算。单次巨型工具调用就能吃掉全部配额。",
+    "tags": [
+      "成本",
+      "控制"
+    ]
+  },
+  {
+    "id": "retry-backoff",
+    "name": "重试与退避",
+    "en": "Retry & Backoff",
+    "alias": [
+      "指数退避",
+      "失败重试"
+    ],
+    "dot": "L4.P5",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "失败后按退避策略重试，并区分可重试错误与必须立刻放弃的错误。",
+    "problem": "瞬时故障（限流、超时）通过重试即可恢复，但盲目重试会放大故障。",
+    "newIn": "LLM 场景新增一类错误：不是调用失败，而是「返回了内容但内容不对」，这类不能靠重试解决。",
+    "from": [
+      [
+        "resilience-pattern",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "idempotency",
+      "tool-error-handling",
+      "circuit-breaker"
+    ],
+    "trap": "对非幂等操作重试。扣款、发邮件、提交订单都必须在重试前确认是否已执行。",
+    "tags": [
+      "运维"
+    ]
+  },
+  {
+    "id": "circuit-breaker",
+    "name": "熔断",
+    "en": "Circuit Breaker",
+    "alias": [
+      "快速失败",
+      "降级开关"
+    ],
+    "dot": "L4.P5",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "稳定",
+    "oneLine": "下游持续失败时快速断开，避免请求堆积与级联雪崩，并定期试探恢复。",
+    "problem": "重试风暴会让一个已经过载的依赖彻底死亡。",
+    "newIn": "老模式，新场景：LLM API 的限流是常态，熔断常常比重试更重要。",
+    "from": [
+      [
+        "retry-backoff",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "retry-backoff",
+      "escalation",
+      "cost-budgeting"
+    ],
+    "trap": "熔断后直接报错给用户。应有降级路径（换模型、走缓存、转人工）。",
+    "tags": [
+      "运维"
+    ]
+  },
+  {
+    "id": "escalation",
+    "name": "升级与转人工",
+    "en": "Escalation / Human Handoff",
+    "alias": [
+      "兜底",
+      "人工接管"
+    ],
+    "dot": "L4.P7",
+    "facets": [
+      "F6",
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "当置信度低、越权、或反复失败时，把控制权连同上下文完整移交给人。",
+    "problem": "Agent 不可能覆盖所有情况，硬扛会制造更严重的错误。",
+    "newIn": "关键在「移交什么」：只丢一句「需要人工」，等于把排查成本转嫁给下游。必须移交结构化状态。",
+    "from": [
+      [
+        "termination",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "termination",
+      "budget-control",
+      "circuit-breaker",
+      "human-in-the-loop",
+      "guardrails"
+    ],
+    "trap": "把升级当作失败处理。升级应当是被设计的主路径之一，有明确的触发条件与 SLA。",
+    "tags": [
+      "控制",
+      "安全"
+    ]
+  },
+  {
+    "id": "human-in-the-loop",
+    "name": "人在回路",
+    "en": "Human-in-the-Loop",
+    "alias": [
+      "HITL",
+      "人工确认"
+    ],
+    "dot": "L4.P7",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在关键动作前插入人工审批，或在高风险场景保留持续监督。",
+    "problem": "完全自主的 Agent 在高风险动作上不可接受（转账、删库、对外发送）。",
+    "newIn": "从「全程监督」演进为「按风险分级的抽检」：审批太多会让人机械点同意，反而更危险。",
+    "from": [
+      [
+        "escalation",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "permission-scope",
+      "interrupt-resume",
+      "escalation",
+      "guardrails"
+    ],
+    "trap": "把所有动作都设成需审批。审批疲劳会让操作员无脑放行，安全机制形同虚设。",
+    "tags": [
+      "安全",
+      "控制"
+    ]
+  },
+  {
+    "id": "interrupt-resume",
+    "name": "中断与恢复",
+    "en": "Interrupt & Resume",
+    "alias": [
+      "可暂停",
+      "长任务续跑"
+    ],
+    "dot": "L4.P7",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "支持在任意步骤暂停（等待人工输入或外部事件），之后从断点继续。",
+    "problem": "真实任务常常横跨数小时甚至数天，不能占着一个进程干等。",
+    "newIn": "它让 Agent 从「一次请求」变成「一个可挂起的长期流程」，这是从 demo 到产品的分水岭之一。",
+    "from": [
+      [
+        "checkpoint",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "human-in-the-loop",
+      "durable-execution",
+      "temporal-state"
+    ],
+    "trap": "暂停时不保存工具调用上下文。恢复后模型不知道已经执行到哪一步。",
+    "tags": [
+      "运维",
+      "控制"
+    ]
+  },
+  {
+    "id": "todo-list",
+    "name": "计划清单",
+    "en": "Todo List / Plan Artifact",
+    "alias": [
+      "任务列表",
+      "待办追踪"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "把计划外化成一份可勾选的清单，作为跨轮次的状态锚点。",
+    "problem": "长任务中模型会忘记自己做到哪、还剩什么。",
+    "newIn": "新在「外化」：把隐式的计划变成上下文里的显式对象，这比任何记忆机制都便宜有效。",
+    "from": [
+      [
+        "plan-and-execute",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "working-memory",
+      "task-decomposition",
+      "plan-and-execute",
+      "subagent"
+    ],
+    "trap": "清单只增不减、不更新状态。几十轮后它本身就成了噪声源。",
+    "tags": [
+      "控制"
+    ]
+  },
+  {
+    "id": "short-circuit",
+    "name": "短路与快速通道",
+    "en": "Short-circuit / Fast Path",
+    "alias": [
+      "简单问题直答",
+      "绕过循环"
+    ],
+    "dot": "L4.P3",
+    "facets": [
+      "F5",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "识别出简单请求后直接作答或走固定路径，不进入完整 Agent 循环。",
+    "problem": "用多步循环处理「你好」这类请求，延迟与成本都被放大十倍。",
+    "newIn": "它是模型路由在控制层的对应物：不是所有流量都值得走最贵的路径。",
+    "from": [
+      [
+        "model-routing",
+        "并行"
+      ],
+      [
+        "agent-loop",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "classification",
+      "agent-loop",
+      "termination",
+      "latency-budget"
+    ],
+    "trap": "短路判据过宽，把本该多步处理的问题也直答掉了，表现为「偶尔答得很敷衍」。",
+    "tags": [
+      "时延",
+      "成本"
+    ]
+  },
+  {
+    "id": "classification",
+    "name": "意图分类",
+    "en": "Intent Classification",
+    "alias": [
+      "任务路由",
+      "分诊"
+    ],
+    "dot": "L4.P1",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "在进入 Agent 之前先判断请求属于哪一类，路由到对应处理路径。",
+    "problem": "单一 Agent 处理所有请求会导致提示词臃肿、行为不稳定。",
+    "newIn": "老 NLP 任务在 Agent 架构里复活了，成为编排层的入口层；且常由小模型完成。",
+    "from": [
+      [
+        "model-routing",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "short-circuit",
+      "routing-accuracy",
+      "supervisor"
+    ],
+    "trap": "分类错误会成为下游所有环节的隐形天花板，且极难在最终指标上被察觉。",
+    "tags": [
+      "控制",
+      "质量"
+    ]
+  },
+  {
+    "id": "evaluator-optimizer",
+    "name": "评估-优化循环",
+    "en": "Evaluator-Optimizer",
+    "alias": [
+      "生成-评估分离",
+      "critic 模式"
+    ],
+    "dot": "L4.P6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "一个模型负责生成，另一个（或同一模型换角色/换上下文）负责按明确标准评估并反馈。",
+    "problem": "自己评自己容易产生确认偏差，且缺少外部标准锚定。",
+    "newIn": "把「批评」从提示词技巧变成独立角色，是自我改进类系统最小的可复用单元。",
+    "from": [
+      [
+        "reflexion",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "tree-of-thought",
+      "reflexion",
+      "self-consistency",
+      "multi-agent",
+      "evaluation",
+      "llm-as-judge"
+    ],
+    "trap": "评估器与生成器共享同一份上下文缺陷。它们会一起错过同一个错误。",
+    "tags": [
+      "控制",
+      "质量"
+    ]
+  },
+  {
+    "id": "durable-execution",
+    "name": "持久化执行",
+    "en": "Durable Execution",
+    "alias": [
+      "工作流引擎",
+      "确定性重放"
+    ],
+    "dot": "L4.P7",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "把每一步执行记录为可重放的事件日志，进程崩溃后从最后一步继续，而不是重头再来。",
+    "problem": "Agent 运行在不可靠的进程里，长任务中途崩溃是常态而非例外。",
+    "newIn": "从工作流引擎（Temporal 等）迁移而来。关键洞察是：LLM 的输出不可重放，必须被记录而非重算。",
+    "from": [
+      [
+        "checkpoint",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "idempotency",
+      "interrupt-resume",
+      "temporal-state",
+      "agent-runtime",
+      "tracing"
+    ],
+    "trap": "重放时重新调用 LLM。同一输入未必得到同一输出，恢复后的状态会与原轨迹分叉。",
+    "tags": [
+      "运维"
+    ]
+  },
+  {
+    "id": "temporal-state",
+    "name": "时态状态管理",
+    "en": "Temporal State",
+    "alias": [
+      "版本化状态",
+      "随时间变化的事实"
+    ],
+    "dot": "L4.P7",
+    "facets": [
+      "F7"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "给每一条状态与事实打上时间戳与版本，能回答「当时是什么值」。",
+    "problem": "业务问题常带时间语义（去年同期、上个月），而 Agent 的上下文里时间是扁平的。",
+    "newIn": "多数 Agent 系统把时间当作普通文本，导致「去年」被解析成当前年份。这是一个高频且隐蔽的错误源。",
+    "from": [
+      [
+        "memory-conflict",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "semantic-memory",
+      "memory-conflict",
+      "checkpoint",
+      "interrupt-resume",
+      "durable-execution"
+    ],
+    "trap": "忽略「相对时间」的解析。所有「上个月」「三天前」都必须在入口处转换成绝对时间戳。",
+    "tags": [
+      "运维",
+      "前沿"
+    ]
+  }
+]

@@ -1,0 +1,198 @@
+[
+  {
+    "id": "agent-skills",
+    "name": "Agent 技能",
+    "en": "Agent Skills",
+    "alias": [
+      "Skills",
+      "渐进披露",
+      "progressive disclosure"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "把一套完整做法（说明 + 脚本 + 模板）封装成可按需加载的能力包，平时只暴露一行摘要。",
+    "problem": "把所有知识都塞进系统提示，既撑爆上下文，又让模型在无关场景被干扰。",
+    "newIn": "它是上下文工程里最省钱的一招：用完再加载，而不是提前全都给。本质是分页，不是新能力。",
+    "from": [
+      [
+        "context-engineering",
+        "特化"
+      ],
+      [
+        "rag",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "context-engineering",
+      "tool-search",
+      "mcp-primitives"
+    ],
+    "trap": "技能包写成没人知道何时该用的长文档。摘要行必须写「什么时候用」，而不是「这是什么」。",
+    "tags": [
+      "上下文",
+      "前沿"
+    ]
+  },
+  {
+    "id": "context-rot",
+    "name": "上下文腐化",
+    "en": "Context Rot",
+    "alias": [
+      "长上下文退化",
+      "噪声累积"
+    ],
+    "dot": "L1.P2",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "上下文越长，模型对其中任意一条信息的利用率越低，且错误更倾向于「看起来合理」。",
+    "problem": "标称窗口在变大，但有效容量没有同比变大，塞得越多反而越差。",
+    "newIn": "它把「长上下文够不够用」这个问题从「容量」改写成「信噪比」，是对 long context 叙事最直接的修正。",
+    "from": [
+      [
+        "lost-in-the-middle",
+        "演进"
+      ],
+      [
+        "long-context",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "long-context",
+      "context-compression",
+      "lost-in-the-middle",
+      "needle-test",
+      "compaction"
+    ],
+    "trap": "用单针检索成绩证明「我的模型不怕长上下文」。多文档、多约束、含干扰项的任务表现会差得多。",
+    "tags": [
+      "上下文",
+      "前沿"
+    ]
+  },
+  {
+    "id": "compaction",
+    "name": "上下文压缩重写",
+    "en": "Compaction",
+    "alias": [
+      "摘要重写",
+      "会话折叠"
+    ],
+    "dot": "L1.P6",
+    "facets": [
+      "F4",
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "接近窗口上限时，把整段历史重写成更短的摘要，再用它继续任务。",
+    "problem": "截断会丢信息，扩展窗口有成本与腐化问题。",
+    "newIn": "与「摘要」的差别在于触发时机与彻底性：它不是每轮压缩，而是在临界点做一次整体重写。",
+    "from": [
+      [
+        "context-compression",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "context-rot",
+      "working-memory",
+      "memory-consolidation"
+    ],
+    "trap": "压缩掉「约束」与「已否决的方案」。压缩后 Agent 会重新提出已经被否掉的建议。",
+    "tags": [
+      "上下文",
+      "成本"
+    ]
+  },
+  {
+    "id": "harness",
+    "name": "Agent 外壳",
+    "en": "Harness / Scaffold",
+    "alias": [
+      "脚手架",
+      "agent framework",
+      "编排外壳"
+    ],
+    "dot": "L6",
+    "cluster": "运行与发布",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "包在模型外面的那一层代码：循环、工具注册、上下文拼装、权限、日志，全部由它负责。",
+    "problem": "同一个模型，换一套外壳，任务成功率能差出一倍——能力不只来自模型。",
+    "newIn": "「模型 + 外壳 = 系统能力」这个认识正在取代「换个更强的模型就好了」。它是本图 L1–L6 的整体指称。",
+    "from": [
+      [
+        "agent-loop",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "context-engineering",
+      "agent-loop",
+      "evaluation",
+      "agent-runtime",
+      "tracing"
+    ],
+    "trap": "把外壳当成可替换的胶水。上下文拼装顺序、工具描述、终止判据全在外壳里，换掉等于换系统。",
+    "tags": [
+      "系统",
+      "地基"
+    ]
+  },
+  {
+    "id": "subagent-isolation",
+    "name": "上下文隔离",
+    "en": "Context Isolation",
+    "alias": [
+      "子上下文",
+      "上下文分区"
+    ],
+    "dot": "L5.P2",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "让子任务在独立的上下文窗口里完成，只把结论回传主循环，中间过程不污染主上下文。",
+    "problem": "探索性任务会产生大量无用中间信息，直接挤占主循环的容量与注意力。",
+    "newIn": "它不是「并行加速」，而是「降噪」：多 Agent 最被低估的收益在这里，而不是在分工。",
+    "from": [
+      [
+        "subagent",
+        "演进"
+      ],
+      [
+        "context-engineering",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "context-compression",
+      "multi-agent",
+      "subagent",
+      "context-transfer"
+    ],
+    "trap": "把结论也一起丢掉。隔离的是过程，不是判据——约束、否决理由、未决问题必须回传。",
+    "tags": [
+      "编排",
+      "上下文"
+    ]
+  }
+]

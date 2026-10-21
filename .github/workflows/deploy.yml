@@ -1,0 +1,73 @@
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 重建并校验
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 从数据重新生成页面
+        run: python scripts/build.py
+
+      # 三重校验：坏数据不允许上线。任何一个失败，部署直接终止。
+      - name: 数据完整性
+        run: python scripts/validate.py
+
+      - name: 内容质量
+        run: python scripts/content_qa.py
+
+      - name: 页面逻辑
+        run: node scripts/smoke.js Agent知识地图.html
+
+      - name: 深链接
+        run: node scripts/deeplink_test.js
+
+      # 校验通过后以「重新生成的结果」为准发布，而不是仓库里那份可能过期的 HTML。
+      - name: 准备站点目录
+        run: |
+          mkdir -p _site
+          cp Agent知识地图.html _site/index.html
+          cp -r Obsidian-Agent知识库 _site/
+          cp README.md _site/README.md
+          echo "--- 站点内容 ---"
+          ls -la _site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: 发布
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

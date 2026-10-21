@@ -1,0 +1,1761 @@
+[
+  {
+    "id": "multi-agent",
+    "name": "多智能体系统",
+    "en": "Multi-Agent System",
+    "alias": [
+      "MAS",
+      "Agent 协作"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F1",
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "争议",
+    "oneLine": "多个具备独立上下文与独立决策能力的 Agent 通过分工与交接共同完成任务。",
+    "problem": "单 Agent 的上下文与专精能力都有上限，复杂任务需要分工。",
+    "newIn": "本质是把分布式系统的老问题（协调、一致性、故障传播）搬进 LLM 场景。多数「新框架」只是在重新发明 actor 模型。",
+    "from": [
+      [
+        "task-decomposition",
+        "演进"
+      ],
+      [
+        "microservice",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "a2a",
+      "task-decomposition",
+      "evaluator-optimizer",
+      "routing-accuracy",
+      "subagent-isolation",
+      "supervisor",
+      "handoff",
+      "shared-state",
+      "subagent",
+      "swarm",
+      "microservice",
+      "role-design",
+      "error-cascade"
+    ],
+    "trap": "为用多 Agent 而用多 Agent。多数任务用单 Agent + 好工具 + 好上下文更快更稳。先证明单 Agent 不行。",
+    "tags": [
+      "编排",
+      "争议"
+    ]
+  },
+  {
+    "id": "supervisor",
+    "name": "主管模式",
+    "en": "Supervisor / Orchestrator-Worker",
+    "alias": [
+      "编排者",
+      "中心调度"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "一个中心 Agent 负责拆解与派发，子 Agent 执行后把结果汇回主管。",
+    "problem": "多 Agent 之间直接互相调用会导致调用图不可控、难以调试。",
+    "newIn": "中心化编排是工程上最稳的形态，因为它把「协调」压缩到一个可观测的节点上。",
+    "from": [
+      [
+        "multi-agent",
+        "特化"
+      ],
+      [
+        "task-decomposition",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "classification",
+      "routing-accuracy",
+      "handoff",
+      "delegation-brief",
+      "multi-agent",
+      "subagent",
+      "swarm",
+      "role-design"
+    ],
+    "trap": "主管成为上下文与吞吐的瓶颈。所有信息都过它一手，长任务下它会先崩。",
+    "tags": [
+      "编排"
+    ]
+  },
+  {
+    "id": "swarm",
+    "name": "对等协作",
+    "en": "Swarm / Peer-to-Peer",
+    "alias": [
+      "去中心化协作",
+      "自主交接"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "可选",
+    "maturity": "前沿",
+    "oneLine": "无中心节点，Agent 之间按规则直接把控制权交给下一个合适的 Agent。",
+    "problem": "中心调度者会限制并发与灵活性，长流程中成为单点瓶颈。",
+    "newIn": "把控制流从「预定义的图」变成「运行时涌现的路由」，灵活性提升的代价是可预测性下降。",
+    "from": [
+      [
+        "multi-agent",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "termination",
+      "supervisor",
+      "handoff",
+      "multi-agent"
+    ],
+    "trap": "缺少全局终止条件时会出现两个 Agent 互相推诿、无限交接。",
+    "tags": [
+      "编排",
+      "前沿"
+    ]
+  },
+  {
+    "id": "handoff",
+    "name": "交接",
+    "en": "Handoff",
+    "alias": [
+      "转交",
+      "控制权转移"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把任务连同必要的上下文移交给另一个 Agent，并明确谁负责下一步。",
+    "problem": "分工之后必须有明确的责任转移点，否则任务会掉在地上。",
+    "newIn": "关键不在「怎么转」，而在「转什么」：交接包的内容质量决定了多 Agent 系统的可用性。",
+    "from": [
+      [
+        "multi-agent",
+        "特化"
+      ],
+      [
+        "a2a",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "a2a",
+      "supervisor",
+      "delegation-brief",
+      "shared-state",
+      "multi-agent",
+      "swarm",
+      "context-transfer",
+      "error-cascade"
+    ],
+    "trap": "只传任务描述不传约束与已确认事实。接收方会重复已经排除的路径，或违反上游已声明的边界。",
+    "tags": [
+      "编排"
+    ]
+  },
+  {
+    "id": "delegation-brief",
+    "name": "任务简报",
+    "en": "Delegation Brief",
+    "alias": [
+      "交接包",
+      "子任务契约"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2",
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "派发子任务时给出的结构化说明：目标、边界、已知事实、输出格式、验收标准。",
+    "problem": "子 Agent 没有主 Agent 的上下文，简报含糊会导致它朝错误方向努力。",
+    "newIn": "它是「上下文工程」在多 Agent 场景的投影：跨 Agent 传递上下文不是复制粘贴，而是重新组装。",
+    "from": [
+      [
+        "handoff",
+        "演进"
+      ],
+      [
+        "context-engineering",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "task-decomposition",
+      "supervisor",
+      "handoff",
+      "subagent",
+      "role-design",
+      "context-transfer"
+    ],
+    "trap": "把主 Agent 的全部历史塞给子 Agent。既浪费 token，又让子 Agent 被无关信息带偏。",
+    "tags": [
+      "编排",
+      "上下文"
+    ]
+  },
+  {
+    "id": "shared-state",
+    "name": "共享状态",
+    "en": "Shared State / Blackboard",
+    "alias": [
+      "黑板模式",
+      "共享内存"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2",
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "所有 Agent 读写同一份结构化状态（任务板、事实表），而不是靠消息互相传递。",
+    "problem": "点对点消息在 Agent 数量增加后组合爆炸，且难以回溯「谁在什么时候改了什么」。",
+    "newIn": "黑板架构的老思路，在 LLM 场景重新有效，因为它天然解决了「上下文同步」问题。",
+    "from": [
+      [
+        "microservice",
+        "并行"
+      ],
+      [
+        "multi-agent",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "handoff",
+      "multi-agent",
+      "microservice",
+      "context-transfer",
+      "error-cascade"
+    ],
+    "trap": "无并发控制。两个 Agent 同时写同一字段，后写的静默覆盖先写的，且没人发现。",
+    "tags": [
+      "编排"
+    ]
+  },
+  {
+    "id": "subagent",
+    "name": "子智能体",
+    "en": "Subagent",
+    "alias": [
+      "派生 Agent",
+      "专门代理"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2",
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "为某个子任务临时派生的独立 Agent，拥有自己的上下文窗口，完成后只回传结果。",
+    "problem": "主 Agent 的上下文会被子任务的中间过程污染，且窗口有限。",
+    "newIn": "它是「上下文隔离」最有效的工程手段：不只是并行，更是把噪声挡在主循环之外。",
+    "from": [
+      [
+        "task-decomposition",
+        "演进"
+      ],
+      [
+        "multi-agent",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "task-decomposition",
+      "todo-list",
+      "subagent-isolation",
+      "supervisor",
+      "delegation-brief",
+      "multi-agent",
+      "context-transfer"
+    ],
+    "trap": "子 Agent 数量失控。每个都带回一份摘要，主 Agent 反而被汇总结果淹没。",
+    "tags": [
+      "编排",
+      "上下文"
+    ]
+  },
+  {
+    "id": "context-transfer",
+    "name": "上下文传递",
+    "en": "Context Transfer",
+    "alias": [
+      "跨 Agent 上下文",
+      "状态同步"
+    ],
+    "dot": "L5.P5",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在 Agent 之间准确传递「对方需要知道的」：约束、已确认事实、已排除路径、当前进度。",
+    "problem": "多 Agent 系统的失真几乎都发生在合流处，而非分工处。",
+    "newIn": "它是多 Agent 的「grounding 问题」：可独立度量为 context transfer accuracy，且是新增的失败面。",
+    "from": [
+      [
+        "handoff",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "subagent-isolation",
+      "handoff",
+      "delegation-brief",
+      "shared-state",
+      "subagent",
+      "error-cascade",
+      "multi-agent-eval"
+    ],
+    "trap": "只验证「消息发出去了」，不验证「对方理解正确」。需要在下游断言关键约束是否仍在。",
+    "tags": [
+      "编排",
+      "质量"
+    ]
+  },
+  {
+    "id": "error-cascade",
+    "name": "错误级联",
+    "en": "Error Cascade",
+    "alias": [
+      "误差传播",
+      "污染扩散"
+    ],
+    "dot": "L5.P5",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "上游 Agent 的一个小错误在链路中被当作事实继续加工，逐级放大成严重偏差。",
+    "problem": "链式结构的每个节点都默认上游输入是正确的。",
+    "newIn": "单 Agent 没有这个问题，它是多 Agent 独有的失败面，也是「多 Agent 不一定更好」的主要实证依据。",
+    "from": [
+      [
+        "multi-agent",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "handoff",
+      "shared-state",
+      "multi-agent",
+      "context-transfer",
+      "multi-agent-eval",
+      "evaluation"
+    ],
+    "trap": "只在末端评测。错误在中间就发生了，末端指标只能看到「结果不对」。必须在每个交接点设断点校验。",
+    "tags": [
+      "编排",
+      "质量"
+    ]
+  },
+  {
+    "id": "routing-accuracy",
+    "name": "路由准确率",
+    "en": "Routing Accuracy",
+    "alias": [
+      "分派正确性",
+      "调度准确率"
+    ],
+    "dot": "L5.P1",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "请求是否被派给了正确的子 Agent 或处理路径。",
+    "problem": "路由错误会让后续所有努力都作用在错误的轨道上，且表面看起来「有响应」。",
+    "newIn": "可以且应该被单独度量（确定性判定）。把它混进端到端准确率，就永远找不到瓶颈。",
+    "from": [
+      [
+        "classification",
+        "演进"
+      ],
+      [
+        "multi-agent",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "classification",
+      "supervisor",
+      "multi-agent",
+      "multi-agent-eval",
+      "evaluation"
+    ],
+    "trap": "路由层用最强模型、下游用弱模型，导致「入口很聪明，执行很愚蠢」。资源分配应倒过来。",
+    "tags": [
+      "编排",
+      "质量"
+    ]
+  },
+  {
+    "id": "role-design",
+    "name": "角色设计",
+    "en": "Role Design",
+    "alias": [
+      "人格分工",
+      "专家角色"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F2"
+    ],
+    "tier": "进阶",
+    "maturity": "争议",
+    "oneLine": "为不同 Agent 设定明确的专业角色与职责边界，而非简单按流程切分。",
+    "problem": "无角色区分时，多个 Agent 会产出高度同质的结果，协作失去意义。",
+    "newIn": "「给角色起个人设」的收益被高估了。真正的收益来自「不同的工具集 + 不同的上下文 + 不同的验收标准」。",
+    "from": [
+      [
+        "multi-agent",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "system-prompt",
+      "supervisor",
+      "delegation-brief",
+      "multi-agent"
+    ],
+    "trap": "只改人设不改工具与上下文。这叫「同一模型换件衣服」，不产生真正的分工价值。",
+    "tags": [
+      "编排",
+      "争议"
+    ]
+  },
+  {
+    "id": "multi-agent-eval",
+    "name": "多智能体评测",
+    "en": "Multi-Agent Evaluation",
+    "alias": [
+      "编排评测",
+      "第三层评测"
+    ],
+    "dot": "L5.P7",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "评测编排路径本身：路由对不对、上下文丢没丢、合流时有没有失真。",
+    "problem": "端到端跑通不代表编排正确——多个 Agent 可能靠运气绕过了一个错误路由。",
+    "newIn": "这是独立于「单 Agent 质量」的第三个失败面，绝大多数团队只测了前两层。",
+    "from": [
+      [
+        "evaluation",
+        "特化"
+      ],
+      [
+        "multi-agent",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "routing-accuracy",
+      "context-transfer",
+      "error-cascade",
+      "evaluation",
+      "evaluation-tiers",
+      "golden-set"
+    ],
+    "trap": "沿用单 Agent 的评测集。多 Agent 的失败模式（路由、传递、合流）在单轮问答集里根本不会触发。",
+    "tags": [
+      "编排",
+      "质量"
+    ]
+  },
+  {
+    "id": "microservice",
+    "name": "微服务架构",
+    "en": "Microservices",
+    "alias": [
+      "服务拆分",
+      "分布式系统"
+    ],
+    "dot": "L5.P3",
+    "facets": [
+      "F1"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "把系统拆成独立部署、独立演进的小服务，通过明确定义的接口通信。",
+    "problem": "单体系统难以并行开发与独立扩容。",
+    "newIn": "它不是 Agent 概念，但多 Agent 的所有坑（服务发现、契约演进、可观测性、级联故障）都是它的旧账。读它是为了少踩一遍。",
+    "from": [],
+    "rel": [
+      "a2a",
+      "shared-state",
+      "multi-agent",
+      "tracing"
+    ],
+    "trap": "把「按团队拆」当成分工依据。Agent 应按「能力边界」拆，而非按组织架构。",
+    "tags": [
+      "类比"
+    ]
+  },
+  {
+    "id": "evaluation",
+    "name": "Agent 评测",
+    "en": "Evaluation",
+    "alias": [
+      "质量评估",
+      "eval"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "用可复现的题集与打分器，判断 Agent 在给定任务上「做得对不对」。",
+    "problem": "监控只能回答「有没有响应」，无法回答「答案对不对」。",
+    "newIn": "它从「上线前的 QA 环节」变成「贯穿全生命周期的操作系统」：CI 门禁、金丝雀、线上采样、反馈回流。",
+    "from": [
+      [
+        "benchmark",
+        "演进"
+      ],
+      [
+        "regression-test",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "needle-test",
+      "few-shot",
+      "prompt-versioning",
+      "prompt-optimization",
+      "citation-grounding",
+      "structured-output",
+      "tool-selection",
+      "evaluator-optimizer",
+      "routing-accuracy",
+      "error-cascade",
+      "multi-agent-eval",
+      "aaa-eval",
+      "harness",
+      "ci-cd",
+      "llm-as-judge",
+      "benchmark",
+      "observability",
+      "sentinel-set",
+      "regression-gate",
+      "failure-taxonomy",
+      "drift-detection",
+      "deterministic-eval",
+      "online-eval",
+      "statistical-significance",
+      "judge-calibration",
+      "evaluation-tiers",
+      "overfitting-eval",
+      "transcript-forensics",
+      "canary-release",
+      "tracing",
+      "golden-set"
+    ],
+    "trap": "把「准确性」当作单一指标。不拆成可归因的失败类型，指标掉了也不知道改哪里。",
+    "tags": [
+      "质量",
+      "地基"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "golden-set",
+    "name": "黄金集",
+    "en": "Golden Set",
+    "alias": [
+      "评测集",
+      "基准题集"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "版本化的评测题集，含标准答案与判定口径，是判断回归的唯一依据。",
+    "problem": "没有稳定基准，每次争论都退化成「我觉得变差了」。",
+    "newIn": "它是「活文档」而非一次性产物：三个来源（生产采样、历史失败、合成边界）持续汇入，并每月复审。",
+    "from": [
+      [
+        "regression-test",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "distillation",
+      "prompt-optimization",
+      "multi-agent-eval",
+      "evaluation",
+      "benchmark",
+      "sentinel-set",
+      "regression-gate",
+      "failure-taxonomy",
+      "drift-detection",
+      "statistical-significance",
+      "judge-calibration",
+      "evaluation-tiers",
+      "overfitting-eval",
+      "transcript-forensics"
+    ],
+    "trap": "题集里全是「能答对的题」。必须刻意塞入 20% 已知会错的与 20% 边界模糊的，否则评测无区分度。",
+    "tags": [
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "sentinel-set",
+    "name": "哨兵集",
+    "en": "Sentinel Set",
+    "alias": [
+      "高危用例子集",
+      "快速回归集"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3",
+      "F5"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "从黄金集中挑出的十几条最高危场景，每次部署都跑，分钟级完成。",
+    "problem": "全量评测跑一次要几十分钟，不可能每次提交都跑。",
+    "newIn": "速度与覆盖不可兼得，分层是唯一解法：哨兵管「每次」，黄金集管「发布前 / 每日」。",
+    "from": [
+      [
+        "golden-set",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "regression-gate",
+      "evaluation-tiers",
+      "golden-set"
+    ],
+    "trap": "让哨兵集承担覆盖职责。十几条题只能防「已知的致命错误」，不能证明「没有新错误」。",
+    "tags": [
+      "质量",
+      "时延"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "llm-as-judge",
+    "name": "LLM 评审",
+    "en": "LLM-as-Judge",
+    "alias": [
+      "模型打分",
+      "rubric 评分"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "用模型按预先写好的评分标准（rubric）给回答打分，覆盖没有唯一正确答案的质量维度。",
+    "problem": "相关性、忠实度、有用性这类指标无法用规则判定，人工打分又太贵。",
+    "newIn": "新在「规模化」，但它的固有偏差（位置偏好、长度偏好、自我偏好、rubric 敏感）至今没有可靠解。",
+    "from": [
+      [
+        "benchmark",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "citation-grounding",
+      "evaluator-optimizer",
+      "evaluation",
+      "failure-taxonomy",
+      "deterministic-eval",
+      "online-eval",
+      "judge-calibration"
+    ],
+    "trap": "用同族模型当裁判给自己打分，会系统性高估。必须抽人工标注集校准一致率。",
+    "tags": [
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "judge-calibration",
+    "name": "裁判校准",
+    "en": "Judge Calibration",
+    "alias": [
+      "一致率",
+      "Cohen's kappa"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "定期测量模型裁判与人工标注的一致率，低于阈值就改 rubric，而不是改阈值。",
+    "problem": "裁判本身的偏差会系统性地进入所有指标，且无从察觉。",
+    "newIn": "大多数团队根本没有这一层。它决定了整套评测数字到底能不能被信任。",
+    "from": [
+      [
+        "llm-as-judge",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "llm-as-judge",
+      "golden-set"
+    ],
+    "trap": "一次校准后就永久信任。模型升级、rubric 改动、领域漂移都会让一致率悄悄下降。",
+    "tags": [
+      "质量",
+      "前沿"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "deterministic-eval",
+    "name": "确定性评测",
+    "en": "Deterministic Eval",
+    "alias": [
+      "断言式评测",
+      "ground truth 比对"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "对有唯一正确答案的部分（金额、日期、实体、SQL 结果集）用精确断言判定。",
+    "problem": "让 LLM 判断「410.08 和 410.08 Million 是否一致」，它经常答错。",
+    "newIn": "双轨原则：确定性评测给事实以精度，LLM 评审给推理以广度。两者覆盖的问题类型不重叠。",
+    "from": [
+      [
+        "regression-test",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "citation-grounding",
+      "evaluation",
+      "llm-as-judge",
+      "failure-taxonomy"
+    ],
+    "trap": "只做确定性断言。它覆盖不了「答得是否切题」「推理是否合理」，会漏掉一大类质量问题。",
+    "tags": [
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "failure-taxonomy",
+    "name": "失败分类法",
+    "en": "Failure Taxonomy",
+    "alias": [
+      "错误类型拆解",
+      "失败模式枚举"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3",
+      "F1"
+    ],
+    "tier": "核心",
+    "maturity": "前沿",
+    "oneLine": "从真实生产错误反推出的一套互斥的失败类型清单，每类配独立判定口径与评测器。",
+    "problem": "「准确率 87%」这个数字无法指导任何行动，因为不知道那 13% 错在哪。",
+    "newIn": "这是整张图里迁移价值最高的方法：先枚举「会怎么错」，再为每种错造评测器，而不是先选现成评测工具。",
+    "from": [
+      [
+        "evaluation",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "llm-as-judge",
+      "deterministic-eval",
+      "transcript-forensics",
+      "tracing",
+      "golden-set"
+    ],
+    "trap": "分类不互斥。同一回答同时命中「指标取错」和「周期取错」，会导致归因统计重复计数。",
+    "tags": [
+      "质量",
+      "方法论"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "evaluation-tiers",
+    "name": "评测三层级",
+    "en": "Tool / Agent / Multi-Agent Tiers",
+    "alias": [
+      "三层评测",
+      "分层评测"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "核心",
+    "maturity": "前沿",
+    "oneLine": "工具级、单 Agent 级、多 Agent 级各有一套黄金集、评测器与晋级标准，三层都要跑。",
+    "problem": "只测 Agent 端到端，工具坏了会被 Agent 的「最佳猜测」掩盖成「Agent 有点笨」。",
+    "newIn": "「Agent 的质量上限取决于它依赖的工具」——把工具当独立被测对象，是评测方法论的关键分层。",
+    "from": [
+      [
+        "evaluation",
+        "特化"
+      ],
+      [
+        "multi-agent",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "multi-agent-eval",
+      "evaluation",
+      "sentinel-set",
+      "tracing",
+      "golden-set"
+    ],
+    "trap": "只做 Agent 级就停了。工具级的错误会以「Agent 表现不稳定」的形式随机出现，永远查不到根因。",
+    "tags": [
+      "质量",
+      "方法论"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "tracing",
+    "name": "链路追踪",
+    "en": "Tracing / Observability",
+    "alias": [
+      "OTel",
+      "执行轨迹"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "逐步记录每次运行的模型调用、工具调用、输入输出、延迟与 token，形成可检索的执行树。",
+    "problem": "一次调用涉及多个子 Agent 与工具，「某处出问题了」不是可执行的排查线索。",
+    "newIn": "从「日志」升级为「结构化轨迹」：它能被自动评测消费，也能被模型自己读懂并生成诊断。",
+    "from": [
+      [
+        "observability",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "durable-execution",
+      "microservice",
+      "harness",
+      "evaluation",
+      "agent-runtime",
+      "observability",
+      "failure-taxonomy",
+      "audit-log",
+      "cost-attribution",
+      "latency-budget",
+      "drift-detection",
+      "monitoring",
+      "evaluation-tiers",
+      "transcript-forensics",
+      "canary-release"
+    ],
+    "trap": "只记录「调用成功/失败」。真正有价值的是检索回来的上下文与模型的推理中间态。",
+    "tags": [
+      "运维",
+      "质量"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "regression-gate",
+    "name": "回归门禁",
+    "en": "Regression Gate",
+    "alias": [
+      "发布拦截",
+      "CI 卡点"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3",
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "每次部署自动跑哨兵集，质量、安全、延迟、成本任一维度越界则阻断发布。",
+    "problem": "靠人记得跑评测，等于没有评测。",
+    "newIn": "关键设计是分层拦截条件：质量/安全是硬阻断，延迟/成本是「需显式决策」的软阻断。",
+    "from": [
+      [
+        "evaluation",
+        "演进"
+      ],
+      [
+        "sentinel-set",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "prompt-versioning",
+      "evaluation",
+      "ci-cd",
+      "deployment-strategy",
+      "sentinel-set",
+      "canary-release",
+      "golden-set"
+    ],
+    "trap": "只卡总体通过率。均值上升但更多单题不及格的版本会顺利通过。必须同时卡「单题及格率」。",
+    "tags": [
+      "质量",
+      "运维"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "canary-release",
+    "name": "金丝雀发布",
+    "en": "Canary Release",
+    "alias": [
+      "灰度",
+      "渐进放量"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把新版本先放给一小部分流量，用真实表现决定是否全量。",
+    "problem": "离线评测无法覆盖真实流量的长尾表达与上游数据变化。",
+    "newIn": "在 Agent 场景里它多了一个职责：捕捉「没人改代码」的劣化，如上游索引刷新、模型行为漂移。",
+    "from": [
+      [
+        "deployment-strategy",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "aaa-eval",
+      "evaluation",
+      "deployment-strategy",
+      "regression-gate",
+      "drift-detection",
+      "monitoring",
+      "deployment",
+      "tracing"
+    ],
+    "trap": "用单窗口指标决策。一次抖动就回滚会导致频繁误报，团队很快不再信任告警。",
+    "tags": [
+      "运维"
+    ],
+    "cluster": "运行与发布"
+  },
+  {
+    "id": "drift-detection",
+    "name": "漂移检测",
+    "en": "Drift Detection",
+    "alias": [
+      "质量漂移",
+      "线上采样评测"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3",
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "持续采样线上真实流量并打分，与离线基线比对，发现无代码变更下的质量滑坡。",
+    "problem": "上游数据每周刷新、模型行为随时变化，代码没动但效果会变。",
+    "newIn": "它把「监控」的语义彻底改写：不是看系统是否活着，而是看它是否还答得对。",
+    "from": [
+      [
+        "evaluation",
+        "演进"
+      ],
+      [
+        "observability",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "aaa-eval",
+      "evaluation",
+      "observability",
+      "monitoring",
+      "online-eval",
+      "canary-release",
+      "tracing",
+      "golden-set"
+    ],
+    "trap": "采样率过低或只看聚合分数。漂移往往先出现在特定子群（如「用股票代码提问的用户」）上。",
+    "tags": [
+      "运维",
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "online-eval",
+    "name": "线上采样评测",
+    "en": "Online Evaluation",
+    "alias": [
+      "生产评测",
+      "真实流量打分"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3",
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "对生产流量的一部分实时打分，作为质量状态的实时信号。",
+    "problem": "离线题集永远滞后于真实用户表达。",
+    "newIn": "评测成本成为新问题：给 10% 流量全量打分，评测开销可能接近甚至超过被评测系统本身。",
+    "from": [
+      [
+        "drift-detection",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "llm-as-judge",
+      "cost-attribution",
+      "drift-detection"
+    ],
+    "trap": "忽略评测自身的成本。评测 token 消耗需要单独计量并纳入预算。",
+    "tags": [
+      "质量",
+      "成本"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "aaa-eval",
+    "name": "A/B 实验",
+    "en": "A/B Testing",
+    "alias": [
+      "对照实验",
+      "流量分桶"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "把真实流量分成两组，用同一套打分器比较两个版本的实际表现。",
+    "problem": "离线评测无法证明「长尾真实表达也扛得住」。",
+    "newIn": "在 Agent 场景里必须先过质量门禁再做 A/B：候选版本如果连基本正确性都不过关，分流只会伤害真实用户。",
+    "from": [
+      [
+        "evaluation",
+        "并行"
+      ],
+      [
+        "canary-release",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "drift-detection",
+      "statistical-significance",
+      "canary-release"
+    ],
+    "trap": "用几百条样本的 0.5% 差异宣布胜出。没有置信区间的对比等于没做对比。",
+    "tags": [
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "statistical-significance",
+    "name": "统计显著性",
+    "en": "Statistical Significance",
+    "alias": [
+      "置信区间",
+      "bootstrap"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "可选",
+    "maturity": "主流",
+    "oneLine": "用置信区间判断「提升」是真实效应还是采样噪声。",
+    "problem": "200 题样本上的 96% vs 96.5%，大概率是噪声而非改进。",
+    "newIn": "评测方法论文献里几乎从不提这一点，但它是「评测数字可信」的最后一环。",
+    "from": [
+      [
+        "benchmark",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "aaa-eval",
+      "evaluation",
+      "overfitting-eval",
+      "golden-set"
+    ],
+    "trap": "把门禁判据写成「数值大于基线」。应写成「显著优于基线」，否则永远在追噪声。",
+    "tags": [
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "overfitting-eval",
+    "name": "评测过拟合",
+    "en": "Evaluation Overfitting",
+    "alias": [
+      "Goodhart 效应",
+      "刷榜"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "系统被优化成「专门讨好评测集的样子」，指标上涨但真实表现退化。",
+    "problem": "只要有优化目标，优化就会被目标吸引——尤其是提示词自动优化这种高频迭代场景。",
+    "newIn": "它把 Goodhart 定律变成了具体的工程风险，解法是保留一批不参与优化的 holdout 集。",
+    "from": [
+      [
+        "evaluation",
+        "特化"
+      ],
+      [
+        "goodhart",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "prompt-optimization",
+      "evaluation",
+      "statistical-significance",
+      "golden-set"
+    ],
+    "trap": "用同一份集子既优化又验收。这在提示词自动优化里几乎是默认做法，也是它最危险的默认。",
+    "tags": [
+      "质量",
+      "前沿"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "benchmark",
+    "name": "公开基准",
+    "en": "Benchmark",
+    "alias": [
+      "榜单",
+      "SWE-bench 等"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F3"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "标准化的公开评测集，用于横向比较模型或框架的通用能力。",
+    "problem": "缺少统一标尺时，能力对比只能靠个案与口碑。",
+    "newIn": "它的问题正在成为共识：污染、饱和、与真实业务脱节。它的价值主要在于粗筛，而非选型依据。",
+    "from": [],
+    "rel": [
+      "needle-test",
+      "evaluation",
+      "golden-set"
+    ],
+    "trap": "用榜单分数做采购决策。榜单任务与你的任务分布差异越大，分数越没有参考价值。",
+    "tags": [
+      "质量",
+      "类比"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "cost-attribution",
+    "name": "成本归因",
+    "en": "Cost Attribution",
+    "alias": [
+      "token 成本拆分",
+      "单次成本"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F4"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把单次请求的成本拆到每一步、每个工具、每个子 Agent，而不是只看总账单。",
+    "problem": "总账单只能告诉你「这个月贵了」，无法告诉你「哪一步浪费了」。",
+    "newIn": "它引入了「单次成功响应成本」这一指标：单次成本 ÷ 通过率，惩罚「昂贵的失败」。",
+    "from": [
+      [
+        "observability",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "prompt-caching",
+      "budget-control",
+      "observability",
+      "cost-budgeting",
+      "latency-budget",
+      "online-eval",
+      "tracing"
+    ],
+    "trap": "只优化单位 token 价格。工具调用次数、重试次数、上下文膨胀往往比单价影响更大。",
+    "tags": [
+      "成本"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "latency-budget",
+    "name": "时延预算",
+    "en": "Latency Budget",
+    "alias": [
+      "首字延迟",
+      "p99 控制"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F5"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "把端到端时延预算拆分到每一层（入口、检索、模型、工具），并分别设上限。",
+    "problem": "平均值会骗人：p50 很快的系统，p99 可能让 1% 的用户等三分钟。",
+    "newIn": "Agent 的时延形态变了：不是一次推理，而是 N 次串行推理之和，且尾部会叠加。",
+    "from": [
+      [
+        "observability",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "prompt-caching",
+      "short-circuit",
+      "budget-control",
+      "cost-attribution",
+      "tracing"
+    ],
+    "trap": "优化平均值。应看 p90/p99，并用并行化与流式输出改善感知延迟。",
+    "tags": [
+      "时延"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "guardrails",
+    "name": "护栏",
+    "en": "Guardrails",
+    "alias": [
+      "安全过滤",
+      "输入输出拦截"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在模型入口与出口各设一道检查，拦截违规内容、越权操作与提示攻击。",
+    "problem": "模型本身无法可靠拒绝所有恶意请求，也无法保证输出合规。",
+    "newIn": "从「内容审核」扩展到「行为审核」：不仅要看说了什么，还要看准备做什么（工具调用）。",
+    "from": [
+      [
+        "content-moderation",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "instruction-hierarchy",
+      "system-prompt",
+      "permission-scope",
+      "tool-error-handling",
+      "human-in-the-loop",
+      "escalation",
+      "audit-log",
+      "pii-redaction"
+    ],
+    "trap": "只在入口拦截。真正的风险常来自工具返回值与检索内容，出口必须再拦一次。",
+    "tags": [
+      "安全"
+    ],
+    "cluster": "安全与治理"
+  },
+  {
+    "id": "audit-log",
+    "name": "审计日志",
+    "en": "Audit Log",
+    "alias": [
+      "操作留痕",
+      "合规记录"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F6",
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "不可篡改地记录「谁在何时让 Agent 做了什么、影响了哪些数据」。",
+    "problem": "Agent 自主执行后，出问题需要能追溯责任与影响范围。",
+    "newIn": "传统审计记录「人做了什么」，现在还要记录「Agent 代替人做了什么、依据是什么」。",
+    "from": [
+      [
+        "observability",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "tool-poisoning",
+      "permission-scope",
+      "observability",
+      "guardrails",
+      "pii-redaction",
+      "tracing"
+    ],
+    "trap": "只记录结果不记录依据。合规审查会追问「为什么做出这个决定」，而这需要当时的上下文。",
+    "tags": [
+      "安全",
+      "运维"
+    ],
+    "cluster": "安全与治理"
+  },
+  {
+    "id": "pii-redaction",
+    "name": "敏感信息脱敏",
+    "en": "PII Redaction",
+    "alias": [
+      "数据脱敏",
+      "隐私保护"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F6"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "在数据进入模型、日志与记忆之前识别并遮盖个人敏感信息。",
+    "problem": "上下文里一旦出现身份证号、手机号，它就会进入日志、缓存与长期记忆。",
+    "newIn": "Agent 让风险面扩大：同一份数据会同时出现在提示词、轨迹、记忆库三个地方，都要处理。",
+    "from": [
+      [
+        "guardrails",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "forgetting",
+      "tenant-isolation",
+      "audit-log",
+      "guardrails",
+      "data-exfiltration"
+    ],
+    "trap": "只在入口脱敏。工具返回的数据、模型生成的摘要同样可能携带敏感信息。",
+    "tags": [
+      "安全"
+    ],
+    "cluster": "安全与治理"
+  },
+  {
+    "id": "data-exfiltration",
+    "name": "数据外泄",
+    "en": "Data Exfiltration",
+    "alias": [
+      "越权传出",
+      "隐信道"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F6"
+    ],
+    "tier": "进阶",
+    "maturity": "前沿",
+    "oneLine": "攻击者通过让 Agent 访问外部 URL、写文件、发请求，把上下文中的敏感数据带出去。",
+    "problem": "一个拥有网络与工具权限的 Agent，天然就是一个可用的外泄通道。",
+    "newIn": "它是提示注入的「变现环节」：注入只是手段，外泄才是目的，防护必须成对设计。",
+    "from": [
+      [
+        "prompt-injection",
+        "演进"
+      ],
+      [
+        "permission-scope",
+        "组合"
+      ]
+    ],
+    "rel": [
+      "prompt-injection",
+      "permission-scope",
+      "sandbox",
+      "pii-redaction"
+    ],
+    "trap": "只做输入过滤。应限制「Agent 能把什么发到外面」，即出口的域名白名单与内容检查。",
+    "tags": [
+      "安全",
+      "前沿"
+    ],
+    "cluster": "安全与治理"
+  },
+  {
+    "id": "agent-runtime",
+    "name": "Agent 运行时",
+    "en": "Agent Runtime",
+    "alias": [
+      "托管运行时",
+      "执行环境"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "主流",
+    "oneLine": "负责 Agent 的部署、扩缩容、会话隔离、状态持久化与自动埋点的执行底座。",
+    "problem": "自建运行时需要同时解决沙箱、持久化、可观测与弹性，工作量常超过 Agent 本身。",
+    "newIn": "它把「Agent 是一个服务」这件事变成默认假设，而不是每个团队自己拼装。",
+    "from": [
+      [
+        "sandbox",
+        "组合"
+      ],
+      [
+        "microservice",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "checkpoint",
+      "sandbox",
+      "durable-execution",
+      "harness",
+      "deployment-strategy",
+      "deployment",
+      "tracing"
+    ],
+    "trap": "以为托管运行时解决了评测与质量。它只提供管道，定义「什么算好」仍然是你的事。",
+    "tags": [
+      "运维"
+    ],
+    "cluster": "运行与发布"
+  },
+  {
+    "id": "deployment-strategy",
+    "name": "发布策略",
+    "en": "Deployment Strategy",
+    "alias": [
+      "蓝绿",
+      "滚动发布",
+      "协同发布"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "决定数据、工具、提示词、模型四者的变更如何协同上线，避免半新半旧状态。",
+    "problem": "数据变更、工具变更、提示词变更分开发布，错配窗口期质量会断崖下跌。",
+    "newIn": "Agent 系统有四个可独立变更的层，这是传统软件没有的复杂性。错配窗口是典型的隐性故障源。",
+    "from": [
+      [
+        "canary-release",
+        "演进"
+      ],
+      [
+        "ci-cd",
+        "并行"
+      ]
+    ],
+    "rel": [
+      "prompt-versioning",
+      "agent-runtime",
+      "ci-cd",
+      "regression-gate",
+      "deployment",
+      "canary-release"
+    ],
+    "trap": "把提示词当配置热更新，绕过了其余三层的协同。一次「小改动」就能造成大范围回归。",
+    "tags": [
+      "运维"
+    ],
+    "cluster": "运行与发布"
+  },
+  {
+    "id": "ci-cd",
+    "name": "CI/CD",
+    "en": "CI/CD",
+    "alias": [
+      "持续集成",
+      "持续交付"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "自动化地构建、测试、部署的工程流水线。",
+    "problem": "手工发布不可复现、不可审计、频率低。",
+    "newIn": "不是新东西。但它作为「评测门禁」的宿主，是 Agent 工程化绕不开的前置条件。",
+    "from": [],
+    "rel": [
+      "evaluation",
+      "deployment-strategy",
+      "regression-gate"
+    ],
+    "trap": "团队缺少 CI 文化时硬上评测门禁。流程会先压垮人，而不是先发现问题。",
+    "tags": [
+      "类比",
+      "运维"
+    ],
+    "cluster": "运行与发布"
+  },
+  {
+    "id": "transcript-forensics",
+    "name": "轨迹复盘",
+    "en": "Transcript Forensics",
+    "alias": [
+      "失败归因",
+      "事故分析"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7",
+      "F3"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "对一次失败运行做逐步回放，定位「哪一步开始偏离」，而不是只看最终输出。",
+    "problem": "最终答案错，可能是检索错、工具错、推理错或综合错，四者表现完全相同。",
+    "newIn": "从「看日志」变成「读轨迹」：轨迹本身成了可以被模型分析的输入，可以问 Agent「刚才哪里出错了」。",
+    "from": [
+      [
+        "tracing",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "evaluation",
+      "failure-taxonomy",
+      "tracing",
+      "golden-set"
+    ],
+    "trap": "只挑选「明显的错误步骤」看。定位偏差往往发生在看似正确、但语义已偏移的那一步。",
+    "tags": [
+      "运维",
+      "质量"
+    ],
+    "cluster": "评测与质量"
+  },
+  {
+    "id": "observability",
+    "name": "可观测性",
+    "en": "Observability",
+    "alias": [
+      "监控",
+      "日志指标追踪"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "通过日志、指标、追踪三类信号回答「系统内部正在发生什么」。",
+    "problem": "黑盒系统出问题时只能看到外部表现，无法定位内部原因。",
+    "newIn": "在 Agent 场景里它不再足够：可观测回答「系统在做什么」，评测才回答「做得对不对」。两者不可互相替代。",
+    "from": [],
+    "rel": [
+      "evaluation",
+      "audit-log",
+      "cost-attribution",
+      "drift-detection",
+      "monitoring",
+      "tracing"
+    ],
+    "trap": "用监控绿灯证明质量达标。延迟正常、错误率为零，完全可能是「流利且自信的错误答案」。",
+    "tags": [
+      "运维",
+      "类比"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "deployment",
+    "name": "部署",
+    "en": "Deployment",
+    "alias": [
+      "上线"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "可选",
+    "maturity": "稳定",
+    "oneLine": "把 Agent 服务投入生产环境并持续运行。",
+    "problem": "本地跑通与生产可用之间有巨大鸿沟。",
+    "newIn": "无新意。之所以单列，是因为它是「评测必须前置」的原因：上线之后，质量问题会以客户投诉的形式到达。",
+    "from": [],
+    "rel": [
+      "agent-runtime",
+      "deployment-strategy",
+      "canary-release"
+    ],
+    "trap": "把「能跑」当作「可上线」。缺少门禁与回滚能力的上线，本质是在赌。",
+    "tags": [
+      "运维"
+    ],
+    "cluster": "运行与发布"
+  },
+  {
+    "id": "monitoring",
+    "name": "监控告警",
+    "en": "Monitoring & Alerting",
+    "alias": [
+      "阈值告警",
+      "on-call"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F7"
+    ],
+    "tier": "核心",
+    "maturity": "稳定",
+    "oneLine": "为关键指标设定阈值与告警规则，在异常时通知责任人。",
+    "problem": "没有告警，故障只能靠用户投诉发现。",
+    "newIn": "难点不在配置，而在「信噪比」：单窗口越界就报警，会让 on-call 彻底不再信任系统。",
+    "from": [
+      [
+        "observability",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "observability",
+      "drift-detection",
+      "canary-release",
+      "tracing"
+    ],
+    "trap": "告警不带可行动信息。一条只说「准确率下降」的告警，与没有告警的排查成本相同。",
+    "tags": [
+      "运维"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "cost-budgeting",
+    "name": "成本预算",
+    "en": "Cost Budgeting",
+    "alias": [
+      "费用上限",
+      "单位经济模型"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F4"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "为每个租户、每个场景设定成本上限，并在接近上限时降级而非熔断。",
+    "problem": "Agent 的成本随使用深度非线性增长，账单滞后数周才发现异常。",
+    "newIn": "从「财务问题」变成「产品设计约束」：预算决定了能开多少轮、能用多强的模型。",
+    "from": [
+      [
+        "cost-attribution",
+        "演进"
+      ]
+    ],
+    "rel": [
+      "model-routing",
+      "budget-control",
+      "circuit-breaker",
+      "cost-attribution"
+    ],
+    "trap": "只做总量预算不做单请求预算。一个失控的循环就能吃掉整个月的额度。",
+    "tags": [
+      "成本"
+    ],
+    "cluster": "观测与成本"
+  },
+  {
+    "id": "tenant-isolation",
+    "name": "多租户隔离",
+    "en": "Tenant Isolation",
+    "alias": [
+      "租户隔离",
+      "资源隔离"
+    ],
+    "dot": "L6",
+    "facets": [
+      "F6",
+      "F7"
+    ],
+    "tier": "进阶",
+    "maturity": "主流",
+    "oneLine": "保证不同租户的上下文、记忆、工具权限与配额互不可见。",
+    "problem": "共用的向量库与记忆存储，极易发生跨租户召回。",
+    "newIn": "在 Agent 场景下风险更高：记忆系统会主动把「最相似」的内容召回进上下文，跨租户污染是静默发生的。",
+    "from": [
+      [
+        "permission-scope",
+        "特化"
+      ]
+    ],
+    "rel": [
+      "vector-store",
+      "long-term-memory",
+      "permission-scope",
+      "pii-redaction"
+    ],
+    "trap": "只在查询层加 tenant_id 过滤。写入、索引、缓存、评测集每一层都要隔离。",
+    "tags": [
+      "安全",
+      "运维"
+    ],
+    "cluster": "安全与治理"
+  }
+]
