@@ -70,3 +70,4 @@ jobs:
           python scripts/legend_qa.py
           node scripts/badge_test.js
           node scripts/css_collision_test.js
+          node scripts/progress_test.js
