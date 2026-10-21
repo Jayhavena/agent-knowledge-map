@@ -1092,7 +1092,7 @@
     "en": "Drift Detection",
     "alias": [
       "质量漂移",
-      "线上采样评测"
+      "线上漂移采样"
     ],
     "dot": "L6",
     "facets": [
