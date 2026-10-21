@@ -191,6 +191,44 @@ main{max-width:1600px;margin:0 auto;padding:20px 24px 80px;min-height:70vh}
 .badge.b-contra{color:var(--tContraFg);border-color:var(--tContraBd);background:var(--tContraBg)}
 .badge.b-st{color:var(--tStFg);border-color:var(--tStBd);background:var(--tStBg)}
 
+/* ---------- progress ---------- */
+.progwrap{display:grid;grid-template-columns:1fr 292px;gap:24px;align-items:start}
+.prog-side{position:sticky;top:112px;display:grid;gap:12px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--paper2);padding:14px 16px}
+.pcard h4{margin:0 0 6px;font-size:12px;letter-spacing:.06em;color:var(--ink3);font-weight:600}
+.pcard p{margin:0 0 10px;font-size:12px;line-height:1.65;color:var(--ink2)}
+.pbtns{display:flex;gap:7px;flex-wrap:wrap}
+.pbtns .btn{padding:6px 12px;font-size:12px}
+.ptag{font-size:11.5px;color:var(--okFg);margin-top:8px;min-height:15px}
+.plist{margin:0;padding-left:16px;font-size:12px;color:var(--ink2);line-height:1.8}
+
+.progtop{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px}
+.kpi{border:1px solid var(--line);border-radius:10px;background:var(--paper2);padding:13px 15px}
+.kpi .kv{font-family:var(--mono);font-size:24px;line-height:1.1;color:var(--ink)}
+.kpi .kk{font-size:11.5px;color:var(--ink3);margin-top:3px}
+.kpi .ks{font-size:10.5px;color:var(--ink3);opacity:.8;margin-top:2px}
+
+.pbar{height:7px;border-radius:99px;background:var(--line2);overflow:hidden;display:flex;margin:4px 0 6px}
+.pbar i{display:block;height:100%}
+.psec{margin-bottom:26px}
+.psec-h{display:flex;align-items:baseline;gap:9px;padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:11px}
+.psec-h h3{margin:0;font-size:14.5px;font-weight:600}
+.psec-h .n{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+
+.prow{display:grid;grid-template-columns:96px 1fr 74px;gap:11px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line2)}
+.prow:last-child{border-bottom:none}
+.prow .pl{font-size:12.5px;color:var(--ink2)}
+.prow .pv{font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:right}
+
+.legend-st{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;font-size:11.5px;color:var(--ink3)}
+.legend-st span{display:inline-flex;align-items:center;gap:5px}
+.legend-st i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+@media (max-width:900px){
+  .progwrap{grid-template-columns:1fr}
+  .prog-side{position:static}
+}
+
 /* locator */
 .loc{max-width:960px}
 .loc-intro{font-size:13px;color:var(--ink2);line-height:1.78;margin-bottom:20px;max-width:780px}
@@ -382,6 +420,7 @@ footer b{color:var(--ink2)}
       <button data-view="graph">图谱</button>
       <button data-view="outline">大纲</button>
       <button data-view="deep">深读</button>
+      <button data-view="progress">进度</button>
       <button data-view="locator">落位器</button>
     </nav>
     <div class="searchbox">
@@ -447,6 +486,32 @@ footer b{color:var(--ink2)}
       </div>
       <div class="steps" id="steps"></div>
       <div id="locbody"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-progress">
+    <div class="note"><span>掌握度只存在这台浏览器里（<code>localStorage</code>），换设备或清缓存就会丢。
+      所以这里提供一个导出——把进度存成文件，随时可以再读回来。</span></div>
+    <div class="progwrap">
+      <div class="prog-main" id="progmain"></div>
+      <aside class="prog-side">
+        <div class="pcard">
+          <h4>备份与恢复</h4>
+          <p>导出的是一个 JSON，包含每个概念的状态。可以提交进仓库，或放进 Obsidian 附件。</p>
+          <div class="pbtns">
+            <button class="btn primary" id="pExport">导出进度</button>
+            <button class="btn" id="pImport">导入</button>
+            <input type="file" id="pFile" accept="application/json,.json" hidden />
+            <button class="btn" id="pClear">清空</button>
+          </div>
+          <div class="ptag" id="ptag"></div>
+        </div>
+        <div class="pcard">
+          <h4>标记方式</h4>
+          <p>打开任一概念，在详情面板底部点「我的掌握度」。共五档：</p>
+          <ul class="plist" id="plegend"></ul>
+        </div>
+      </aside>
     </div>
   </section>
 </main>
@@ -587,6 +652,7 @@ footer b{color:var(--ink2)}
     document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x===b));
     document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id==="view-"+S.view));
     if (S.view==="locator") renderLocator();
+    else if (S.view==="progress") renderProgress();
     else if (S.view==="deep") renderDeep(S.deep || (DEEPS[0] && DEEPS[0].id));
     else refresh();
     syncHash();
@@ -1100,6 +1166,158 @@ footer b{color:var(--ink2)}
   }
   scrim.onclick = closeDrawer;
 
+  // ---------- progress ----------
+  const ST_ORDER = ["精通", "会用", "知道", "待补"];
+  const ST_COLOR = { "精通":"var(--l1)", "会用":"var(--l5)", "知道":"var(--l3)", "待补":"var(--l4)", "未标":"var(--line)" };
+
+  function statusCounts(){
+    const c = { "未标":0, "知道":0, "会用":0, "精通":0, "待补":0 };
+    NODES.forEach(n => c[STATUS[n.id] || "未标"]++);
+    return c;
+  }
+
+  function renderProgress(){
+    const cnt = statusCounts();
+    const total = NODES.length;
+    const marked = total - cnt["未标"];
+    const solid = cnt["精通"] + cnt["会用"];
+    const pct = v => total ? Math.round(v / total * 100) : 0;
+
+    let h = '<div class="progtop">'
+      + '<div class="kpi"><div class="kv">' + pct(marked) + '%</div><div class="kk">已标记</div>'
+      +   '<div class="ks">' + marked + ' / ' + total + '</div></div>'
+      + '<div class="kpi"><div class="kv">' + pct(solid) + '%</div><div class="kk">会用或以上</div>'
+      +   '<div class="ks">' + solid + ' 个</div></div>'
+      + '<div class="kpi"><div class="kv" style="color:var(--l4)">' + cnt["待补"] + '</div><div class="kk">确认是缺口</div>'
+      +   '<div class="ks">排在计划里</div></div>'
+      + '<div class="kpi"><div class="kv">' + cnt["未标"] + '</div><div class="kk">还没判断</div>'
+      +   '<div class="ks">未知本身也是信息</div></div>'
+      + '</div>';
+
+    // stacked bar
+    h += '<div class="pbar">';
+    ["精通","会用","知道","待补","未标"].forEach(k => {
+      if (!cnt[k]) return;
+      h += '<i style="width:' + (cnt[k] / total * 100) + '%;background:' + ST_COLOR[k] + '"></i>';
+    });
+    h += '</div>';
+
+    h += '<div class="legend-st">';
+    ["精通","会用","知道","待补","未标"].forEach(k => {
+      h += '<span><i style="background:' + ST_COLOR[k] + '"></i>' + k + ' ' + cnt[k] + '</span>';
+    });
+    h += '</div>';
+
+    // by layer
+    h += '<div class="psec"><div class="psec-h"><h3>按层</h3><span class="n">会用以上 / 该层总数</span></div>';
+    LAYERS.forEach(l => {
+      const arr = NODES.filter(n => layerOf(n) === l.code);
+      if (!arr.length) return;
+      const okN = arr.filter(n => ["精通","会用"].indexOf(STATUS[n.id]) > -1).length;
+      const gapN = arr.filter(n => STATUS[n.id] === "待补").length;
+      h += '<div class="prow"><span class="pl">' + esc(l.code + " " + l.name) + '</span>'
+        + '<span class="pbar" style="margin:0">'
+        + '<i style="width:' + (okN / arr.length * 100) + '%;background:var(--l1)"></i>'
+        + '<i style="width:' + (gapN / arr.length * 100) + '%;background:var(--l4)"></i></span>'
+        + '<span class="pv">' + okN + ' / ' + arr.length + '</span></div>';
+    });
+    h += '</div>';
+
+    // by tier
+    h += '<div class="psec"><div class="psec-h"><h3>按权重</h3><span class="n">核心优先</span></div>';
+    ["核心","进阶","可选"].forEach(t => {
+      const arr = NODES.filter(n => n.tier === t);
+      if (!arr.length) return;
+      const okN = arr.filter(n => ["精通","会用"].indexOf(STATUS[n.id]) > -1).length;
+      h += '<div class="prow"><span class="pl">' + esc(t) + '</span>'
+        + '<span class="pbar" style="margin:0"><i style="width:' + (okN / arr.length * 100) + '%;background:var(--l1)"></i></span>'
+        + '<span class="pv">' + okN + ' / ' + arr.length + '</span></div>';
+    });
+    h += '</div>';
+
+    // gaps: core concepts still unmarked or marked as gap
+    const focus = NODES.filter(n => n.tier === "核心" && ["未标","待补"].indexOf(STATUS[n.id] || "未标") > -1);
+    h += '<div class="psec"><div class="psec-h"><h3>核心概念里还没拿下的</h3><span class="n">' + focus.length + ' 个</span></div>';
+    if (!focus.length) {
+      h += '<p style="font-size:12.5px;color:var(--ink3)">核心概念都已有判断。下一步建议看向「进阶」。</p>';
+    } else {
+      h += '<div class="relchips">';
+      focus.slice(0, 40).forEach(n => {
+        h += '<button data-go="' + n.id + '">' + esc(n.name) + '</button>';
+      });
+      h += '</div>';
+      if (focus.length > 40) h += '<p style="font-size:12px;color:var(--ink3);margin-top:8px">另有 ' + (focus.length - 40) + ' 个</p>';
+    }
+    h += '</div>';
+
+    const box = document.getElementById("progmain");
+    box.innerHTML = h;
+    box.querySelectorAll("[data-go]").forEach(b => b.onclick = () => openNode(b.dataset.go));
+
+    // side legend
+    const lg = document.getElementById("plegend");
+    if (lg && META.legend && META.legend.status){
+      lg.innerHTML = META.legend.status.map(x => '<li><b>' + esc(x.key) + '</b> — ' + esc(x.desc) + '</li>').join("");
+    }
+  }
+
+  function downloadProgress(){
+    const payload = {
+      tool: "agent-knowledge-map",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      total: NODES.length,
+      status: STATUS
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "agent-km-progress.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    tag("已导出 " + Object.keys(STATUS).length + " 条记录");
+  }
+
+  function tag(msg){
+    const t = document.getElementById("ptag");
+    if (!t) return;
+    t.textContent = msg;
+    setTimeout(() => { const x = document.getElementById("ptag"); if (x) x.textContent = ""; }, 2600);
+  }
+
+  function importProgress(file){
+    const fr = new FileReader();
+    fr.onload = () => {
+      try {
+        const data = JSON.parse(String(fr.result));
+        const st = data && data.status ? data.status : data;
+        let n = 0, bad = 0;
+        Object.keys(st || {}).forEach(k => {
+          if (byId[k] && ["知道","会用","精通","待补"].indexOf(st[k]) > -1){ STATUS[k] = st[k]; n++; }
+          else bad++;
+        });
+        saveStatus(); renderProgress(); refresh();
+        tag("已导入 " + n + " 条" + (bad ? "，跳过 " + bad + " 条无效" : ""));
+      } catch(e){ tag("文件解析失败"); }
+    };
+    fr.readAsText(file);
+  }
+
+  document.getElementById("pExport").onclick = downloadProgress;
+  document.getElementById("pImport").onclick = () => document.getElementById("pFile").click();
+  document.getElementById("pFile").onchange = e => {
+    if (e.target.files && e.target.files[0]) importProgress(e.target.files[0]);
+    e.target.value = "";
+  };
+  document.getElementById("pClear").onclick = () => {
+    if (!Object.keys(STATUS).length){ tag("本来就没有记录"); return; }
+    const n = Object.keys(STATUS).length;
+    STATUS = {};
+    saveStatus(); renderProgress(); refresh();
+    tag("已清空 " + n + " 条");
+  };
+
   // ---------- locator ----------
   let LOC = { step:1, name:"", layer:"", loop:"", facets:[], lineage:"", done:false };
   const STEPTITLES = ["名称","第一问 · 层","第二问 · 环","第三问 · 面","第四问 · 谱系"];
@@ -1327,6 +1545,7 @@ footer b{color:var(--ink2)}
     if (h.view && ["matrix","graph","outline","deep","locator"].indexOf(h.view) > -1){
       showView(h.view);
       if (h.view === "locator") renderLocator();
+      else if (h.view === "progress") renderProgress();
       else if (h.view === "deep") renderDeep(S.deep || (DEEPS[0] && DEEPS[0].id));
       else refresh();
     }
