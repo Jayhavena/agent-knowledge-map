@@ -1,7 +1,10 @@
 """Undefined-jargon check: a definition that names another concept,
 but that concept is neither a prereq nor a direct neighbour, is unexplained jargon.
+
+Gate semantics: any occurrence exits 1. This is a strict check on purpose —
+the project's whole premise is that a reader should be able to enter at any node.
 """
-import io, json, os
+import io, json, os, sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(BASE, "..", "data")
@@ -52,3 +55,5 @@ if rows:
         for t, _ in hits:
             c[t] += 1
     print("被提及最多的未解释术语:", "、".join(f"{k}({v})" for k, v in c.most_common(8)))
+    sys.exit(1)
+print("no unexplained jargon")

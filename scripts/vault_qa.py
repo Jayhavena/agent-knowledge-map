@@ -1,5 +1,5 @@
 """Verify the Obsidian vault: every [[wikilink]] resolves to an existing note, frontmatter parses, no dupes."""
-import io, os, re, json, collections
+import io, os, re, json, collections, sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 VAULT = os.path.join(BASE, "..", "Obsidian-Agent知识库")
@@ -89,3 +89,17 @@ for k in sorted(notes):
     if k.startswith("00_导航/"):
         sz = os.path.getsize(notes[k])
         print(f"  {k}: {sz} bytes")
+
+# ---- gate ----
+gate = []
+if broken: gate.append(f"{len(broken)} 条断链")
+if bad_fm: gate.append(f"{len(bad_fm)} 条 frontmatter 异常")
+if dup: gate.append(f"重复文件名: {dup}")
+if missing: gate.append(f"{len(missing)} 个概念笔记缺少小节")
+if deps: gate.append(f"深读卡问题: {sorted(deps)}")
+print()
+if gate:
+    print("FAILURES:")
+    for g in gate: print("  -", g)
+    sys.exit(1)
+print("vault checks passed.")

@@ -1,5 +1,10 @@
-"""Dark/light contrast audit: parse both variable blocks and check WCAG ratios for real text pairs."""
-import io, os, re, math
+"""Dark/light contrast audit: parse both variable blocks and check WCAG ratios for real text pairs.
+
+Gate semantics: exit 1 if any pair drops below 3.0 in either theme, or if the
+dark block fails to define a variable the light block defines (a missing var
+silently falls back to the light colour, which usually breaks contrast).
+"""
+import io, os, re, math, sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 s = io.open(os.path.join(BASE, "template.html"), encoding="utf-8").read()
@@ -104,3 +109,16 @@ missing = set(light) - set(dark) - {"--radius", "--sans", "--serif", "--mono"}
 extra = set(dark) - set(light)
 print("\nvars only in light:", sorted(missing) or "none")
 print("vars only in dark:", sorted(extra) or "none")
+
+fails = []
+if bad:
+    fails.append(f"{len(bad)} 组对比度低于 3.0")
+if missing:
+    fails.append(f"深色主题缺少 {len(missing)} 个变量: {sorted(missing)}")
+
+if fails:
+    print("\nFAILURES:")
+    for f in fails:
+        print("  -", f)
+    sys.exit(1)
+print("\ncontrast checks passed.")

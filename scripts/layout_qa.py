@@ -1,5 +1,5 @@
 """Numeric layout QA mirroring template.html's layoutGraph()."""
-import json, io, os, math
+import json, io, os, math, sys
 from collections import defaultdict
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -96,4 +96,19 @@ print("out of bounds:", oob or "none")
 smin = min(min(a["_x"], b["_x"]) for i, a in enumerate(six) for b in six[i+1:] if abs(a["_y"]-b["_y"]) < 1)
 print(f"L6 band: {len(six)} nodes, top={min(n['_y'] for n in six):.1f}, bottom={max(n['_y'] for n in six):.1f}, band {bandTop:.1f}..{bandTop+bandInner:.1f}")
 print("L6 inside band:", all(bandTop <= n["_y"] <= bandTop+bandInner for n in six))
-print("VERDICT:", "PASS" if not oob and bad == 0 and all(bandTop <= n["_y"] <= bandTop+bandInner for n in six) else "FAIL")
+verdict = "PASS" if not oob and bad == 0 and all(bandTop <= n["_y"] <= bandTop+bandInner for n in six) else "FAIL"
+print("VERDICT:", verdict)
+
+fails = []
+if oob:
+    fails.append(f"{len(oob)} 个节点超出画布: {oob[:6]}")
+if bad:
+    fails.append(f"{bad} 个格子节点重叠")
+if not all(bandTop <= n["_y"] <= bandTop+bandInner for n in six):
+    fails.append("L6 带内有节点越界")
+
+if fails:
+    print("\nFAILURES:")
+    for f in fails:
+        print("  -", f)
+    sys.exit(1)
