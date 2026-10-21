@@ -94,7 +94,7 @@ console.log("maturity values:", MATS.join(", "));
 
 function classOf(html, label) {
   // pull the badge whose text equals the label
-  const re = new RegExp('<span class="badge ([a-z]*)"\\s*>' + label + "<");
+  const re = new RegExp('<span class="badge ([a-z-]*)"\\s*>' + label + "<");
   const m = html.match(re);
   return m ? m[1] : null;
 }

@@ -12,7 +12,7 @@ js = html[html.rindex("<script>"):]
 
 def parse_map(name):
     block = re.search(name + r"\s*=\s*\{([^}]*)\}", js).group(1)
-    return dict(re.findall(r'"([^"]+)":\s*"([a-z]+)"', block))
+    return dict(re.findall(r'"([^"]+)":\s*"([a-z-]+)"', block))
 
 TIER = parse_map("TIER_CLASS")
 MAT = parse_map("MAT_CLASS")

@@ -34,6 +34,7 @@ CHECKS = [
     ["node", os.path.join(BASE, "smoke.js"), os.path.join(ROOT, "Agent知识地图.html")],
     ["node", os.path.join(BASE, "deeplink_test.js")],
     ["node", os.path.join(BASE, "badge_test.js")],
+    ["node", os.path.join(BASE, "css_collision_test.js")],
 ]
 
 
