@@ -64,3 +64,8 @@ jobs:
 
       - name: 深链接
         run: node scripts/deeplink_test.js
+
+      - name: 徽章映射（图例每个值都有独立样式）
+        run: |
+          python scripts/legend_qa.py
+          node scripts/badge_test.js
