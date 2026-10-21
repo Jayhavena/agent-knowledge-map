@@ -2,7 +2,7 @@
 
 > 一套「层 × 环 × 面」的坐标系，用来把任何新出现的 Agent 概念，在 30 秒内定位到「它属于哪个已知位置、它是谁的下一代」。
 
-**在线浏览**：https://nanguagod.github.io/agent-knowledge-map/
+**在线浏览**：https://jayhavena.github.io/agent-knowledge-map/
 
 ---
 
@@ -34,13 +34,32 @@
 
 ## 怎么用
 
-**在线看**：直接打开上面的网址。按 `/` 搜索，按 `t` 切换主题。
+**在线看**：直接打开 https://jayhavena.github.io/agent-knowledge-map/ 。按 `/` 搜索，按 `t` 切换主题。
 
 **本地看**：下载 `Agent知识地图.html`，双击即可，无需联网、无需服务器。
 
 **在 Obsidian 里用**：把 `Obsidian-Agent知识库/` 作为 vault 打开，会得到 134 篇双链笔记 + 导航页 + 深读笔记。
 
 **分享某个概念**：地址栏会随导航更新，例如 `#node=memory-consolidation`，复制即直达。
+
+## 更新与发布
+
+改完数据后一条命令发布：
+
+```bash
+python scripts/publish.py
+```
+
+它做四件事：重新生成 → 跑全套校验（任何一项失败就中止）→ 组装站点 → 推送到 `gh-pages` 分支。GitHub Pages 监听该分支，推送后一两分钟内自动生效。
+
+```bash
+python scripts/publish.py --dry-run   # 只构建和校验，生成 _site/ 供本地预览
+python scripts/publish.py --skip-checks
+```
+
+**为什么用分支而不是 Actions 部署**：推送分支只需要 `repo` 权限，而提交 workflow 文件需要额外的 `workflow` 权限，后者很多令牌没有。分支方案对任何能 push 的人都成立，也更少依赖。
+
+`.github/workflows/` 的 CI 是可选的，装法见 `ci-templates/README.md`。不装也能正常发布——`publish.py` 内部跑的是同一套校验。
 
 ## 发现错误或有建议
 
@@ -69,7 +88,7 @@ node scripts/smoke.js Agent知识地图.html
 git add -A && git commit -m "add: 概念 X" && git push
 ```
 
-CI 会拒绝两类 PR：**只改数据没重新生成**，以及**生成物与数据不一致**。
+只改数据没重新生成，是这类项目最常见的问题——所以 `publish.py` 会先重跑构建再比对，产物对不上就不发布。
 
 ### 新增概念需要哪些字段
 

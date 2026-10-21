@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: 校验数据与页面
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # 构建必须可复现：若数据改了但没重新生成，这一步会失败。
+      - name: 重新生成（构建必须可复现）
+        run: python scripts/build.py
+
+      - name: 构建产物无未提交改动
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::构建产物与提交内容不一致。请在本地运行 python scripts/build.py 并提交结果。"
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: 数据完整性
+        run: python scripts/validate.py
+
+      - name: 内容质量
+        run: python scripts/content_qa.py
+
+      - name: 对比度（深浅两套主题）
+        run: python scripts/contrast_qa.py
+
+      - name: 图谱布局
+        run: python scripts/layout_qa.py
+
+      - name: 双链与深读卡
+        run: python scripts/vault_qa.py
+
+      - name: 页面逻辑
+        run: node scripts/smoke.js Agent知识地图.html
+
+      - name: 静态一致性
+        run: node scripts/static_check.js
+
+      - name: 深链接
+        run: node scripts/deeplink_test.js
