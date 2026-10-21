@@ -175,8 +175,13 @@ main{max-width:1600px;margin:0 auto;padding:20px 24px 80px;min-height:70vh}
 .ol-item:hover{background:var(--hover4)}
 .ol-item .nm{font-weight:600;font-size:13px;white-space:nowrap;flex:0 0 auto}
 .ol-item .on{font-size:12px;color:var(--ink2);line-height:1.5}
-.ol-item .bg{margin-left:auto;display:flex;gap:4px;flex:0 0 auto;padding-left:8px}
-.badge{font-size:9.5px;padding:1px 6px;border-radius:99px;border:1px solid var(--line);color:var(--ink3);white-space:nowrap}
+.ol-item .bg{margin-left:auto;display:flex;gap:4px;flex:0 0 auto;padding-left:8px;align-items:center}
+.badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:10px; line-height:1.35; letter-spacing:.01em;
+  padding:2px 7px; border-radius:5px; border:1px solid var(--line);
+  background:var(--paper3); color:var(--ink3); white-space:nowrap;
+}
 .badge.core{color:var(--tCoreFg);border-color:var(--tCoreBd);background:var(--tCoreBg)}
 .badge.mid{color:var(--tMidFg);border-color:var(--tMidBd);background:var(--tMidBg)}
 .badge.opt{color:var(--tOptFg);border-color:var(--tOptBd);background:var(--tOptBg)}
@@ -238,7 +243,7 @@ pre.snip{font-family:var(--mono);font-size:11.5px;line-height:1.6;background:var
 .dw-coord .sw{width:8px;height:8px;border-radius:50%}
 .dw-top h2{font-family:var(--serif);font-size:23px;font-weight:600;margin:6px 0 2px}
 .dw-en{font-family:var(--mono);font-size:11px;color:var(--ink3)}
-.dw-badges{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.dw-badges{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;align-items:center}
 .dw-body{padding:19px 26px 60px}
 .dw-sec{margin-bottom:18px}
 .dw-sec h4{margin:0 0 5px;font-size:11px;letter-spacing:.07em;color:var(--ink3);font-weight:600}
