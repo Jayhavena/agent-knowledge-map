@@ -59,6 +59,9 @@ jobs:
       - name: 双链与深读卡
         run: python scripts/vault_qa.py
 
+      - name: 关系类型词表
+        run: python scripts/relation_qa.py
+
       - name: 页面逻辑
         run: node scripts/smoke.js Agent知识地图.html
 

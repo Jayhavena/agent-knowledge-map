@@ -1492,9 +1492,27 @@ footer b{color:var(--ink2)}
   // ---------- help ----------
   const help = document.getElementById("help");
   document.getElementById("helpbtn").onclick = () => {
-    document.getElementById("helperules").innerHTML = META.rules.map(r =>
-      '<div class="rule"><div class="n">'+r.step+'</div><div class="tx"><b>'+esc(r.title)+'</b><p>'+esc(r.body)+'</p>'
-      + '<div class="trap">易错：'+esc(r.trap)+'</div></div></div>').join("");
+  // 五类关系定义 + 落位规则
+  const relTypes = META.relationTypes || {};
+  let html = META.rules.map(r =>
+      '<div class="rule"><div class="n">' + r.step + '</div><div class="tx"><b>' + esc(r.title) + '</b><p>' + esc(r.body) + '</p>'
+      + '<div class="trap">易错：' + esc(r.trap) + '</div></div></div>').join("");
+  if (Object.keys(relTypes).length){
+    html += '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">'
+         + '<h3 style="font-family:var(--serif);font-size:17px;margin:0 0 3px">from 关系的五类定义</h3>'
+         + '<p style="font-size:12.5px;color:var(--ink3);margin:0 0 14px">给概念标谱系前先查这里；五类都套不上，说明还没想清它是什么关系。</p>';
+    Object.keys(relTypes).forEach(function(k){
+      const rt = relTypes[k];
+      html += '<div class="rule"><div class="n" style="font-size:10px">' + esc(k) + '</div><div class="tx">'
+           + '<p>' + esc(rt.definition) + '</p>'
+           + '<div style="font-size:11.5px;color:var(--ink3);margin-top:4px">判定：' + esc(rt.test) + '</div>'
+           + '<div style="font-size:11.5px;color:var(--ink2);margin-top:4px">例：' + esc(rt.example) + '</div>'
+           + (rt.note ? '<div class="trap">' + esc(rt.note) + '</div>' : '')
+           + '</div></div>';
+    });
+    html += '</div>';
+  }
+  document.getElementById("helperules").innerHTML = html;
     help.classList.add("on");
   };
   document.getElementById("helpclose").onclick = () => help.classList.remove("on");
