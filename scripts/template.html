@@ -291,6 +291,9 @@ pre.snip{font-family:var(--mono);font-size:11.5px;line-height:1.6;background:var
 .dw-sec.warn{background:var(--warnBg);border:1px solid var(--warnBd);border-radius:8px;padding:12px 15px}
 .dw-sec.warn h4{color:var(--warnFg)}
 .dw-sec.warn p{color:var(--warnTxt)}
+.dw-sec.eg{background:var(--paper3);border:1px dashed var(--line);border-radius:8px;padding:12px 15px}
+.dw-sec.eg h4{color:var(--l1)}
+.dw-sec.eg p{color:var(--ink2);font-size:13px}
 .lin{display:flex;align-items:baseline;gap:7px;font-size:12.5px;color:var(--ink2);margin-bottom:4px}
 .lin .k{font-size:9.5px;padding:0 5px;border-radius:3px;background:var(--hover2);color:var(--ink3);font-family:var(--mono);flex:0 0 auto}
 .relchips{display:flex;gap:6px;flex-wrap:wrap}
@@ -1079,8 +1082,20 @@ footer b{color:var(--ink2)}
 
     let b = '';
     b += '<div class="dw-sec"><h4>一句话</h4><p>'+esc(n.oneLine)+'</p></div>';
+    if (n.example){
+      b += '<div class="dw-sec eg"><h4>具体是什么样</h4><p>'+esc(n.example)+'</p></div>';
+    }
     b += '<div class="dw-sec"><h4>它解决什么问题</h4><p>'+esc(n.problem)+'</p></div>';
     b += '<div class="dw-sec accent"><h4>它新在哪</h4><p>'+esc(n.newIn)+'</p></div>';
+
+    if ((n.prereq||[]).length){
+      const pre = n.prereq.map(r => byId[r]).filter(Boolean);
+      if (pre.length){
+        b += '<div class="dw-sec"><h4>看不懂？先看这几个</h4><div class="relchips">'
+           + pre.map(r => '<button data-go="'+r.id+'">'+esc(r.name)+' · '+r.dot+'</button>').join("")
+           + '</div></div>';
+      }
+    }
 
     if (DEEP[n.id]){
       b += '<div class="dw-sec deepsec"><h4>深读卡</h4>'

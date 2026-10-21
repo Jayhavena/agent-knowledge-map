@@ -47,6 +47,9 @@ jobs:
       - name: 内容质量
         run: python scripts/content_qa.py
 
+      - name: 未解释术语
+        run: python scripts/jargon_check.py
+
       - name: 对比度（深浅两套主题）
         run: python scripts/contrast_qa.py
 

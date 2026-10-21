@@ -1,0 +1,147 @@
+{
+  "_note": "第四批：系统层（L6）。",
+  "evaluation": {
+    "example": "上线前跑了 200 道题，模型把「$410.08」报成「$410.08 Million」——监控全绿，评测抓到了。",
+    "prereq": ["golden-set"]
+  },
+  "golden-set": {
+    "example": "从真实日志抽 200 条问题，人工写好标准答案存下来。以后每次改 prompt 都拿这 200 条跑一遍看有没有变差。",
+    "prereq": ["benchmark"]
+  },
+  "sentinel-set": {
+    "example": "黄金集里挑出 15 条「答错就是事故」的题，每次提交代码跑一遍，两分钟出结果。",
+    "prereq": ["golden-set"]
+  },
+  "llm-as-judge": {
+    "example": "「这段回答是否忠实于检索到的原文」没法用规则判，让另一个模型按 rubric 打个分。",
+    "prereq": ["evaluation"]
+  },
+  "judge-calibration": {
+    "example": "人工标 100 条当标准，再让模型裁判打一遍，算两者一致率——只有 0.6 就说明裁判本身不可信。",
+    "prereq": ["llm-as-judge"]
+  },
+  "deterministic-eval": {
+    "example": "营收必须是 4100800 元，多一位少一位都算错——这种就用断言，不让模型去「感觉对不对」。",
+    "prereq": ["golden-set"]
+  },
+  "failure-taxonomy": {
+    "example": "把错误拆成「指标取错 / 周期错配 / 实体混淆 / 纯幻觉 / 单位错误 / 未授权计算」，每类配一个检查器。",
+    "prereq": ["evaluation"]
+  },
+  "evaluation-tiers": {
+    "example": "工具层单独测（消歧准不准）、单 Agent 测（推理对不对）、多 Agent 测（路由和交接对不对），三层各跑各的。",
+    "prereq": ["evaluation", "multi-agent"]
+  },
+  "tracing": {
+    "example": "一次请求调了 3 个子 Agent、5 个工具，出问题时能点开看到第 4 步检索回来的那段内容其实是错的。",
+    "prereq": ["observability"]
+  },
+  "regression-gate": {
+    "example": "CI 里跑 15 条哨兵题，通过率从 96% 掉到 91%，自动拦住不让发布。",
+    "prereq": ["sentinel-set"]
+  },
+  "canary-release": {
+    "example": "新版本先给 5% 流量，观察两小时；质量、延迟、成本任一维度变差就自动回滚。",
+    "prereq": ["regression-gate"]
+  },
+  "drift-detection": {
+    "example": "代码一行没改，但上游索引刷新后检索质量掉了，三天后评测分数才显示出来——这就是漂移。",
+    "prereq": ["evaluation"]
+  },
+  "online-eval": {
+    "example": "抽 10% 的线上真实会话，用裁判模型实时打分，画成一条质量曲线。",
+    "prereq": ["drift-detection"]
+  },
+  "aaa-eval": {
+    "example": "把流量五五分给 A、B 两版，跑两周看 B 版的用户满意度是不是真的更高。",
+    "prereq": ["evaluation"]
+  },
+  "statistical-significance": {
+    "example": "96% vs 96.5%，在 200 道题的样本上很可能只是随机波动，不能据此宣布「变好了」。",
+    "prereq": ["aaa-eval"]
+  },
+  "overfitting-eval": {
+    "example": "反复针对同一套题改 prompt，分数一路涨到 98%，换一批新题立刻掉回 82%。",
+    "prereq": ["golden-set"]
+  },
+  "benchmark": {
+    "example": "SWE-bench、MMLU 这类公开题集，用来横向比模型，但和你的业务场景往往对不上。",
+    "prereq": []
+  },
+  "cost-attribution": {
+    "example": "账单涨了三倍，拆开看发现是某个工具每次返回 2 万 token 的原始 JSON，占了总成本 70%。",
+    "prereq": ["tracing"]
+  },
+  "latency-budget": {
+    "example": "用户能忍 3 秒。拆成：检索 400ms、模型 1.8s、工具 600ms，哪一块超了就知道该优化谁。",
+    "prereq": ["tracing"]
+  },
+  "guardrails": {
+    "example": "入口拦「帮我写钓鱼邮件」，出口拦「回答里带出了用户手机号」，两头都要查。",
+    "prereq": ["prompt-injection"]
+  },
+  "audit-log": {
+    "example": "能查清「3 月 12 日 14:07，哪个用户让 Agent 改了哪条价格、依据是什么」。",
+    "prereq": ["tracing"]
+  },
+  "pii-redaction": {
+    "example": "日志和记忆里出现身份证号、手机号时，入库前替换成 [ID]、[PHONE]。",
+    "prereq": ["guardrails"]
+  },
+  "data-exfiltration": {
+    "example": "注入成功后，攻击者让 Agent 把上下文拼进一个图片 URL 的参数里发出去——数据就这么走了。",
+    "prereq": ["prompt-injection", "permission-scope"]
+  },
+  "agent-runtime": {
+    "example": "不用自己搭容器、排队、状态存储、trace 采集，托管平台把这些都包了，你只写业务逻辑。",
+    "prereq": ["sandbox"]
+  },
+  "deployment-strategy": {
+    "example": "prompt 改了、工具也改了，必须一起上线；分开发布的那两小时里，通过率会从 78% 掉到 38%。",
+    "prereq": ["canary-release"]
+  },
+  "ci-cd": {
+    "example": "每次 push 自动跑测试并部署到预发，合并到 main 自动上生产——没有这套，评测门禁无处可挂。",
+    "prereq": []
+  },
+  "transcript-forensics": {
+    "example": "用户说答案错了，回放这次会话：第 3 步检索到的其实是另一个客户的文档，后面全错。",
+    "prereq": ["tracing"]
+  },
+  "observability": {
+    "example": "看板上延迟、错误率、QPS 全绿，但你并不知道它答得对不对——这就是可观测性的边界。",
+    "prereq": []
+  },
+  "deployment": {
+    "example": "把 Agent 服务部署上线，接真实流量——从这一步起，问题会以用户投诉的形式到达。",
+    "prereq": ["ci-cd"]
+  },
+  "monitoring": {
+    "example": "质量分连续三个 30 分钟窗口低于阈值才报警，单次抖动不打扰人。",
+    "prereq": ["observability"]
+  },
+  "cost-budgeting": {
+    "example": "给每个租户设每月 500 元上限，用到 80% 开始降级到小模型，到 100% 直接拒绝新请求。",
+    "prereq": ["cost-attribution"]
+  },
+  "tenant-isolation": {
+    "example": "A 公司的记忆库里绝不该检索出 B 公司的任何内容，写入、索引、检索、评测每一层都要隔离。",
+    "prereq": ["permission-scope"]
+  },
+  "agent-skills": {
+    "example": "把「写周报」的完整做法（模板 + 取数脚本 + 格式要求）打包成一个技能，平时只占一行说明，用到才展开。",
+    "prereq": ["context-engineering"]
+  },
+  "context-rot": {
+    "example": "上下文塞到 8 万字后，模型开始忽略中间那段关键约束，答得越来越「像那么回事」。",
+    "prereq": ["lost-in-the-middle"]
+  },
+  "compaction": {
+    "example": "接近窗口上限时，把前面 40 轮重写成 500 字摘要，只保留结论和已排除的路径。",
+    "prereq": ["context-compression"]
+  },
+  "harness": {
+    "example": "同一个模型，换成另一套 agent 框架，任务成功率可能差一倍——差异全在外壳里。",
+    "prereq": ["agent-loop"]
+  }
+}

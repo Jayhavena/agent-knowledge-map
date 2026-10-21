@@ -134,6 +134,19 @@ for n in nodes:
     body.append("")
     body.append(n["oneLine"])
     body.append("")
+    if n.get("example"):
+        body.append("## 具体是什么样")
+        body.append("")
+        body.append("> " + n["example"])
+        body.append("")
+    if n.get("prereq"):
+        pres = [by_id[r] for r in n["prereq"] if r in by_id]
+        if pres:
+            body.append("## 看不懂？先看这几个")
+            body.append("")
+            for p in pres:
+                body.append("- " + link(p["name"]) + " — " + p["oneLine"])
+            body.append("")
     body.append("## 它解决什么问题")
     body.append("")
     body.append(n["problem"])

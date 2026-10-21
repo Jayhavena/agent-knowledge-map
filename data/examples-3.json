@@ -1,0 +1,152 @@
+{
+  "_note": "第三批：控制层 + 编排层。",
+  "agent-loop": {
+    "example": "「查一下上周退款率为什么涨了」——模型先查指标、发现集中在某商品、再查该商品评价、最后给结论，中间每步都看结果再决定下一步。",
+    "prereq": ["react"]
+  },
+  "react": {
+    "example": "思考「要查退款率」→ 调用指标接口 → 观察结果异常 → 思考「得看是哪个商品」→ 再调用明细接口。",
+    "prereq": ["chain-of-thought"]
+  },
+  "chain-of-thought": {
+    "example": "不直接要答案，而是让模型先写「第一步… 第二步…」，最后才给结论，多步算术的准确率明显上升。",
+    "prereq": []
+  },
+  "plan-and-execute": {
+    "example": "先一次性列出「1 取数 2 清洗 3 算环比 4 出图」四步，再逐步执行，而不是每步都想一遍要不要做。",
+    "prereq": ["react"]
+  },
+  "replanning": {
+    "example": "计划里写「从 A 库取数」，执行时发现 A 库今天维护，改成从 B 库取——而不是硬等 A 库恢复。",
+    "prereq": ["plan-and-execute"]
+  },
+  "task-decomposition": {
+    "example": "「写一份竞品分析」拆成：确定 3 家竞品 → 各自查定价与功能 → 对比成表 → 写结论。每步都能验收。",
+    "prereq": ["plan-and-execute"]
+  },
+  "reflexion": {
+    "example": "生成 SQL 后先自查「这个 JOIN 会不会导致行数翻倍」，发现不对再改，而不是直接把结果交出去。",
+    "prereq": ["react"]
+  },
+  "self-consistency": {
+    "example": "同一道题采样 5 次，4 次答案一致、1 次不一样，取多数那个。",
+    "prereq": ["chain-of-thought"]
+  },
+  "tree-of-thought": {
+    "example": "面对「24 点」这类题，同时尝试三条不同的运算方向，评估哪条更接近，走不通就回溯换分支。",
+    "prereq": ["chain-of-thought"]
+  },
+  "lats": {
+    "example": "下棋式的思路：走一步、估个分、不行退回来换一步，只不过「走一步」是调用一次工具。",
+    "prereq": ["tree-of-thought"]
+  },
+  "termination": {
+    "example": "「数据到手就算完成」「重试三次仍失败就转人工」「预算超了立刻停」——三条都写进代码，而不是等模型自己说完了。",
+    "prereq": ["agent-loop"]
+  },
+  "budget-control": {
+    "example": "每次运行最多 20 步、5 万 token、3 分钟；超了就走降级路径，而不是让账单继续涨。",
+    "prereq": ["termination"]
+  },
+  "retry-backoff": {
+    "example": "接口限流了，等 1 秒重试、再失败等 2 秒、4 秒，而不是立刻连打十次把对方打挂。",
+    "prereq": ["tool-error-handling"]
+  },
+  "circuit-breaker": {
+    "example": "下游连续失败 5 次，直接断开十分钟不再尝试，免得请求堆积把整个系统拖死。",
+    "prereq": ["retry-backoff"]
+  },
+  "escalation": {
+    "example": "连续两次答不出用户问题，把对话连同已确认的信息一起转给人工，而不是继续瞎猜。",
+    "prereq": ["termination"]
+  },
+  "human-in-the-loop": {
+    "example": "「发邮件」「改价格」「删数据」这三类操作必须先弹窗让人点确认，其余可以自动做。",
+    "prereq": ["escalation"]
+  },
+  "interrupt-resume": {
+    "example": "流程走到「等财务审批」就挂起，三天后审批通过再从这里继续，而不是一直占着进程干等。",
+    "prereq": ["checkpoint"]
+  },
+  "todo-list": {
+    "example": "把「1 取数 2 清洗 3 出图」写进上下文并实时打勾，跑到第 5 轮也不会忘了还剩哪步。",
+    "prereq": ["plan-and-execute"]
+  },
+  "short-circuit": {
+    "example": "「今天几号」这种问题直接答，不必进规划、检索、反思的完整流程。",
+    "prereq": ["agent-loop"]
+  },
+  "classification": {
+    "example": "先判断这句话是「查订单」「要退款」还是「投诉」，再决定走哪条处理路径。",
+    "prereq": ["model-routing"]
+  },
+  "evaluator-optimizer": {
+    "example": "一个模型写文案，另一个模型拿着评分标准挑毛病，来回三轮，产出质量比单次生成高一截。",
+    "prereq": ["reflexion"]
+  },
+  "durable-execution": {
+    "example": "每一步都记进事件日志，机器重启后按日志重放，已经执行过的步骤不再重跑。",
+    "prereq": ["checkpoint"]
+  },
+  "temporal-state": {
+    "example": "「上个月」必须解析成 2026-09，而不是当成当前月份；否则月度报表全错。",
+    "prereq": ["memory-conflict"]
+  },
+
+  "multi-agent": {
+    "example": "一个负责检索资料、一个负责写、一个负责校对，三个各管一段，最后拼起来。",
+    "prereq": ["task-decomposition"]
+  },
+  "supervisor": {
+    "example": "主管 Agent 拆任务：「你去查数据」「你去写结论」，两边交回来它再合成。",
+    "prereq": ["multi-agent"]
+  },
+  "swarm": {
+    "example": "客服 Agent 判断「这是退款问题」，直接把对话交给退款 Agent，不需要中心节点调度。",
+    "prereq": ["multi-agent"]
+  },
+  "handoff": {
+    "example": "把「用户已确认订单号 A123、已排除是物流问题」这两条一起交给下一环节，而不是只丢一句「你来处理」。",
+    "prereq": ["multi-agent"]
+  },
+  "delegation-brief": {
+    "example": "派活时写清：目标（查清退款率上涨原因）、边界（只看华东区）、输出格式（三条结论 + 数据来源）。",
+    "prereq": ["handoff"]
+  },
+  "shared-state": {
+    "example": "所有 Agent 读写同一张任务表：谁领了哪条、状态如何、结论是什么，一目了然。",
+    "prereq": ["multi-agent"]
+  },
+  "subagent": {
+    "example": "主 Agent 需要读 20 份文档，派生一个子 Agent 去读，只把「这 20 份里跟退款有关的是第 3、7、15 份」带回来。",
+    "prereq": ["multi-agent"]
+  },
+  "context-transfer": {
+    "example": "上游说「已排除物流问题」，下游如果不知道这条，会把物流再查一遍，浪费两轮。",
+    "prereq": ["handoff"]
+  },
+  "error-cascade": {
+    "example": "检索 Agent 拿错了客户 ID，下游三个 Agent 基于这个错 ID 继续算，最后整份报告全是别人的数据。",
+    "prereq": ["multi-agent"]
+  },
+  "routing-accuracy": {
+    "example": "1000 条请求里 85 条被派错了部门，这个 8.5% 就是路由错误率，且它不会在最终指标里单独暴露。",
+    "prereq": ["classification"]
+  },
+  "role-design": {
+    "example": "「研究员」和「审稿人」两个角色，给的资料和验收标准都不同，而不是同一个模型换个称呼。",
+    "prereq": ["multi-agent"]
+  },
+  "multi-agent-eval": {
+    "example": "端到端答对了，但中间路由错了两次、上下文丢了三条约束——只看最终答案永远发现不了。",
+    "prereq": ["evaluation"]
+  },
+  "microservice": {
+    "example": "订单服务、支付服务各自部署，通过明确定义的接口通信——多 Agent 拆分的坑和它几乎一样。",
+    "prereq": []
+  },
+  "subagent-isolation": {
+    "example": "子 Agent 读了 50 页文档，只把结论带回主线程，主线程的上下文里不会多出那 50 页。",
+    "prereq": ["subagent"]
+  }
+}

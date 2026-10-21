@@ -46,6 +46,10 @@
     "tags": [
       "编排",
       "争议"
+    ],
+    "example": "一个负责检索资料、一个负责写、一个负责校对，三个各管一段，最后拼起来。",
+    "prereq": [
+      "task-decomposition"
     ]
   },
   {
@@ -88,6 +92,10 @@
     "trap": "主管成为上下文与吞吐的瓶颈。所有信息都过它一手，长任务下它会先崩。",
     "tags": [
       "编排"
+    ],
+    "example": "主管 Agent 拆任务：「你去查数据」「你去写结论」，两边交回来它再合成。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -123,6 +131,10 @@
     "tags": [
       "编排",
       "前沿"
+    ],
+    "example": "客服 Agent 判断「这是退款问题」，直接把对话交给退款 Agent，不需要中心节点调度。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -166,6 +178,10 @@
     "trap": "只传任务描述不传约束与已确认事实。接收方会重复已经排除的路径，或违反上游已声明的边界。",
     "tags": [
       "编排"
+    ],
+    "example": "把「用户已确认订单号 A123、已排除是物流问题」这两条一起交给下一环节，而不是只丢一句「你来处理」。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -208,6 +224,10 @@
     "tags": [
       "编排",
       "上下文"
+    ],
+    "example": "派活时写清：目标（查清退款率上涨原因）、边界（只看华东区）、输出格式（三条结论 + 数据来源）。",
+    "prereq": [
+      "handoff"
     ]
   },
   {
@@ -249,6 +269,10 @@
     "trap": "无并发控制。两个 Agent 同时写同一字段，后写的静默覆盖先写的，且没人发现。",
     "tags": [
       "编排"
+    ],
+    "example": "所有 Agent 读写同一张任务表：谁领了哪条、状态如何、结论是什么，一目了然。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -292,6 +316,10 @@
     "tags": [
       "编排",
       "上下文"
+    ],
+    "example": "主 Agent 需要读 20 份文档，派生一个子 Agent 去读，只把「这 20 份里跟退款有关的是第 3、7、15 份」带回来。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -330,6 +358,10 @@
     "tags": [
       "编排",
       "质量"
+    ],
+    "example": "上游说「已排除物流问题」，下游如果不知道这条，会把物流再查一遍，浪费两轮。",
+    "prereq": [
+      "handoff"
     ]
   },
   {
@@ -367,6 +399,10 @@
     "tags": [
       "编排",
       "质量"
+    ],
+    "example": "检索 Agent 拿错了客户 ID，下游三个 Agent 基于这个错 ID 继续算，最后整份报告全是别人的数据。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -407,6 +443,10 @@
     "tags": [
       "编排",
       "质量"
+    ],
+    "example": "1000 条请求里 85 条被派错了部门，这个 8.5% 就是路由错误率，且它不会在最终指标里单独暴露。",
+    "prereq": [
+      "classification"
     ]
   },
   {
@@ -442,6 +482,10 @@
     "tags": [
       "编排",
       "争议"
+    ],
+    "example": "「研究员」和「审稿人」两个角色，给的资料和验收标准都不同，而不是同一个模型换个称呼。",
+    "prereq": [
+      "multi-agent"
     ]
   },
   {
@@ -483,6 +527,10 @@
     "tags": [
       "编排",
       "质量"
+    ],
+    "example": "端到端答对了，但中间路由错了两次、上下文丢了三条约束——只看最终答案永远发现不了。",
+    "prereq": [
+      "evaluation"
     ]
   },
   {
@@ -507,12 +555,15 @@
       "a2a",
       "shared-state",
       "multi-agent",
+      "deployment",
       "tracing"
     ],
     "trap": "把「按团队拆」当成分工依据。Agent 应按「能力边界」拆，而非按组织架构。",
     "tags": [
       "类比"
-    ]
+    ],
+    "example": "订单服务、支付服务各自部署，通过明确定义的接口通信——多 Agent 拆分的坑和它几乎一样。",
+    "prereq": []
   },
   {
     "id": "evaluation",
@@ -580,7 +631,11 @@
       "质量",
       "地基"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "上线前跑了 200 道题，模型把「$410.08」报成「$410.08 Million」——监控全绿，评测抓到了。",
+    "prereq": [
+      "golden-set"
+    ]
   },
   {
     "id": "golden-set",
@@ -619,13 +674,18 @@
       "judge-calibration",
       "evaluation-tiers",
       "overfitting-eval",
-      "transcript-forensics"
+      "transcript-forensics",
+      "deployment"
     ],
     "trap": "题集里全是「能答对的题」。必须刻意塞入 20% 已知会错的与 20% 边界模糊的，否则评测无区分度。",
     "tags": [
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "从真实日志抽 200 条问题，人工写好标准答案存下来。以后每次改 prompt 都拿这 200 条跑一遍看有没有变差。",
+    "prereq": [
+      "benchmark"
+    ]
   },
   {
     "id": "sentinel-set",
@@ -655,6 +715,7 @@
       "evaluation",
       "regression-gate",
       "evaluation-tiers",
+      "deployment",
       "golden-set"
     ],
     "trap": "让哨兵集承担覆盖职责。十几条题只能防「已知的致命错误」，不能证明「没有新错误」。",
@@ -662,7 +723,11 @@
       "质量",
       "时延"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "黄金集里挑出 15 条「答错就是事故」的题，每次提交代码跑一遍，两分钟出结果。",
+    "prereq": [
+      "golden-set"
+    ]
   },
   {
     "id": "llm-as-judge",
@@ -700,7 +765,11 @@
     "tags": [
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "「这段回答是否忠实于检索到的原文」没法用规则判，让另一个模型按 rubric 打个分。",
+    "prereq": [
+      "evaluation"
+    ]
   },
   {
     "id": "judge-calibration",
@@ -728,6 +797,7 @@
     "rel": [
       "evaluation",
       "llm-as-judge",
+      "evaluation-tiers",
       "golden-set"
     ],
     "trap": "一次校准后就永久信任。模型升级、rubric 改动、领域漂移都会让一致率悄悄下降。",
@@ -735,7 +805,11 @@
       "质量",
       "前沿"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "人工标 100 条当标准，再让模型裁判打一遍，算两者一致率——只有 0.6 就说明裁判本身不可信。",
+    "prereq": [
+      "llm-as-judge"
+    ]
   },
   {
     "id": "deterministic-eval",
@@ -770,7 +844,11 @@
     "tags": [
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "营收必须是 4100800 元，多一位少一位都算错——这种就用断言，不让模型去「感觉对不对」。",
+    "prereq": [
+      "golden-set"
+    ]
   },
   {
     "id": "failure-taxonomy",
@@ -809,7 +887,11 @@
       "质量",
       "方法论"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "把错误拆成「指标取错 / 周期错配 / 实体混淆 / 纯幻觉 / 单位错误 / 未授权计算」，每类配一个检查器。",
+    "prereq": [
+      "evaluation"
+    ]
   },
   {
     "id": "evaluation-tiers",
@@ -841,7 +923,9 @@
     "rel": [
       "multi-agent-eval",
       "evaluation",
+      "benchmark",
       "sentinel-set",
+      "judge-calibration",
       "tracing",
       "golden-set"
     ],
@@ -850,7 +934,12 @@
       "质量",
       "方法论"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "工具层单独测（消歧准不准）、单 Agent 测（推理对不对）、多 Agent 测（路由和交接对不对），三层各跑各的。",
+    "prereq": [
+      "evaluation",
+      "multi-agent"
+    ]
   },
   {
     "id": "tracing",
@@ -876,6 +965,7 @@
       ]
     ],
     "rel": [
+      "native-tool-calling",
       "checkpoint",
       "durable-execution",
       "microservice",
@@ -898,7 +988,11 @@
       "运维",
       "质量"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "一次请求调了 3 个子 Agent、5 个工具，出问题时能点开看到第 4 步检索回来的那段内容其实是错的。",
+    "prereq": [
+      "observability"
+    ]
   },
   {
     "id": "regression-gate",
@@ -934,6 +1028,7 @@
       "ci-cd",
       "deployment-strategy",
       "sentinel-set",
+      "deployment",
       "canary-release",
       "golden-set"
     ],
@@ -942,7 +1037,11 @@
       "质量",
       "运维"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "CI 里跑 15 条哨兵题，通过率从 96% 掉到 91%，自动拦住不让发布。",
+    "prereq": [
+      "sentinel-set"
+    ]
   },
   {
     "id": "canary-release",
@@ -981,7 +1080,11 @@
     "tags": [
       "运维"
     ],
-    "cluster": "运行与发布"
+    "cluster": "运行与发布",
+    "example": "新版本先给 5% 流量，观察两小时；质量、延迟、成本任一维度变差就自动回滚。",
+    "prereq": [
+      "regression-gate"
+    ]
   },
   {
     "id": "drift-detection",
@@ -1026,7 +1129,11 @@
       "运维",
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "代码一行没改，但上游索引刷新后检索质量掉了，三天后评测分数才显示出来——这就是漂移。",
+    "prereq": [
+      "evaluation"
+    ]
   },
   {
     "id": "online-eval",
@@ -1063,7 +1170,11 @@
       "质量",
       "成本"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "抽 10% 的线上真实会话，用裁判模型实时打分，画成一条质量曲线。",
+    "prereq": [
+      "drift-detection"
+    ]
   },
   {
     "id": "aaa-eval",
@@ -1102,7 +1213,11 @@
     "tags": [
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "把流量五五分给 A、B 两版，跑两周看 B 版的用户满意度是不是真的更高。",
+    "prereq": [
+      "evaluation"
+    ]
   },
   {
     "id": "statistical-significance",
@@ -1137,7 +1252,11 @@
     "tags": [
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "96% vs 96.5%，在 200 道题的样本上很可能只是随机波动，不能据此宣布「变好了」。",
+    "prereq": [
+      "aaa-eval"
+    ]
   },
   {
     "id": "overfitting-eval",
@@ -1153,8 +1272,8 @@
     ],
     "tier": "进阶",
     "maturity": "前沿",
-    "oneLine": "系统被优化成「专门讨好评测集的样子」，指标上涨但真实表现退化。",
-    "problem": "只要有优化目标，优化就会被目标吸引——尤其是提示词自动优化这种高频迭代场景。",
+    "oneLine": "系统被调成「专门讨好评测集」的样子，分数一路上涨，真实使用反而变差。",
+    "problem": "只要存在优化目标，优化就会朝目标跑偏，尤其是自动改写提示词这种高频迭代。",
     "newIn": "它把 Goodhart 定律变成了具体的工程风险，解法是保留一批不参与优化的 holdout 集。",
     "from": [
       [
@@ -1177,7 +1296,11 @@
       "质量",
       "前沿"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "反复针对同一套题改 prompt，分数一路涨到 98%，换一批新题立刻掉回 82%。",
+    "prereq": [
+      "golden-set"
+    ]
   },
   {
     "id": "benchmark",
@@ -1200,6 +1323,7 @@
     "rel": [
       "needle-test",
       "evaluation",
+      "evaluation-tiers",
       "golden-set"
     ],
     "trap": "用榜单分数做采购决策。榜单任务与你的任务分布差异越大，分数越没有参考价值。",
@@ -1207,7 +1331,9 @@
       "质量",
       "类比"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "SWE-bench、MMLU 这类公开题集，用来横向比模型，但和你的业务场景往往对不上。",
+    "prereq": []
   },
   {
     "id": "cost-attribution",
@@ -1246,7 +1372,11 @@
     "tags": [
       "成本"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "账单涨了三倍，拆开看发现是某个工具每次返回 2 万 token 的原始 JSON，占了总成本 70%。",
+    "prereq": [
+      "tracing"
+    ]
   },
   {
     "id": "latency-budget",
@@ -1282,7 +1412,11 @@
     "tags": [
       "时延"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "用户能忍 3 秒。拆成：检索 400ms、模型 1.8s、工具 600ms，哪一块超了就知道该优化谁。",
+    "prereq": [
+      "tracing"
+    ]
   },
   {
     "id": "guardrails",
@@ -1322,7 +1456,11 @@
     "tags": [
       "安全"
     ],
-    "cluster": "安全与治理"
+    "cluster": "安全与治理",
+    "example": "入口拦「帮我写钓鱼邮件」，出口拦「回答里带出了用户手机号」，两头都要查。",
+    "prereq": [
+      "prompt-injection"
+    ]
   },
   {
     "id": "audit-log",
@@ -1361,7 +1499,11 @@
       "安全",
       "运维"
     ],
-    "cluster": "安全与治理"
+    "cluster": "安全与治理",
+    "example": "能查清「3 月 12 日 14:07，哪个用户让 Agent 改了哪条价格、依据是什么」。",
+    "prereq": [
+      "tracing"
+    ]
   },
   {
     "id": "pii-redaction",
@@ -1387,6 +1529,7 @@
       ]
     ],
     "rel": [
+      "long-term-memory",
       "forgetting",
       "tenant-isolation",
       "audit-log",
@@ -1397,7 +1540,11 @@
     "tags": [
       "安全"
     ],
-    "cluster": "安全与治理"
+    "cluster": "安全与治理",
+    "example": "日志和记忆里出现身份证号、手机号时，入库前替换成 [ID]、[PHONE]。",
+    "prereq": [
+      "guardrails"
+    ]
   },
   {
     "id": "data-exfiltration",
@@ -1437,7 +1584,12 @@
       "安全",
       "前沿"
     ],
-    "cluster": "安全与治理"
+    "cluster": "安全与治理",
+    "example": "注入成功后，攻击者让 Agent 把上下文拼进一个图片 URL 的参数里发出去——数据就这么走了。",
+    "prereq": [
+      "prompt-injection",
+      "permission-scope"
+    ]
   },
   {
     "id": "agent-runtime",
@@ -1479,7 +1631,11 @@
     "tags": [
       "运维"
     ],
-    "cluster": "运行与发布"
+    "cluster": "运行与发布",
+    "example": "不用自己搭容器、排队、状态存储、trace 采集，托管平台把这些都包了，你只写业务逻辑。",
+    "prereq": [
+      "sandbox"
+    ]
   },
   {
     "id": "deployment-strategy",
@@ -1521,7 +1677,11 @@
     "tags": [
       "运维"
     ],
-    "cluster": "运行与发布"
+    "cluster": "运行与发布",
+    "example": "prompt 改了、工具也改了，必须一起上线；分开发布的那两小时里，通过率会从 78% 掉到 38%。",
+    "prereq": [
+      "canary-release"
+    ]
   },
   {
     "id": "ci-cd",
@@ -1542,16 +1702,20 @@
     "newIn": "不是新东西。但它作为「评测门禁」的宿主，是 Agent 工程化绕不开的前置条件。",
     "from": [],
     "rel": [
+      "prompt-versioning",
       "evaluation",
       "deployment-strategy",
-      "regression-gate"
+      "regression-gate",
+      "deployment"
     ],
     "trap": "团队缺少 CI 文化时硬上评测门禁。流程会先压垮人，而不是先发现问题。",
     "tags": [
       "类比",
       "运维"
     ],
-    "cluster": "运行与发布"
+    "cluster": "运行与发布",
+    "example": "每次 push 自动跑测试并部署到预发，合并到 main 自动上生产——没有这套，评测门禁无处可挂。",
+    "prereq": []
   },
   {
     "id": "transcript-forensics",
@@ -1588,7 +1752,11 @@
       "运维",
       "质量"
     ],
-    "cluster": "评测与质量"
+    "cluster": "评测与质量",
+    "example": "用户说答案错了，回放这次会话：第 3 步检索到的其实是另一个客户的文档，后面全错。",
+    "prereq": [
+      "tracing"
+    ]
   },
   {
     "id": "observability",
@@ -1621,7 +1789,9 @@
       "运维",
       "类比"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "看板上延迟、错误率、QPS 全绿，但你并不知道它答得对不对——这就是可观测性的边界。",
+    "prereq": []
   },
   {
     "id": "deployment",
@@ -1641,15 +1811,26 @@
     "newIn": "无新意。之所以单列，是因为它是「评测必须前置」的原因：上线之后，质量问题会以客户投诉的形式到达。",
     "from": [],
     "rel": [
+      "small-model",
+      "microservice",
       "agent-runtime",
+      "ci-cd",
       "deployment-strategy",
-      "canary-release"
+      "sentinel-set",
+      "regression-gate",
+      "monitoring",
+      "canary-release",
+      "golden-set"
     ],
     "trap": "把「能跑」当作「可上线」。缺少门禁与回滚能力的上线，本质是在赌。",
     "tags": [
       "运维"
     ],
-    "cluster": "运行与发布"
+    "cluster": "运行与发布",
+    "example": "把 Agent 服务部署上线，接真实流量——从这一步起，问题会以用户投诉的形式到达。",
+    "prereq": [
+      "ci-cd"
+    ]
   },
   {
     "id": "monitoring",
@@ -1677,6 +1858,7 @@
     "rel": [
       "observability",
       "drift-detection",
+      "deployment",
       "canary-release",
       "tracing"
     ],
@@ -1684,7 +1866,11 @@
     "tags": [
       "运维"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "质量分连续三个 30 分钟窗口低于阈值才报警，单次抖动不打扰人。",
+    "prereq": [
+      "observability"
+    ]
   },
   {
     "id": "cost-budgeting",
@@ -1719,7 +1905,11 @@
     "tags": [
       "成本"
     ],
-    "cluster": "观测与成本"
+    "cluster": "观测与成本",
+    "example": "给每个租户设每月 500 元上限，用到 80% 开始降级到小模型，到 100% 直接拒绝新请求。",
+    "prereq": [
+      "cost-attribution"
+    ]
   },
   {
     "id": "tenant-isolation",
@@ -1756,6 +1946,10 @@
       "安全",
       "运维"
     ],
-    "cluster": "安全与治理"
+    "cluster": "安全与治理",
+    "example": "A 公司的记忆库里绝不该检索出 B 公司的任何内容，写入、索引、检索、评测每一层都要隔离。",
+    "prereq": [
+      "permission-scope"
+    ]
   }
 ]

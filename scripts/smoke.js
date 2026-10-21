@@ -145,6 +145,8 @@ try {
   check("drawer shows node name", dw.includes("模型上下文协议"));
   check("drawer shows lineage", dw.includes("谱系"));
   check("drawer shows trap", dw.includes("常见误判"));
+  check("drawer shows example", dw.includes("具体是什么样"), dw.slice(0,120));
+  check("drawer shows prereq", dw.includes("看不懂？先看这几个"), dw.slice(0,120));
   check("drawer shows status buttons", dw.includes("stbtns"));
 
   // L6 node drawer must not crash on missing loop code

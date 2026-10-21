@@ -46,6 +46,14 @@ for n in nodes:
         if fr[0] not in idp and fr[0] not in anc: dangling_from.append((n["id"], fr[0]))
 
 check("coordinates valid", not bad_dot, str(bad_dot))
+
+# every concept must carry a concrete example and valid prerequisites
+noex = [n["id"] for n in nodes if not (n.get("example") or "").strip()]
+badpre = [(n["id"], p) for n in nodes for p in n.get("prereq", []) if p not in idp]
+selfpre = [n["id"] for n in nodes if n["id"] in n.get("prereq", [])]
+check("every node has an example", not noex, str(noex[:8]))
+check("prereq ids exist", not badpre, str(badpre[:8]))
+check("no self-prerequisite", not selfpre, str(selfpre[:8]))
 check("facets valid", not bad_facet, str(bad_facet))
 check("rel targets exist", not dangling, str(dangling))
 check("lineage targets exist (node or ancestor)", not dangling_from, str(dangling_from))

@@ -29,6 +29,7 @@ BRANCH = "gh-pages"
 CHECKS = [
     ["python", os.path.join(BASE, "validate.py")],
     ["python", os.path.join(BASE, "content_qa.py")],
+    ["python", os.path.join(BASE, "jargon_check.py")],
     ["python", os.path.join(BASE, "contrast_qa.py")],
     ["python", os.path.join(BASE, "legend_qa.py")],
     ["node", os.path.join(BASE, "smoke.js"), os.path.join(ROOT, "Agent知识地图.html")],

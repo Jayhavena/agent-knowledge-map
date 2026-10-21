@@ -1,0 +1,1466 @@
+[
+ {
+  "id": "overfitting-eval",
+  "name": "评测过拟合",
+  "dot": "L6",
+  "jargon": [
+   "prompt",
+   "评测集"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 5
+ },
+ {
+  "id": "system-prompt",
+  "name": "系统提示",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [
+   "newIn:人设"
+  ],
+  "has_eg": true,
+  "longest": 47,
+  "score": 4
+ },
+ {
+  "id": "vector-store",
+  "name": "向量库",
+  "dot": "L2.P2",
+  "jargon": [
+   "RAG",
+   "语义向量"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 4
+ },
+ {
+  "id": "react",
+  "name": "ReAct 范式",
+  "dot": "L4.P3",
+  "jargon": [
+   "CoT",
+   "工具调用"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 30,
+  "score": 4
+ },
+ {
+  "id": "termination",
+  "name": "终止判据",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [
+   "newIn:终止判据"
+  ],
+  "has_eg": true,
+  "longest": 48,
+  "score": 4
+ },
+ {
+  "id": "sentinel-set",
+  "name": "哨兵集",
+  "dot": "L6",
+  "jargon": [
+   "部署",
+   "黄金集"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 4
+ },
+ {
+  "id": "regression-gate",
+  "name": "回归门禁",
+  "dot": "L6",
+  "jargon": [
+   "哨兵集",
+   "部署"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 4
+ },
+ {
+  "id": "agent-runtime",
+  "name": "Agent 运行时",
+  "dot": "L6",
+  "jargon": [
+   "沙箱",
+   "部署"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 4
+ },
+ {
+  "id": "distillation",
+  "name": "蒸馏",
+  "dot": "L0.P2",
+  "jargon": [],
+  "circular": [
+   "newIn:蒸馏"
+  ],
+  "has_eg": true,
+  "longest": 42,
+  "score": 3
+ },
+ {
+  "id": "rerank",
+  "name": "重排序",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [
+   "newIn:精排"
+  ],
+  "has_eg": true,
+  "longest": 44,
+  "score": 3
+ },
+ {
+  "id": "graph-rag",
+  "name": "图谱增强检索",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [
+   "oneLine:社区摘要"
+  ],
+  "has_eg": true,
+  "longest": 39,
+  "score": 3
+ },
+ {
+  "id": "prompt-caching",
+  "name": "提示缓存",
+  "dot": "L1.P2",
+  "jargon": [
+   "系统提示"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 3
+ },
+ {
+  "id": "citation-grounding",
+  "name": "引用锚定",
+  "dot": "L1.P7",
+  "jargon": [],
+  "circular": [
+   "newIn:可溯源"
+  ],
+  "has_eg": true,
+  "longest": 43,
+  "score": 3
+ },
+ {
+  "id": "memory-vs-rag",
+  "name": "记忆与 RAG 的边界",
+  "dot": "L2.P2",
+  "jargon": [
+   "RAG"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 51,
+  "score": 3
+ },
+ {
+  "id": "mcp-primitives",
+  "name": "MCP 三原语",
+  "dot": "L3.P4",
+  "jargon": [
+   "MCP"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 47,
+  "score": 3
+ },
+ {
+  "id": "replanning",
+  "name": "重规划",
+  "dot": "L4.P6",
+  "jargon": [],
+  "circular": [
+   "newIn:重规划"
+  ],
+  "has_eg": true,
+  "longest": 34,
+  "score": 3
+ },
+ {
+  "id": "reflexion",
+  "name": "反思",
+  "dot": "L4.P6",
+  "jargon": [],
+  "circular": [
+   "newIn:反思"
+  ],
+  "has_eg": true,
+  "longest": 38,
+  "score": 3
+ },
+ {
+  "id": "circuit-breaker",
+  "name": "熔断",
+  "dot": "L4.P5",
+  "jargon": [],
+  "circular": [
+   "newIn:熔断"
+  ],
+  "has_eg": true,
+  "longest": 33,
+  "score": 3
+ },
+ {
+  "id": "durable-execution",
+  "name": "持久化执行",
+  "dot": "L4.P7",
+  "jargon": [],
+  "circular": [
+   "newIn:工作流引擎"
+  ],
+  "has_eg": true,
+  "longest": 31,
+  "score": 3
+ },
+ {
+  "id": "handoff",
+  "name": "交接",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [
+   "newIn:交接"
+  ],
+  "has_eg": true,
+  "longest": 43,
+  "score": 3
+ },
+ {
+  "id": "microservice",
+  "name": "微服务架构",
+  "dot": "L5.P3",
+  "jargon": [
+   "部署"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 53,
+  "score": 3
+ },
+ {
+  "id": "evaluation",
+  "name": "Agent 评测",
+  "dot": "L6",
+  "jargon": [
+   "监控"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 50,
+  "score": 3
+ },
+ {
+  "id": "judge-calibration",
+  "name": "裁判校准",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "oneLine:一致率"
+  ],
+  "has_eg": true,
+  "longest": 24,
+  "score": 3
+ },
+ {
+  "id": "deterministic-eval",
+  "name": "确定性评测",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "newIn:确定性评测"
+  ],
+  "has_eg": true,
+  "longest": 44,
+  "score": 3
+ },
+ {
+  "id": "evaluation-tiers",
+  "name": "评测三层级",
+  "dot": "L6",
+  "jargon": [
+   "黄金集"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 47,
+  "score": 3
+ },
+ {
+  "id": "statistical-significance",
+  "name": "统计显著性",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "oneLine:置信区间"
+  ],
+  "has_eg": true,
+  "longest": 33,
+  "score": 3
+ },
+ {
+  "id": "cost-attribution",
+  "name": "成本归因",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "newIn:单次成本"
+  ],
+  "has_eg": true,
+  "longest": 39,
+  "score": 3
+ },
+ {
+  "id": "latency-budget",
+  "name": "时延预算",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "oneLine:时延预算"
+  ],
+  "has_eg": true,
+  "longest": 40,
+  "score": 3
+ },
+ {
+  "id": "deployment",
+  "name": "部署",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "newIn:上线"
+  ],
+  "has_eg": true,
+  "longest": 43,
+  "score": 3
+ },
+ {
+  "id": "monitoring",
+  "name": "监控告警",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [
+   "newIn:on-call"
+  ],
+  "has_eg": true,
+  "longest": 43,
+  "score": 3
+ },
+ {
+  "id": "tenant-isolation",
+  "name": "多租户隔离",
+  "dot": "L6",
+  "jargon": [
+   "向量库"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 50,
+  "score": 3
+ },
+ {
+  "id": "model-routing",
+  "name": "模型路由",
+  "dot": "L0.P2",
+  "jargon": [
+   "兜底"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 28,
+  "score": 2
+ },
+ {
+  "id": "small-model",
+  "name": "小模型 / 端侧模型",
+  "dot": "L0.P2",
+  "jargon": [
+   "部署"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 31,
+  "score": 2
+ },
+ {
+  "id": "structured-output",
+  "name": "结构化输出",
+  "dot": "L1.P7",
+  "jargon": [
+   "兜底"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 42,
+  "score": 2
+ },
+ {
+  "id": "context-compression",
+  "name": "上下文压缩",
+  "dot": "L1.P2",
+  "jargon": [
+   "工具调用"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 2
+ },
+ {
+  "id": "lost-in-the-middle",
+  "name": "中间遗忘",
+  "dot": "L1.P2",
+  "jargon": [
+   "长上下文"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 2
+ },
+ {
+  "id": "needle-test",
+  "name": "大海捞针测试",
+  "dot": "L1.P2",
+  "jargon": [
+   "长上下文"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 2
+ },
+ {
+  "id": "prompt-optimization",
+  "name": "提示词自动优化",
+  "dot": "L1.P2",
+  "jargon": [
+   "prompt"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 2
+ },
+ {
+  "id": "memory-write-policy",
+  "name": "记忆写入策略",
+  "dot": "L2.P6",
+  "jargon": [
+   "长期记忆"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 2
+ },
+ {
+  "id": "memory-conflict",
+  "name": "记忆冲突",
+  "dot": "L2.P6",
+  "jargon": [
+   "向量库"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 2
+ },
+ {
+  "id": "checkpoint",
+  "name": "检查点",
+  "dot": "L2.P7",
+  "jargon": [
+   "工具调用"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 44,
+  "score": 2
+ },
+ {
+  "id": "tool-search",
+  "name": "工具检索",
+  "dot": "L3.P3",
+  "jargon": [
+   "MCP"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 38,
+  "score": 2
+ },
+ {
+  "id": "browser-use",
+  "name": "浏览器自动化",
+  "dot": "L3.P4",
+  "jargon": [
+   "计算机操作"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 2
+ },
+ {
+  "id": "idempotency",
+  "name": "幂等性",
+  "dot": "L3.P4",
+  "jargon": [
+   "检查点"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 2
+ },
+ {
+  "id": "tool-poisoning",
+  "name": "工具投毒",
+  "dot": "L3.P4",
+  "jargon": [
+   "MCP"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 2
+ },
+ {
+  "id": "openapi-to-tool",
+  "name": "OpenAPI 转工具",
+  "dot": "L3.P4",
+  "jargon": [
+   "工具定义"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 2
+ },
+ {
+  "id": "plan-and-execute",
+  "name": "先规划后执行",
+  "dot": "L4.P3",
+  "jargon": [
+   "重规划"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 42,
+  "score": 2
+ },
+ {
+  "id": "lats",
+  "name": "语言智能体树搜索",
+  "dot": "L4.P3",
+  "jargon": [
+   "思维树"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 2
+ },
+ {
+  "id": "short-circuit",
+  "name": "短路与快速通道",
+  "dot": "L4.P3",
+  "jargon": [
+   "Agent 循环"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 30,
+  "score": 2
+ },
+ {
+  "id": "multi-agent",
+  "name": "多智能体系统",
+  "dot": "L5.P3",
+  "jargon": [
+   "交接"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 2
+ },
+ {
+  "id": "swarm",
+  "name": "对等协作",
+  "dot": "L5.P3",
+  "jargon": [
+   "中心调度"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 2
+ },
+ {
+  "id": "tracing",
+  "name": "链路追踪",
+  "dot": "L6",
+  "jargon": [
+   "工具调用"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 2
+ },
+ {
+  "id": "benchmark",
+  "name": "公开基准",
+  "dot": "L6",
+  "jargon": [
+   "评测集"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 24,
+  "score": 2
+ },
+ {
+  "id": "pii-redaction",
+  "name": "敏感信息脱敏",
+  "dot": "L6",
+  "jargon": [
+   "长期记忆"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 2
+ },
+ {
+  "id": "deployment-strategy",
+  "name": "发布策略",
+  "dot": "L6",
+  "jargon": [
+   "上线"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 32,
+  "score": 2
+ },
+ {
+  "id": "ci-cd",
+  "name": "CI/CD",
+  "dot": "L6",
+  "jargon": [
+   "部署"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 33,
+  "score": 2
+ },
+ {
+  "id": "cost-budgeting",
+  "name": "成本预算",
+  "dot": "L6",
+  "jargon": [
+   "熔断"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 2
+ },
+ {
+  "id": "agent-skills",
+  "name": "Agent 技能",
+  "dot": "L1.P2",
+  "jargon": [
+   "系统提示"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 32,
+  "score": 2
+ },
+ {
+  "id": "subagent-isolation",
+  "name": "上下文隔离",
+  "dot": "L5.P2",
+  "jargon": [
+   "主循环"
+  ],
+  "circular": [],
+  "has_eg": true,
+  "longest": 42,
+  "score": 2
+ },
+ {
+  "id": "foundation-model",
+  "name": "基础大模型",
+  "dot": "L0.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 49,
+  "score": 1
+ },
+ {
+  "id": "long-context",
+  "name": "长上下文",
+  "dot": "L0.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 49,
+  "score": 1
+ },
+ {
+  "id": "context-engineering",
+  "name": "上下文工程",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 1
+ },
+ {
+  "id": "prompt-versioning",
+  "name": "提示词版本管理",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 55,
+  "score": 1
+ },
+ {
+  "id": "knowledge-graph",
+  "name": "知识图谱",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 55,
+  "score": 1
+ },
+ {
+  "id": "tool-definition",
+  "name": "工具定义",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 52,
+  "score": 1
+ },
+ {
+  "id": "mcp",
+  "name": "模型上下文协议",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 1
+ },
+ {
+  "id": "tool-selection",
+  "name": "工具选择",
+  "dot": "L3.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 57,
+  "score": 1
+ },
+ {
+  "id": "sandbox",
+  "name": "沙箱",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 1
+ },
+ {
+  "id": "permission-scope",
+  "name": "权限范围",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 47,
+  "score": 1
+ },
+ {
+  "id": "self-consistency",
+  "name": "自洽投票",
+  "dot": "L4.P6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 47,
+  "score": 1
+ },
+ {
+  "id": "tree-of-thought",
+  "name": "思维树",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 57,
+  "score": 1
+ },
+ {
+  "id": "interrupt-resume",
+  "name": "中断与恢复",
+  "dot": "L4.P7",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 49,
+  "score": 1
+ },
+ {
+  "id": "delegation-brief",
+  "name": "任务简报",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 50,
+  "score": 1
+ },
+ {
+  "id": "context-transfer",
+  "name": "上下文传递",
+  "dot": "L5.P5",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 67,
+  "score": 1
+ },
+ {
+  "id": "error-cascade",
+  "name": "错误级联",
+  "dot": "L5.P5",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 56,
+  "score": 1
+ },
+ {
+  "id": "llm-as-judge",
+  "name": "LLM 评审",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 48,
+  "score": 1
+ },
+ {
+  "id": "failure-taxonomy",
+  "name": "失败分类法",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 47,
+  "score": 1
+ },
+ {
+  "id": "canary-release",
+  "name": "金丝雀发布",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 46,
+  "score": 1
+ },
+ {
+  "id": "aaa-eval",
+  "name": "A/B 实验",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 53,
+  "score": 1
+ },
+ {
+  "id": "transcript-forensics",
+  "name": "轨迹复盘",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 49,
+  "score": 1
+ },
+ {
+  "id": "context-rot",
+  "name": "上下文腐化",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 54,
+  "score": 1
+ },
+ {
+  "id": "reasoning-model",
+  "name": "推理模型",
+  "dot": "L0.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 0
+ },
+ {
+  "id": "test-time-compute",
+  "name": "测试时计算扩展",
+  "dot": "L0.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 29,
+  "score": 0
+ },
+ {
+  "id": "native-tool-calling",
+  "name": "原生工具调用",
+  "dot": "L0.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 0
+ },
+ {
+  "id": "multimodal-input",
+  "name": "多模态输入",
+  "dot": "L0.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 34,
+  "score": 0
+ },
+ {
+  "id": "prompt-template",
+  "name": "提示词模板",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 33,
+  "score": 0
+ },
+ {
+  "id": "few-shot",
+  "name": "少样本示例",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 33,
+  "score": 0
+ },
+ {
+  "id": "rag",
+  "name": "检索增强生成",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "chunking",
+  "name": "分块",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 45,
+  "score": 0
+ },
+ {
+  "id": "embedding",
+  "name": "向量嵌入",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 29,
+  "score": 0
+ },
+ {
+  "id": "hybrid-retrieval",
+  "name": "混合检索",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 0
+ },
+ {
+  "id": "query-rewrite",
+  "name": "查询改写",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "agentic-rag",
+  "name": "代理式检索",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "instruction-hierarchy",
+  "name": "指令层级",
+  "dot": "L1.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 38,
+  "score": 0
+ },
+ {
+  "id": "prompt-injection",
+  "name": "提示注入",
+  "dot": "L1.P1",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "working-memory",
+  "name": "工作记忆",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 0
+ },
+ {
+  "id": "long-term-memory",
+  "name": "长期记忆",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 28,
+  "score": 0
+ },
+ {
+  "id": "episodic-memory",
+  "name": "情景记忆",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 38,
+  "score": 0
+ },
+ {
+  "id": "semantic-memory",
+  "name": "语义记忆",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "procedural-memory",
+  "name": "程序记忆",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 38,
+  "score": 0
+ },
+ {
+  "id": "memory-consolidation",
+  "name": "记忆巩固",
+  "dot": "L2.P6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 0
+ },
+ {
+  "id": "forgetting",
+  "name": "遗忘机制",
+  "dot": "L2.P6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "user-profile",
+  "name": "用户画像",
+  "dot": "L2.P2",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "tool-result-design",
+  "name": "工具返回设计",
+  "dot": "L3.P5",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 26,
+  "score": 0
+ },
+ {
+  "id": "tool-error-handling",
+  "name": "工具错误处理",
+  "dot": "L3.P5",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "code-interpreter",
+  "name": "代码解释器",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 45,
+  "score": 0
+ },
+ {
+  "id": "computer-use",
+  "name": "计算机操作",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 0
+ },
+ {
+  "id": "a2a",
+  "name": "A2A 协议",
+  "dot": "L3.P4",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 0
+ },
+ {
+  "id": "agent-loop",
+  "name": "Agent 循环",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 26,
+  "score": 0
+ },
+ {
+  "id": "chain-of-thought",
+  "name": "思维链",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 0
+ },
+ {
+  "id": "task-decomposition",
+  "name": "任务分解",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 41,
+  "score": 0
+ },
+ {
+  "id": "budget-control",
+  "name": "预算控制",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 31,
+  "score": 0
+ },
+ {
+  "id": "retry-backoff",
+  "name": "重试与退避",
+  "dot": "L4.P5",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 44,
+  "score": 0
+ },
+ {
+  "id": "escalation",
+  "name": "升级与转人工",
+  "dot": "L4.P7",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 33,
+  "score": 0
+ },
+ {
+  "id": "human-in-the-loop",
+  "name": "人在回路",
+  "dot": "L4.P7",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 39,
+  "score": 0
+ },
+ {
+  "id": "todo-list",
+  "name": "计划清单",
+  "dot": "L4.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 38,
+  "score": 0
+ },
+ {
+  "id": "classification",
+  "name": "意图分类",
+  "dot": "L4.P1",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 32,
+  "score": 0
+ },
+ {
+  "id": "evaluator-optimizer",
+  "name": "评估-优化循环",
+  "dot": "L4.P6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 34,
+  "score": 0
+ },
+ {
+  "id": "temporal-state",
+  "name": "时态状态管理",
+  "dot": "L4.P7",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "supervisor",
+  "name": "主管模式",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 35,
+  "score": 0
+ },
+ {
+  "id": "shared-state",
+  "name": "共享状态",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "subagent",
+  "name": "子智能体",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 0
+ },
+ {
+  "id": "routing-accuracy",
+  "name": "路由准确率",
+  "dot": "L5.P1",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 34,
+  "score": 0
+ },
+ {
+  "id": "role-design",
+  "name": "角色设计",
+  "dot": "L5.P3",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 34,
+  "score": 0
+ },
+ {
+  "id": "multi-agent-eval",
+  "name": "多智能体评测",
+  "dot": "L5.P7",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 37,
+  "score": 0
+ },
+ {
+  "id": "golden-set",
+  "name": "黄金集",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 45,
+  "score": 0
+ },
+ {
+  "id": "drift-detection",
+  "name": "漂移检测",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 34,
+  "score": 0
+ },
+ {
+  "id": "online-eval",
+  "name": "线上采样评测",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 42,
+  "score": 0
+ },
+ {
+  "id": "guardrails",
+  "name": "护栏",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "audit-log",
+  "name": "审计日志",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 41,
+  "score": 0
+ },
+ {
+  "id": "data-exfiltration",
+  "name": "数据外泄",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 0
+ },
+ {
+  "id": "observability",
+  "name": "可观测性",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 43,
+  "score": 0
+ },
+ {
+  "id": "compaction",
+  "name": "上下文压缩重写",
+  "dot": "L1.P6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 40,
+  "score": 0
+ },
+ {
+  "id": "harness",
+  "name": "Agent 外壳",
+  "dot": "L6",
+  "jargon": [],
+  "circular": [],
+  "has_eg": true,
+  "longest": 36,
+  "score": 0
+ }
+]
