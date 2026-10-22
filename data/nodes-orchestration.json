@@ -19,10 +19,6 @@
     "newIn": "本质是把分布式系统的老问题（协调、一致性、故障传播）搬进 LLM 场景。多数「新框架」只是在重新发明 actor 模型。",
     "from": [
       [
-        "task-decomposition",
-        "演进"
-      ],
-      [
         "microservice",
         "并行"
       ]
