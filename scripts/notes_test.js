@@ -7,6 +7,7 @@ const html = fs.readFileSync(process.argv[2] || path.join(__dirname, "..", "Agen
 const ALL = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 const DATA = JSON.parse(ALL[1].replace(/^const DATA = /, "").replace(/;\s*$/, ""));
 
+const REAL_TIMEOUT = setTimeout;
 const ctx = { get: () => () => {}, set: () => true };
 class El {
   constructor(tag, id) {
@@ -35,7 +36,9 @@ class El {
   getBoundingClientRect() { return { width: 1400, height: 780, left: 0, top: 0 }; }
   getContext() { return ctx; }
   setAttribute(name, value) { this[name] = String(value); }
-  focus() {}
+  focus() { if (!this.disabled) global.document.activeElement = this; }
+  select() { this.selected = true; this.selectionStart = 0; this.selectionEnd = this.value.length; }
+  setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
   click() { if (this._onclick) this._onclick({ target: this, preventDefault() {} }); }
   set onclick(f) { this._onclick = f; this._listeners.click = [f]; }
   get onclick() { return this._onclick; }
@@ -85,6 +88,7 @@ const boot = () => new Function("DATA", "window", ALL[ALL.length - 1] + "\n;retu
 const fails = [];
 const ok = (n, c, e) => { if (!c) fails.push(n + (e ? " <" + e + ">" : "")); };
 
+async function runTests(){
 // ---------- 1. 打开概念，写笔记 ----------
 let APP = boot();
 APP.openNode("mcp");
@@ -192,6 +196,113 @@ els.dwNoteToggle.onclick();
 APP.closeDrawer && APP.closeDrawer();
 ok("关闭抽屉时笔记栏一并关闭", !els.notepanel.classList.contains("on"));
 
+// ---------- 3c. 一键复制：当前节点 + 原样笔记，兼容与失败反馈 ----------
+ok("静态按钮和只读手动复制区存在", html.includes('id="npCopy"') && html.includes('id="npContext" readonly'));
+APP.openNode("mcp");
+APP.setNoteOpen(true);
+const question = "  为什么 Host 需要多个 client？\n\nJava 中如何隔离工具权限？ <原样保留>\n  ";
+els.dnote.value = question;
+els.dnote.oninput();
+const node = APP.NODES.find(n => n.id === "mcp");
+let clipboardText = "", apiCalls = 0;
+global.navigator.clipboard = { writeText: async text => { apiCalls++; clipboardText = text; } };
+const memoBeforeCopy = JSON.stringify(APP.MEMO), statusBeforeCopy = JSON.stringify(APP.STATUS);
+const storageBeforeCopy = JSON.stringify(global.localStorage._d), nodesBeforeCopy = JSON.stringify(APP.NODES);
+const bodyBeforeCopy = els.dwbody.innerHTML;
+els.drawer.scrollTop = 123;
+els.dnote.scrollTop = 37;
+await els.npCopy.onclick();
+ok("复制正确概念及坐标", clipboardText.includes("概念名称：" + node.name) && clipboardText.includes("节点 ID：mcp") && clipboardText.includes(node.dot));
+for (const key of ["en", "oneLine", "problem", "newIn", "example", "trap"]){
+  if (node[key]) ok("复制节点已有字段 " + key, clipboardText.includes(node[key]));
+}
+ok("复制完整笔记含首尾空白与换行", clipboardText.includes("### 我的疑问与笔记\n" + question + "\n\n### 请按以下方式回答"));
+ok("复制含六条回答要求及来源核验提示", clipboardText.includes("6. 最后判断") && clipboardText.includes("一手来源") && clipboardText.includes("不要直接修改我的知识库"));
+ok("原生 API 成功显示成功提示", apiCalls === 1 && els.npCopyStatus.textContent.includes("已复制") && els.npManual.hidden && !els.npCopy.disabled);
+ok("复制不改变笔记掌握度或本地存储", JSON.stringify(APP.MEMO) === memoBeforeCopy && JSON.stringify(APP.STATUS) === statusBeforeCopy && JSON.stringify(global.localStorage._d) === storageBeforeCopy && els.dnote.value === question);
+ok("复制不改节点正文或阅读位置", JSON.stringify(APP.NODES) === nodesBeforeCopy && els.dwbody.innerHTML === bodyBeforeCopy && els.drawer.scrollTop === 123 && els.dnote.scrollTop === 37);
+
+const sparse = APP.buildQuestionContext({id:"sparse", name:"稀疏节点", oneLine:"", problem:"  ", example:null}, "疑问");
+ok("缺失或空字段不生成占位内容", !sparse.includes("核心解释：") && !sparse.includes("它解决什么问题：") && !sparse.includes("具体例子：") && !sparse.includes("undefined") && !sparse.includes("null"));
+const stack = APP.NODES.find(n => n.dot === "L6");
+const stackContext = APP.buildQuestionContext(stack, "系统层疑问");
+ok("L6 坐标不虚构运行环", stackContext.includes("所属坐标：L6") && !stackContext.includes("undefined"));
+
+APP.openNode("rag");
+ok("切概念清除旧复制反馈和兜底文本", els.npCopyStatus.textContent === "" && els.npManual.hidden && els.npContext.value === "");
+const ragQuestion = "只问 RAG 的检索与生成边界？";
+els.dnote.value = ragQuestion; els.dnote.oninput();
+await els.npCopy.onclick();
+ok("新概念复制不串数据", clipboardText.includes("节点 ID：rag") && clipboardText.includes(ragQuestion) && !clipboardText.includes("节点 ID：mcp") && !clipboardText.includes(question));
+for (const blank of ["", "  \n\t  "]){
+  els.dnote.value = blank; els.dnote.oninput();
+  const count = apiCalls;
+  await els.npCopy.onclick();
+  ok("空白笔记提示且不调用剪贴板 " + JSON.stringify(blank), apiCalls === count && els.npCopyStatus.textContent.includes("先在笔记中记录疑问") && els.npManual.hidden);
+}
+
+APP.openNode("mcp");
+// 没有 input 事件也必须读编辑器最新值；复制本身不触发额外保存。
+els.dnote.value = question + "最新编辑";
+let legacyText = "", legacyCalls = 0;
+global.navigator.clipboard = null;
+global.document.execCommand = command => { legacyCalls++; legacyText = els.npContext.value; return command === "copy"; };
+els.dnote.focus(); els.dnote.setSelectionRange(2, 5);
+await els.npCopy.onclick();
+ok("本地文件可走兼容复制", legacyCalls === 1 && legacyText.includes(question + "最新编辑") && els.npCopyStatus.textContent.includes("已复制") && els.npManual.hidden);
+ok("兼容复制恢复原编辑器光标且不改笔记", global.document.activeElement === els.dnote && els.dnote.selectionStart === 2 && els.dnote.selectionEnd === 5 && els.dnote.value === question + "最新编辑" && APP.MEMO.notes.mcp === question);
+
+global.navigator.clipboard = { writeText: async () => { throw new Error("permission denied"); } };
+await els.npCopy.onclick();
+ok("原生 API 拒绝后兼容复制仍可成功", legacyCalls === 2 && els.npCopyStatus.textContent.includes("已复制"));
+// 键盘从按钮触发：按钮 disabled 时聚焦无效，必须在解锁后恢复。
+els.npCopy.focus();
+await els.npCopy.onclick();
+ok("兼容复制成功后焦点回到复制按钮", global.document.activeElement === els.npCopy && !els.npCopy.disabled);
+global.document.execCommand = () => false;
+await els.npCopy.onclick();
+ok("复制全失败明确提示手动复制而不报成功", !els.npManual.hidden && els.npContext.selected && els.npContext.value.includes(question + "最新编辑") && els.npCopyStatus.textContent.includes("手动复制") && !els.npCopyStatus.textContent.includes("已复制") && !els.npCopy.disabled);
+global.navigator.clipboard = null;
+delete global.document.execCommand;
+await els.npCopy.onclick();
+ok("无任何剪贴板 API 时可手动复制", !els.npManual.hidden && els.npContext.value.includes("节点 ID：mcp"));
+APP.openNode("rag");
+ok("切换后不残留上个概念手动复制文本", els.npManual.hidden && els.npContext.value === "");
+
+// writeText 无法取消：写入未完成前不得再发起写入，否则旧写入会晚到并覆盖新剪贴板。
+els.dnote.value = ragQuestion; els.dnote.oninput();
+const writes = [];
+let finishWrite;
+global.navigator.clipboard = { writeText: (text) => {
+  writes.push(text);
+  // 第二次写入不应发生；若发生则立即拒绝，让串行断言失败而不是挂起。
+  return writes.length === 1 ? new Promise(r => { finishWrite = r; }) : Promise.reject(new Error("并发写入"));
+} };
+const firstWrite = els.npCopy.onclick();
+ok("写入进行中按钮禁用", els.npCopy.disabled && writes.length === 1);
+APP.openNode("mcp");
+ok("切概念后写入未完成仍禁用并提示稍候", els.npCopy.disabled && els.npCopyStatus.textContent.includes("稍候"));
+els.dnote.value = question; els.dnote.oninput();
+await els.npCopy.onclick();
+ok("写入未完成时拒绝发起第二次复制", writes.length === 1);
+finishWrite();
+await firstWrite;
+ok("旧写入完成后不冒充新概念已复制", els.npCopyStatus.textContent === "" && !els.npCopy.disabled && els.npManual.hidden && els.npContext.value === "");
+global.navigator.clipboard = { writeText: async (text) => { writes.push(text); } };
+await els.npCopy.onclick();
+ok("解锁后可复制当前新概念", writes.length === 2 && writes[1].includes("节点 ID：mcp") && writes[1].includes(question) && els.npCopyStatus.textContent.includes("已复制"));
+APP.closeDrawer();
+await els.npCopy.onclick();
+ok("未选概念有明确提示", els.npCopyStatus.textContent.includes("先选择"));
+
+// 恢复原回归测试的样本，随后继续验证刷新和导入导出。
+APP.openNode("rag"); els.dnote.value = ""; els.dnote.oninput();
+APP.openNode("mcp"); els.dnote.value = NOTE_TEXT; els.dnote.oninput();
+APP = boot(); APP.openNode("mcp");
+ok("复制之后仍可刷新恢复笔记", els.dnote.value === NOTE_TEXT && els.npCopyStatus.textContent === "");
+APP.closeDrawer();
+global.navigator.clipboard = null;
+
 // ---------- 4. 搜索无结果 → 待整理清单 ----------
 els.q.oninput({ target: { value: "量子编排协议" } });
 ok("无结果时显示提示条", els.nores.classList.contains("on"));
@@ -256,3 +367,14 @@ if (fails.length) {
 }
 console.log("v1.1 notes/collection checks passed");
 console.log("  keys:", Object.keys(payload).join(", "));
+}
+// 用真实计时器兜底：未完成的 await 会让 node 静默退出 0，这里改成显式失败。
+const watchdog = REAL_TIMEOUT(() => {
+  console.error("FAILURES:\n - 测试超时：存在未完成的异步复制");
+  process.exit(1);
+}, 5000);
+runTests().then(() => { clearTimeout(watchdog); }, e => {
+  clearTimeout(watchdog);
+  console.error(e);
+  process.exit(1);
+});

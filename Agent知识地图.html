@@ -432,12 +432,20 @@ footer b{color:var(--ink2)}
 .np-tools{display:flex;align-items:center;gap:10px}
 .np-close{color:var(--ink3);font-size:19px;line-height:1;cursor:pointer;background:none;border:none;padding:0 2px}
 .np-close:hover{color:var(--ink)}
-.np-body{padding:12px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:0}
+.np-body{padding:12px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;overflow-y:auto}
 .notepanel .nb{width:100%;flex:1;min-height:140px;resize:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:12.5px;line-height:1.65;color:var(--ink);background:var(--paper2)}
 .notepanel .nb:focus{outline:none;border-color:var(--ringLine);box-shadow:0 0 0 3px var(--ring)}
 .flagbtn{font-size:11px;padding:3px 9px;border:1px solid var(--line);border-radius:99px;color:var(--ink3);background:var(--paper3);cursor:pointer;white-space:nowrap}
 .flagbtn.on{background:var(--warnBg);border-color:var(--warnFg);color:var(--warnFg);font-weight:600}
 .notehint{font-size:11px;color:var(--ink3);min-height:14px}
+.np-copy{flex:0 0 auto;min-height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper3);color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.np-copy:hover{border-color:var(--ringLine)}
+.np-copy:focus-visible,.np-context:focus-visible{outline:2px solid var(--ringLine);outline-offset:2px}
+.np-copy:disabled{opacity:.6;cursor:wait}
+.np-copy-status{font-size:11px;line-height:1.5;color:var(--ink2);min-height:17px;flex:0 0 auto}
+.np-manual{flex:0 0 auto;font-size:11px;line-height:1.5;color:var(--ink2)}
+.np-manual[hidden]{display:none}
+.np-context{display:block;width:100%;height:110px;margin-top:5px;padding:7px;border:1px solid var(--line);border-radius:7px;background:var(--paper2);color:var(--ink);font:inherit;resize:none}
 @media (max-width:880px){
   .drawer.note-open{right:0}
   .notepanel{width:100%}
@@ -682,6 +690,12 @@ pre.dcode .cl{color:var(--ink3)}
   <div class="np-body">
     <textarea class="nb" id="dnote" placeholder="边读边记：它是什么、什么时候用、哪里还不懂…"></textarea>
     <div class="notehint" id="dnhint">不会同步，也不会改动知识库文件</div>
+    <button class="np-copy" id="npCopy" type="button">复制问题上下文</button>
+    <div class="np-copy-status" id="npCopyStatus" role="status" aria-live="polite"></div>
+    <div class="np-manual" id="npManual" hidden>
+      <label for="npContext">手动复制文本（可全选后按 Ctrl+C / ⌘C）</label>
+      <textarea class="np-context" id="npContext" readonly aria-label="待手动复制的问题上下文"></textarea>
+    </div>
   </div>
 </aside>
 
@@ -1308,6 +1322,110 @@ pre.dcode .cl{color:var(--ink3)}
   const dnhint = document.getElementById("dnhint");
   let noteOpen = false;
 
+  // 复制仅生成当前节点的纯文本，不写笔记、不改节点或导入导出结构。
+  const npCopy = document.getElementById("npCopy");
+  const npCopyStatus = document.getElementById("npCopyStatus");
+  const npManual = document.getElementById("npManual");
+  const npContext = document.getElementById("npContext");
+  let questionCopySeq = 0, questionCopyBusy = false;
+  function resetQuestionCopy(){
+    questionCopySeq++;
+    // writeText 无法取消；切概念时仍串行写入，避免旧写入晚于新写入覆盖剪贴板。
+    npCopy.disabled = questionCopyBusy;
+    npCopyStatus.textContent = questionCopyBusy ? "上一次复制正在结束，请稍候…" : "";
+    npManual.hidden = true;
+    npContext.value = "";
+  }
+  function buildQuestionContext(n, note){
+    const fields = [];
+    const add = (label, value) => {
+      if (typeof value === "string" && value.trim()) fields.push("- " + label + "：" + value);
+    };
+    add("概念名称", n.name);
+    add("节点 ID", n.id);
+    add("英文名", n.en);
+    if (Array.isArray(n.alias)) add("别名", n.alias.filter(x => typeof x === "string" && x.trim()).join(" / "));
+    if (typeof n.dot === "string" && n.dot.trim()){
+      const [lc, pc] = n.dot.split(".");
+      const names = [L[lc] && L[lc].name, P[pc] && P[pc].name, n.cluster].filter(Boolean);
+      add("所属坐标", n.dot + (names.length ? " · " + names.join(" / ") : ""));
+    }
+    if (Array.isArray(n.facets)) add("工程面", n.facets.map(f => f + (F[f] ? " · " + F[f].name : "")).join(" / "));
+    [["核心解释", "oneLine"], ["它解决什么问题", "problem"], ["它新在哪", "newIn"],
+      ["具体例子", "example"], ["常见误区", "trap"]].forEach(([label, key]) => add(label, n[key]));
+    return [
+      "### 角色与任务\n请作为我的 Agent 技术学习助手，帮助我理解当前知识点，并处理我的疑问。",
+      "### 当前知识点\n" + fields.join("\n"),
+      "### 我的疑问与笔记\n" + note,
+      "### 请按以下方式回答\n"
+        + "1. 识别我真正想问的问题；如果笔记包含多个问题，请分别处理。\n"
+        + "2. 解释相关概念及其内部机制，优先使用清晰的因果链，而不是只给结论。\n"
+        + "3. 结合 Agent 开发场景举例；必要时关联 Java、Spring Boot、RAG、工具调用或 Agent Runtime。\n"
+        + "4. 区分已核验的事实、合理解释和仍待验证的推测。涉及协议、论文、框架行为时，尽量提供可核验的一手来源；没有核验时明确说明。\n"
+        + "5. 给出适合保存到个人笔记的精简结论。\n"
+        + "6. 最后判断是否值得补充正式知识节点。如果值得，指出建议修改的现有字段，并给出最小补充草稿；不要直接修改我的知识库。\n\n"
+        + "请帮助我真正理解问题，而不是单纯生成大量文字。"
+    ].join("\n\n");
+  }
+  async function copyQuestionContext(){
+    if (questionCopyBusy) return;
+    resetQuestionCopy();
+    const id = S.sel, n = byId[id];
+    if (!n){ npCopyStatus.textContent = "请先选择一个知识点。"; return; }
+    // renderNotePanel 从 MEMO 回填；这里取编辑器最新原文，连首尾空白也不裁剪。
+    const note = dnote.value;
+    if (!note.trim()){
+      npCopyStatus.textContent = "请先在笔记中记录疑问，再复制问题上下文。";
+      dnote.focus();
+      return;
+    }
+    const text = buildQuestionContext(n, note), seq = questionCopySeq;
+    const current = () => seq === questionCopySeq && S.sel === id && dnote.value === note;
+    const active = document.activeElement;
+    const start = active && active.selectionStart, end = active && active.selectionEnd;
+    const restoreFocus = () => {
+      if (active && active.focus){
+        active.focus({preventScroll:true});
+        if (typeof start === "number" && active.setSelectionRange) active.setSelectionRange(start, end);
+      }
+    };
+    questionCopyBusy = true;
+    npCopy.disabled = true;
+    npCopyStatus.textContent = "正在复制…";
+    let restoreAfterUnlock = false;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
+        try {
+          await navigator.clipboard.writeText(text);
+          if (current()) npCopyStatus.textContent = "已复制，可直接粘贴给 ChatGPT 或 DSH。";
+          return;
+        } catch(e) { /* 本地文件、权限拒绝等情况继续走兼容方案。 */ }
+      }
+      if (!current()) return;
+      npContext.value = text;
+      npManual.hidden = false;
+      npContext.focus({preventScroll:true});
+      npContext.select();
+      let copied = false;
+      try { copied = typeof document.execCommand === "function" && document.execCommand("copy") === true; } catch(e){}
+      if (copied){
+        npManual.hidden = true;
+        npContext.value = "";
+        npCopyStatus.textContent = "已复制，可直接粘贴给 ChatGPT 或 DSH。";
+        // 按钮仍处于 disabled，此时聚焦无效；解锁后再还焦点。
+        restoreAfterUnlock = true;
+      } else {
+        npCopyStatus.textContent = "自动复制不可用或被浏览器拒绝。下方文本已选中，请手动复制（Ctrl+C / ⌘C）。";
+      }
+    } finally {
+      questionCopyBusy = false;
+      npCopy.disabled = false;
+      if (!current()) npCopyStatus.textContent = "";
+      else if (restoreAfterUnlock) restoreFocus();
+    }
+  }
+  npCopy.onclick = copyQuestionContext;
+
   // ---------- 笔记位置偏好：紧贴知识点（默认）/ 屏幕右侧（旧行为）----------
   // 紧贴：讲解区 + 笔记区同高双栏、整体居中；仅在「居中」详情下生效（侧边详情保持原双栏）
   const NOTE_POS_KEY = "agentmap.notePos.v1";
@@ -1336,6 +1454,7 @@ pre.dcode .cl{color:var(--ink3)}
 
   // 笔记栏开合：只切类名，不重建正文、不碰滚动位置
   function setNoteOpen(on){
+    if (!on) resetQuestionCopy();
     noteOpen = on;
     drawer.classList.toggle("note-open", on);
     notepanel.classList.toggle("on", on);
@@ -1354,6 +1473,7 @@ pre.dcode .cl{color:var(--ink3)}
 
   // 唯一的笔记编辑器：只换内容、不换 DOM，自动保存到 notes.v1
   function renderNotePanel(n){
+    resetQuestionCopy();
     dnote.value = MEMO.notes[n.id] || "";
     const flagged = !!MEMO.flags[n.id];
     dflag.classList.toggle("on", flagged);
@@ -1368,6 +1488,7 @@ pre.dcode .cl{color:var(--ink3)}
   }
 
   function commitNote(){
+    resetQuestionCopy();
     const id = S.sel;
     if (!id) return;
     const v = dnote.value;
@@ -2002,7 +2123,7 @@ pre.dcode .cl{color:var(--ink3)}
   applyHash();
   window.addEventListener("hashchange", applyHash);
 
-  window.__agentmap = { NODES, META, STATUS, MEMO, openNode, closeDrawer, showView, applyImport, addPending, downloadProgress, renderProgress, saveMemo, saveStatus, setNoteOpen, commitNote, renderNotePanel, setDetailMode, applyNotePos, updateNoteLayout };
+  window.__agentmap = { NODES, META, STATUS, MEMO, openNode, closeDrawer, showView, applyImport, addPending, downloadProgress, renderProgress, saveMemo, saveStatus, setNoteOpen, commitNote, renderNotePanel, setDetailMode, applyNotePos, updateNoteLayout, buildQuestionContext, copyQuestionContext };
 })();
 </script>
 </body>
