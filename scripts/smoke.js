@@ -194,7 +194,8 @@ try {
     try {
       // call through the exported-ish path: simulate nav click by re-invoking renderDeep
       const navBtns = [...els.deepnav.innerHTML.matchAll(/data-deep="([^"]+)"/g)].map(m => m[1]);
-      check("deep nav has 2 entries", navBtns.length === 2, navBtns.join(","));
+      check("deep nav lists every card", navBtns.length === DATA.deeps.length,
+            navBtns.join(",") + " vs " + DATA.deeps.length);
     } catch (e) { check("deep nav parse", false, String(e)); }
   }
   check("deep marker on chips", (els.matrix.innerHTML.match(/class="cd"/g) || []).length === DATA.deeps.length,

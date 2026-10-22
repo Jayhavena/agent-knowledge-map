@@ -397,6 +397,50 @@ table.dpath td.o{color:var(--tMidFg);width:190px}
 footer{max-width:1600px;margin:0 auto;padding:0 24px 56px;font-size:11.5px;color:var(--ink3);line-height:1.8}
 footer b{color:var(--ink2)}
 
+/* ---- v1.1: 搜索无结果 / 待整理清单 ---- */
+.nores{display:none;max-width:1600px;margin:0 auto;padding:0 24px 10px}
+.nores.on{display:block}
+.nores-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px dashed var(--lineDash);border-radius:9px;padding:9px 12px;background:var(--paper2);font-size:12.5px;color:var(--ink2)}
+.nores-in b{color:var(--ink)}
+.nores-in .btn{padding:4px 10px;font-size:11.5px;border:1px solid var(--line);border-radius:6px;background:var(--paper3)}
+.nores-in .btn:hover{border-color:var(--ink3)}
+.nores-in .ok{color:var(--okFg);font-size:11.5px}
+
+/* ---- v1.1: 概念笔记 ---- */
+.dw-note{margin-top:2px}
+.dw-note .nb{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12.5px;line-height:1.65;color:var(--ink);background:var(--paper2)}
+.dw-note .nb:focus{outline:none;border-color:var(--ringLine);box-shadow:0 0 0 3px var(--ring)}
+.dw-nh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.dw-nh h4{margin:0}
+.flagbtn{font-size:11px;padding:3px 9px;border:1px solid var(--line);border-radius:99px;color:var(--ink3);background:var(--paper3)}
+.flagbtn.on{background:var(--warnBg);border-color:var(--warnFg);color:var(--warnFg);font-weight:600}
+.notehint{font-size:11px;color:var(--ink3);margin-top:6px;min-height:14px}
+
+/* ---- v1.1: 待整理概念清单 ---- */
+.pendlist{list-style:none;margin:0;padding:0}
+.pendlist li{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--line2);font-size:12.5px}
+.pendlist li:last-child{border-bottom:none}
+.pendlist .pw{flex:1;color:var(--ink);word-break:break-word}
+.pendlist .px{font-size:11px;color:var(--ink3);padding:2px 6px;border-radius:5px}
+.pendlist .px:hover{background:var(--hover);color:var(--ink)}
+.pendlist .pl{font-size:11px;color:var(--ink3)}
+.pempty{font-size:12px;color:var(--ink3)}
+
+/* ---- v1.1: 坐标系导读 ---- */
+.helpgrid{display:grid;gap:10px;margin:14px 0 4px}
+.helpgrid .hg{border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:var(--paper2)}
+.helpgrid .hg b{display:block;font-size:12.5px;color:var(--ink);margin-bottom:3px}
+.helpgrid .hg p{margin:0;font-size:12px;color:var(--ink2);line-height:1.72}
+.helpgrid .hg em{font-style:normal;color:var(--warnFg)}
+table.hextb{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:12px}
+table.hextb th{text-align:left;font-size:10px;letter-spacing:.07em;color:var(--ink3);font-weight:600;padding:0 8px 6px 0;border-bottom:1px solid var(--line)}
+table.hextb td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line2);vertical-align:top;line-height:1.6}
+table.hextb td.w{font-weight:600;color:var(--ink);white-space:nowrap;width:64px}
+
+/* ---- v1.1: 深读卡代码块 ---- */
+pre.dcode{margin:13px 0 0;padding:12px 14px;background:var(--paper2);border:1px solid var(--line);border-radius:9px;overflow-x:auto;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--ink);white-space:pre}
+pre.dcode .cl{color:var(--ink3)}
+
 @media (max-width:1180px){
   nav.tabs{order:4;width:100%;margin-left:0;overflow-x:auto}
   .searchbox{order:3;flex:1 1 170px}
@@ -452,6 +496,14 @@ footer b{color:var(--ink2)}
   </div>
 </header>
 
+<div class="nores" id="nores">
+  <div class="nores-in">
+    <span>没找到「<b id="noq"></b>」。它可能是个新概念——</span>
+    <button class="btn" id="pendAdd">记到待整理清单</button>
+    <span class="ok" id="pendOk"></span>
+  </div>
+</div>
+
 <main>
   <section class="view on" id="view-matrix">
     <div class="note"><span>读法：横轴是 <b>一次运行的时间轴</b>（P1→P7），纵轴是 <b>对象层级</b>（L0→L5）。
@@ -493,14 +545,14 @@ footer b{color:var(--ink2)}
   </section>
 
   <section class="view" id="view-progress">
-    <div class="note"><span>掌握度只存在这台浏览器里（<code>localStorage</code>），换设备或清缓存就会丢。
+    <div class="note"><span>掌握度、笔记、待深入标记与待整理清单，都只存在这台浏览器里（<code>localStorage</code>），换设备或清缓存就会丢。
       所以这里提供一个导出——把进度存成文件，随时可以再读回来。</span></div>
     <div class="progwrap">
       <div class="prog-main" id="progmain"></div>
       <aside class="prog-side">
         <div class="pcard">
           <h4>备份与恢复</h4>
-          <p>导出的是一个 JSON，包含每个概念的状态。可以提交进仓库，或放进 Obsidian 附件。</p>
+          <p>导出的是一个 JSON：每个概念的掌握度、笔记、待深入标记，以及待整理清单。旧版文件仍可导入。</p>
           <div class="pbtns">
             <button class="btn primary" id="pExport">导出进度</button>
             <button class="btn" id="pImport">导入</button>
@@ -508,6 +560,16 @@ footer b{color:var(--ink2)}
             <button class="btn" id="pClear">清空</button>
           </div>
           <div class="ptag" id="ptag"></div>
+        </div>
+        <div class="pcard">
+          <h4>我的笔记</h4>
+          <p>详情面板里写的笔记与「待深入」标记。只存在本机浏览器，不会改动知识库文件。</p>
+          <p id="memoInfo" class="pempty"></p>
+        </div>
+        <div class="pcard">
+          <h4>待整理概念 <span class="pl" id="pendCount"></span></h4>
+          <p>搜索不到的词可以先记在这里，想清楚再决定要不要正式加进图谱。</p>
+          <ul class="pendlist" id="pendList"></ul>
         </div>
         <div class="pcard">
           <h4>标记方式</h4>
@@ -535,6 +597,32 @@ footer b{color:var(--ink2)}
     <button class="help-close" id="helpclose">×</button>
     <h2>坐标系是怎么来的</h2>
     <div class="sub">三条正交的轴。任何概念必须同时回答三个问题才能落位。</div>
+    <div class="helpgrid">
+      <div class="hg"><b>P1–P7 是「典型」请求生命周期，不是强制步骤</b>
+        <p>它描述的是一次多步 Agent 请求大体经过的环节，用来回答「这个东西在第几步起作用」。
+        单轮问答、固定流程、纯工具调用都可能跳过其中几步——跳过不代表设计缺陷，只是这次任务不需要。
+        <em>环是定位用的尺子，不是必须走完的流水线。</em></p></div>
+      <div class="hg"><b>L0–L6 是「职责分类」，不是调用链</b>
+        <p>它回答「这个知识/工程问题归谁负责」，帮你把名词归到同一类里比较。
+        一次真实请求并不会先从 L0 走到 L6；模型只在 L0 里被调用，而 L1–L6 是你在设计、包装、运行它时各自要处理的事。
+        <em>层是分类抽屉，不是数据流管道。</em></p></div>
+      <div class="hg"><b>两者是正交的：环看「什么时候」，层看「管什么」</b>
+        <p>同一个环节里，可能同时涉及多个层。例：P4（行动）里，「发出调用」是 L4 的决策，「工具契约」是 L3 的接口，「沙箱」是 L6 的运行环境。</p></div>
+    </div>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--ink2);line-height:1.72">
+      <b>用一次工具调用走一遍：</b>
+    </div>
+    <table class="hextb">
+      <thead><tr><th>环节</th><th>这一次发生了什么</th><th>牵涉的层</th></tr></thead>
+      <tbody>
+        <tr><td class="w">P2 取景</td><td>把系统提示、历史、检索到的 3 篇文档、50 个工具的描述，拼成这次的输入</td><td>L1 上下文；若用了记忆召回，还牵涉 L2</td></tr>
+        <tr><td class="w">P3 规划</td><td>模型看到工具清单，决定「先查订单状态」而不是直接反问</td><td>L4 决策；工具描述本身是 L3 的契约</td></tr>
+        <tr><td class="w">P4 行动</td><td>输出一次 <code>query_order</code> 调用，参数是订单号</td><td>L3 工具层；代码在哪跑由 L6 沙箱决定</td></tr>
+        <tr><td class="w">P5 观察</td><td>拿到返回：<code>{"status":429,"msg":"限流，请等 30 秒"}</code>，判断这是可重试错误</td><td>L3 错误契约；L4 决定退避策略</td></tr>
+        <tr><td class="w">P6 反思</td><td>等 2 秒重试；两次失败后改为查缓存，而不是继续硬重试</td><td>L4 控制；用的是 L2 里记住的「上次也超时」</td></tr>
+        <tr><td class="w">P7 交付</td><td>给出结论并标注数据时间；同时记一条时延、一次调用成本</td><td>L1 输出格式；L6 观测与计量</td></tr>
+      </tbody>
+    </table>
     <div id="helperules"></div>
     <div style="margin-top:16px;padding-top:15px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);line-height:1.72">
       <b>为什么这三轴够用：</b>层决定「它改变系统的哪一部分」，环决定「它什么时候生效」，面决定「你该用什么标准评价它」。
@@ -605,6 +693,23 @@ footer b{color:var(--ink2)}
   try { STATUS = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); } catch(e){}
   const saveStatus = () => { try{ localStorage.setItem(LS_KEY, JSON.stringify(STATUS)); }catch(e){} };
 
+  // v1.1 本地笔记：与掌握度分开存，旧数据零迁移。
+  // { notes: {id: "文本"}, flags: {id: true}, pending: ["关键词"] }
+  const NOTE_KEY = "agentmap.notes.v1";
+  let MEMO = { notes:{}, flags:{}, pending:[] };
+  try {
+    const raw = JSON.parse(localStorage.getItem(NOTE_KEY) || "null");
+    if (raw && typeof raw === "object"){
+      MEMO = {
+        notes:  (raw.notes  && typeof raw.notes  === "object") ? raw.notes  : {},
+        flags:  (raw.flags  && typeof raw.flags  === "object") ? raw.flags  : {},
+        pending: Array.isArray(raw.pending) ? raw.pending.filter(x => typeof x === "string") : []
+      };
+    }
+  } catch(e){}
+  const saveMemo = () => { try{ localStorage.setItem(NOTE_KEY, JSON.stringify(MEMO)); }catch(e){} };
+  const memoCount = () => Object.keys(MEMO.notes).length + Object.keys(MEMO.flags).length;
+
   const S = { q:"", layers:new Set(), tier:"", mat:"", st:"", view:"matrix", sel:null, exp:new Set(), deep:null };
   const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   // Must mirror build.py's safe(): "/" is a path separator in Obsidian wikilinks.
@@ -649,6 +754,28 @@ footer b{color:var(--ink2)}
   };
   document.getElementById("q").oninput = e => { S.q = e.target.value.trim(); refresh(); };
 
+  // v1.1 搜索无结果 → 记到「待整理概念」
+  function renderNoResult(){
+    const box = document.getElementById("nores");
+    if (!box) return;
+    const show = !!S.q && VISIBLE.length === 0;
+    box.classList.toggle("on", show);
+    if (show){
+      const q = document.getElementById("noq");
+      if (q) q.textContent = S.q;
+    }
+  }
+  function addPending(){
+    const w = S.q.trim();
+    if (!w) return;
+    if (MEMO.pending.indexOf(w) === -1) MEMO.pending.push(w);
+    saveMemo();
+    const ok = document.getElementById("pendOk");
+    if (ok){ ok.textContent = "已记录，可在「进度」页查看"; setTimeout(() => { ok.textContent = ""; }, 2600); }
+  }
+  const pendAddBtn = document.getElementById("pendAdd");
+  if (pendAddBtn) pendAddBtn.onclick = addPending;
+
   document.getElementById("tabs").onclick = e => {
     const b = e.target.closest("button[data-view]"); if(!b) return;
     S.view = b.dataset.view;
@@ -676,6 +803,7 @@ footer b{color:var(--ink2)}
     if (S.view==="matrix") renderMatrix();
     else if (S.view==="graph") drawGraph();
     else if (S.view==="outline") renderOutline();
+    if (typeof renderNoResult === "function") renderNoResult();
     // deep view is not filter-driven: re-rendering it on every keystroke would reset scroll.
   }
 
@@ -1033,6 +1161,7 @@ footer b{color:var(--ink2)}
          + '<table class="dpath"><thead><tr><th>阶段</th><th>动作</th><th>产出</th></tr></thead><tbody>'
          + d.path.steps.map(s => '<tr><td class="w">'+esc(s.w)+'</td><td>'+esc(s.do)+'</td><td class="o">'+esc(s.out)+'</td></tr>').join("")
          + '</tbody></table>'
+         + (d.path.code ? '<pre class="dcode">'+esc(d.path.code.text)+'</pre>' : '')
          + (d.path.note ? '<div class="dsec-intro" style="margin:13px 0 0;padding-left:12px;border-left:2px solid var(--line);color:var(--ink2)">'+esc(d.path.note)+'</div>' : '')
          + '</div>';
     }
@@ -1123,6 +1252,15 @@ footer b{color:var(--ink2)}
        + ["未标","知道","会用","精通","待补"].map(s=>'<button data-st="'+s+'"'+(s===cur?' class="on"':'')+'>'+s+'</button>').join("")
        + '</div></div>';
 
+    // v1.1 我的笔记：只存在本机浏览器，不写回 JSON
+    const noteTxt = MEMO.notes[n.id] || "";
+    const flagged = !!MEMO.flags[n.id];
+    b += '<div class="dw-sec dw-note"><div class="dw-nh"><h4>我的笔记</h4>'
+       + '<button class="flagbtn'+(flagged?' on':'')+'" id="dflag">'+(flagged?'★ 待深入':'☆ 待深入')+'</button></div>'
+       + '<textarea class="nb" id="dnote" placeholder="用自己的话记一句：它是什么、什么时候用、哪里还不懂…">'+esc(noteTxt)+'</textarea>'
+       + '<div class="notehint" id="dnhint">'+(noteTxt?'已保存（本机浏览器）':'不会同步，也不会改动知识库文件')+'</div>'
+       + '</div>';
+
     const idx = NODES.findIndex(x=>x.id===n.id);
     b += '<div class="dw-nav"><button id="prevn">← '+esc(NODES[(idx-1+NODES.length)%NODES.length].name)+'</button>'
        + '<button id="nextn">'+esc(NODES[(idx+1)%NODES.length].name)+' →</button></div>';
@@ -1143,6 +1281,26 @@ footer b{color:var(--ink2)}
       bd.querySelectorAll("#stbtns button").forEach(y=>y.classList.toggle("on", y===x));
       refresh();
     });
+
+    // 笔记自动保存：每次输入直接落盘（笔记很短，够用且无需防抖）
+    const noteBox = document.getElementById("dnote");
+    const noteHint = document.getElementById("dnhint");
+    const commitNote = () => {
+      const v = noteBox ? noteBox.value : "";
+      if (v.trim()) MEMO.notes[n.id] = v; else delete MEMO.notes[n.id];
+      saveMemo();
+      if (noteHint) noteHint.textContent = v.trim() ? "已保存（本机浏览器）" : "不会同步，也不会改动知识库文件";
+    };
+    if (noteBox) noteBox.oninput = commitNote;
+    const flagBtn = document.getElementById("dflag");
+    if (flagBtn) flagBtn.onclick = () => {
+      if (MEMO.flags[n.id]) delete MEMO.flags[n.id]; else MEMO.flags[n.id] = true;
+      saveMemo();
+      const on = !!MEMO.flags[n.id];
+      flagBtn.classList.toggle("on", on);
+      flagBtn.textContent = on ? "★ 待深入" : "☆ 待深入";
+      refresh();
+    };
     document.getElementById("prevn").onclick = () => openNode(NODES[(idx-1+NODES.length)%NODES.length].id);
     document.getElementById("nextn").onclick = () => openNode(NODES[(idx+1)%NODES.length].id);
     drawer.classList.add("on"); scrim.classList.add("on"); drawer.scrollTop = 0;
@@ -1274,15 +1432,55 @@ footer b{color:var(--ink2)}
     if (lg && META.legend && META.legend.status){
       lg.innerHTML = META.legend.status.map(x => '<li><b>' + esc(x.key) + '</b> — ' + esc(x.desc) + '</li>').join("");
     }
+
+    renderMemoAside();
+  }
+
+  // v1.1 进度页侧栏：笔记统计 + 待整理清单
+  function renderMemoAside(){
+    const mi = document.getElementById("memoInfo");
+    if (mi){
+      const nc = Object.keys(MEMO.notes).length, fc = Object.keys(MEMO.flags).length;
+      mi.textContent = nc || fc
+        ? ("已写 " + nc + " 条笔记 · " + fc + " 个标记为待深入")
+        : "还没有笔记。打开任一概念，在详情面板底部写。";
+    }
+    const list = document.getElementById("pendList");
+    const cnt = document.getElementById("pendCount");
+    if (cnt) cnt.textContent = MEMO.pending.length ? "（" + MEMO.pending.length + "）" : "";
+    if (!list) return;
+    if (!MEMO.pending.length){
+      list.innerHTML = '<li><span class="pempty">空。搜索一个没找到的词，会出现「记到待整理清单」。</span></li>';
+      return;
+    }
+    list.innerHTML = MEMO.pending.map((w, i) =>
+      '<li><span class="pw">' + esc(w) + '</span>'
+      + '<button class="px" data-pend-loc="' + i + '" title="去落位器试试">落位</button>'
+      + '<button class="px" data-pend-del="' + i + '" title="移除">删</button></li>').join("");
+    list.querySelectorAll("[data-pend-del]").forEach(b => b.onclick = () => {
+      MEMO.pending.splice(Number(b.dataset.pendDel), 1);
+      saveMemo(); renderProgress();
+    });
+    list.querySelectorAll("[data-pend-loc]").forEach(b => b.onclick = () => {
+      const w = MEMO.pending[Number(b.dataset.pendLoc)];
+      LOC = { step:2, name:w, layer:"", loop:"", facets:[], lineage:"", done:false };
+      showView("locator");
+      renderLocator();
+    });
   }
 
   function downloadProgress(){
+    // v2：在原有 status 之外带上笔记 / 待深入 / 待整理。
+    // 旧版本可以读新文件（多出的键被忽略），新版本也能读旧文件（缺的键按空处理）。
     const payload = {
       tool: "agent-knowledge-map",
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       total: NODES.length,
-      status: STATUS
+      status: STATUS,
+      notes: MEMO.notes,
+      flags: MEMO.flags,
+      pending: MEMO.pending
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -1291,7 +1489,10 @@ footer b{color:var(--ink2)}
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-    tag("已导出 " + Object.keys(STATUS).length + " 条记录");
+    tag("已导出 " + Object.keys(STATUS).length + " 条进度 · "
+        + Object.keys(MEMO.notes).length + " 条笔记 · "
+        + Object.keys(MEMO.flags).length + " 个待深入 · "
+        + MEMO.pending.length + " 个待整理");
   }
 
   function tag(msg){
@@ -1301,19 +1502,47 @@ footer b{color:var(--ink2)}
     setTimeout(() => { const x = document.getElementById("ptag"); if (x) x.textContent = ""; }, 2600);
   }
 
+  // 把导入包合并进内存（v2 完整包 / v1 进度包 / 裸 status 对象都能吃）
+  function applyImport(data){
+    const st = data && data.status ? data.status : (data && data.notes === undefined ? data : {});
+    let n = 0, bad = 0;
+    Object.keys(st || {}).forEach(k => {
+      if (byId[k] && ["知道","会用","精通","待补"].indexOf(st[k]) > -1){ STATUS[k] = st[k]; n++; }
+      else bad++;
+    });
+    saveStatus();
+
+    let nn = 0, nf = 0, np = 0;
+    if (data && data.notes && typeof data.notes === "object"){
+      Object.keys(data.notes).forEach(k => {
+        if (byId[k] && typeof data.notes[k] === "string"){ MEMO.notes[k] = data.notes[k]; nn++; }
+      });
+    }
+    if (data && data.flags && typeof data.flags === "object"){
+      Object.keys(data.flags).forEach(k => {
+        if (byId[k] && data.flags[k]){ MEMO.flags[k] = true; nf++; }
+      });
+    }
+    if (data && Array.isArray(data.pending)){
+      data.pending.forEach(w => {
+        if (typeof w === "string" && w.trim() && MEMO.pending.indexOf(w.trim()) === -1){
+          MEMO.pending.push(w.trim()); np++;
+        }
+      });
+    }
+    saveMemo();
+    return { n, bad, nn, nf, np };
+  }
+
   function importProgress(file){
     const fr = new FileReader();
     fr.onload = () => {
       try {
         const data = JSON.parse(String(fr.result));
-        const st = data && data.status ? data.status : data;
-        let n = 0, bad = 0;
-        Object.keys(st || {}).forEach(k => {
-          if (byId[k] && ["知道","会用","精通","待补"].indexOf(st[k]) > -1){ STATUS[k] = st[k]; n++; }
-          else bad++;
-        });
-        saveStatus(); renderProgress(); refresh();
-        tag("已导入 " + n + " 条" + (bad ? "，跳过 " + bad + " 条无效" : ""));
+        const r = applyImport(data);
+        renderProgress(); refresh();
+        const extra = (r.nn || r.nf || r.np) ? "，另恢复 " + r.nn + " 条笔记 / " + r.nf + " 个待深入 / " + r.np + " 个待整理" : "";
+        tag("已导入 " + r.n + " 条进度" + extra + (r.bad ? "，跳过 " + r.bad + " 条无效" : ""));
       } catch(e){ tag("文件解析失败"); }
     };
     fr.readAsText(file);
@@ -1587,7 +1816,7 @@ footer b{color:var(--ink2)}
   applyHash();
   window.addEventListener("hashchange", applyHash);
 
-  window.__agentmap = { NODES, META, STATUS, openNode, showView };
+  window.__agentmap = { NODES, META, STATUS, MEMO, openNode, showView, applyImport, addPending, downloadProgress, renderProgress, saveMemo, saveStatus };
 })();
 </script>
 </body>

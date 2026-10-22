@@ -29,7 +29,7 @@ MAIN_LAYERS = [x for x in LAYERS if x["code"] != "L6"]
 
 # ---- deep dives: concept-level elaboration, a different shape from nodes ----
 DEEPS = []
-for f in ["deeps-evaluation.json", "deeps-memory.json"]:
+for f in ["deeps-evaluation.json", "deeps-memory.json", "deeps-agent-loop.json"]:
     p = os.path.join(DATA, f)
     if os.path.exists(p):
         obj = load(f)
@@ -506,6 +506,11 @@ for d in DEEPS:
         for s in pa["steps"]:
             out.append("| **" + s["w"] + "** | " + s["do"] + " | " + s["out"] + " |")
         out.append("")
+        if pa.get("code"):
+            out.append("```" + pa["code"].get("lang", "") )
+            out.append(pa["code"]["text"])
+            out.append("```")
+            out.append("")
         if pa.get("note"):
             out.append("> " + pa["note"])
             out.append("")

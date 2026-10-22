@@ -113,7 +113,12 @@ ok("export produced JSON", !!exported);
 let payload = null;
 try { payload = JSON.parse(exported); } catch (e) {}
 ok("export parses", !!payload);
-ok("export has tool+version", payload && payload.tool === "agent-knowledge-map" && payload.version === 1, JSON.stringify(payload && Object.keys(payload)));
+ok("export has tool+version", payload && payload.tool === "agent-knowledge-map" && payload.version === 2, JSON.stringify(payload && Object.keys(payload)));
+ok("export carries notes/flags/pending",
+   !!(payload && payload.notes && typeof payload.notes === "object"
+        && payload.flags && typeof payload.flags === "object"
+        && Array.isArray(payload.pending)),
+   JSON.stringify(payload && Object.keys(payload)));
 ok("export total matches", payload && payload.total === DATA.nodes.length, payload && String(payload.total));
 
 // 4. clear works

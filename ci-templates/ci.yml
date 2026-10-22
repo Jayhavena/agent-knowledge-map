@@ -62,6 +62,9 @@ jobs:
       - name: 关系类型词表
         run: python scripts/relation_qa.py
 
+      - name: 笔记与待整理
+        run: node scripts/notes_test.js Agent知识地图.html
+
       - name: 页面逻辑
         run: node scripts/smoke.js Agent知识地图.html
 

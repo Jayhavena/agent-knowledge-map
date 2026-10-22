@@ -1,0 +1,156 @@
+{
+  "_note": "深度卡：Agent 循环。与评测、记忆不同，这一张的重点是「状态怎么流转」，以及那个几乎所有项目都会踩的坑——把终止权交给模型。",
+  "agent-loop": {
+    "id": "agent-loop",
+    "title": "Agent 循环",
+    "subtitle": "一次「想 · 动 · 看」的完整机制与最小实现",
+    "lead": "循环的价值不在「再来一次」，而在「每一步都允许改变下一步」。所以真正要设计的只有三件事：什么时候停、花多少、坏了怎么办。其余部分都是模型的输出。",
+    "structure": {
+      "title": "内部结构：一个状态机，四段",
+      "intro": "所谓 Agent 循环，本质是一个由代码驱动的状态机。状态只有一个——消息序列；每一轮做四件事，其中只有第四件必须由你写死。",
+      "items": [
+        {
+          "k": "① 状态",
+          "v": "唯一的状态是一条消息序列：user 输入、assistant 输出、tool 返回。模型不记得任何东西，它每次都读到整条序列。"
+        },
+        {
+          "k": "② 决策",
+          "v": "一次模型调用，产出两种可能：要调某个工具，或给出最终答案。这是循环里唯一的「智能」环节。"
+        },
+        {
+          "k": "③ 行动",
+          "v": "执行工具，把结果作为 tool 消息追加回序列。注意：追加的是「观察」，不是「结论」。"
+        },
+        {
+          "k": "④ 判定",
+          "v": "由代码判断：继续、终止、还是升级给人。这一段必须是确定性的，不能交给模型自由裁量。"
+        }
+      ],
+      "note": "很多人把 ④ 也写成提示词（「如果你觉得做完了就输出 DONE」）。这让终止变成了模型的自我评价，而模型的自我评价恰好是最不可靠的一环。"
+    },
+    "decisions": {
+      "title": "五个必须显式回答的问题",
+      "intro": "这五个问题不回答，循环也能跑起来——只是会在第一次遇到异常输入时烧掉一天的预算。",
+      "items": [
+        {
+          "q": "终止条件写在哪：提示词还是代码？",
+          "a": "代码。模型只能「发出完成信号」，代码决定要不要接受。",
+          "why": "模型会在没做完时也输出完成，这是训练目标造成的倾向，不是 bug。把终止权交给它，等于把刹车交给一个总想下班的司机。",
+          "cost": "需要在提示词里约定一个可被解析的完成标记，并处理「一直不发出标记」的分支。"
+        },
+        {
+          "q": "用步数上限还是预算上限？",
+          "a": "两个都要，且取先到者。",
+          "why": "步数上限防的是「原地打转」（每步很便宜但很多步）；预算上限防的是「单步烧光」（步数不多但每步都是长上下文）。只设一个必然漏掉另一类。",
+          "cost": "需要在每步累计 token 与耗时，多一层记账。"
+        },
+        {
+          "q": "工具结果直接回灌，还是先摘要？",
+          "a": "小于阈值直接回灌；超过就截断，并在文本里显式写明「已截断」。",
+          "why": "摘要会引入一次新的幻觉，把「原始事实」变成「模型理解的事实」。但直接回灌大结果会让上下文在第 5 步就爆掉。折中点是截断 + 标注，让模型知道自己看到的是残缺的。",
+          "cost": "截断会丢信息，模型可能因为看不到关键部分而反复重试。"
+        },
+        {
+          "q": "出错时重试还是重规划？",
+          "a": "瞬时错误（限流、超时）重试；前提被推翻（参数不存在、字段没这个值）重规划。",
+          "why": "判据是「再试一次会不会得到不同结果」。会，就重试；不会，就必须换路径。否则就是拿预算去撞一堵不动的墙。",
+          "cost": "要把错误分成可重试与不可重试两类，工具返回就得承担这个语义。"
+        },
+        {
+          "q": "循环状态存内存还是持久化？",
+          "a": "长任务持久化，短任务内存。",
+          "why": "一次跑 30 秒的任务，崩了重来成本很低；一次跑 20 分钟、调了 40 次工具的任务，崩了重来既费钱又可能产生副作用（重复下单、重复发信）。",
+          "cost": "持久化要处理恢复点的语义——恢复到哪一步、已发生的副作用怎么避免重放。"
+        }
+      ]
+    },
+    "failures": {
+      "title": "失败模式：循环的坏是「越跑越自信」",
+      "intro": "循环不会突然报错，它通常是安静地偏离，然后在第 N 步给你一个言之凿凿的错答案。",
+      "items": [
+        {
+          "k": "没有终止判据",
+          "v": "模型反复调同一个工具，每次措辞略有不同，步数线性增长，花费同步增长，而输出没有任何变得更接近答案的迹象。",
+          "fix": "代码里写死步数 + 预算双上限；连续两次相同工具与相同参数即判定为打转。"
+        },
+        {
+          "k": "观察残缺但模型不知道",
+          "v": "工具返回被截断、只取了第一页、缓存已过期，模型把这当成完整事实继续推理，结论看起来合理但前提是漏的。",
+          "fix": "工具返回体里带 meta：是否截断、数据时间、总数 vs 返回数。"
+        },
+        {
+          "k": "错误被包成 200",
+          "v": "接口返回 HTTP 200，但响应体里是 {\"code\":500}。模型看到 200 就当成成功，把错误信息当成业务数据使用。",
+          "fix": "在工具层做语义校验，把业务错误翻译成明确的失败，而不是让模型去猜。"
+        },
+        {
+          "k": "上下文逐轮膨胀",
+          "v": "每步都追加完整工具结果，到第 8 步时早期约束被挤到中间，模型开始忽略它们——表现是「它明明知道，但就是没照做」。",
+          "fix": "固定关键约束在最前；工具结果超限即压缩；超过阈值触发一次摘要重写。"
+        },
+        {
+          "k": "崩溃后从零重来",
+          "v": "跑到第 12 步进程被杀，重启后重新执行全部工具调用，其中包含已经生效的写操作。",
+          "fix": "写操作必须幂等（带幂等键），或把已完成步骤持久化为检查点。"
+        }
+      ]
+    },
+    "path": {
+      "title": "最小 Java 实践：一个不含框架的循环",
+      "intro": "不需要 LangChain 之类的框架也能跑。下面这段代码只有 40 行，把上面五个决策里最关键的三个（终止、预算、错误回灌）都写死了。把 Llm 与 Tool 换成真实实现即可运行。",
+      "steps": [
+        {
+          "w": "第 1 步",
+          "do": "定义两个接口：Llm.next(history) 返回模型的下一步动作，Tool.run(arg) 执行一次外部调用。",
+          "out": "可替换的边界，方便接真实模型与真实工具"
+        },
+        {
+          "w": "第 2 步",
+          "do": "把状态定义成一条 List<Msg>，每轮追加 assistant 输出与 tool 返回，不做任何删除。",
+          "out": "唯一的状态源，调试时可直接打印"
+        },
+        {
+          "w": "第 3 步",
+          "do": "在 for 循环里做三件事：调模型、解析动作、回灌结果。终止只认代码里的两个上限。",
+          "out": "不会无限循环的骨架"
+        },
+        {
+          "w": "第 4 步",
+          "do": "把异常与未知工具也转换成 tool 消息回灌，而不是抛出中断循环。",
+          "out": "模型能看到失败原因并自我修正"
+        },
+        {
+          "w": "第 5 步",
+          "do": "跑 10 个不可能完成的任务（比如查一个不存在的订单），确认它会在步数上限处停下并明确说放弃。",
+          "out": "一个不会烧穿预算的循环"
+        }
+      ],
+      "code": {
+        "lang": "java",
+        "text": "record Msg(String role, String content) {}\n\ninterface Llm  { String next(java.util.List<Msg> history); }\ninterface Tool { String name(); String run(String arg); }\n\nfinal class AgentLoop {\n    private final Llm llm;\n    private final java.util.Map<String, Tool> tools = new java.util.HashMap<>();\n    private final int maxSteps;\n\n    AgentLoop(Llm llm, int maxSteps) { this.llm = llm; this.maxSteps = maxSteps; }\n\n    void register(Tool t) { tools.put(t.name(), t); }\n\n    String run(String userInput) {\n        var history = new java.util.ArrayList<Msg>();\n        history.add(new Msg(\"user\", userInput));\n\n        for (int step = 1; step <= maxSteps; step++) {\n            String out = llm.next(history);              // ② 决策\n            history.add(new Msg(\"assistant\", out));\n\n            if (out.startsWith(\"FINAL:\")) {              // ④ 终止：代码判定\n                return out.substring(6).trim();\n            }\n\n            String[] parts = out.split(\" \", 3);           // CALL <tool> <arg>\n            if (parts.length < 2 || !parts[0].equals(\"CALL\")) {\n                history.add(new Msg(\"tool\", \"ERROR: 动作格式无法解析，请用 CALL <tool> <arg> 或 FINAL: <答案>\"));\n                continue;\n            }\n            Tool t = tools.get(parts[1]);\n            String arg = parts.length > 2 ? parts[2] : \"\";\n            String result;\n            if (t == null) {\n                result = \"ERROR: 未知工具 \" + parts[1] + \"，可用：\" + tools.keySet();\n            } else {\n                try { result = t.run(arg); }            // ③ 行动\n                catch (Exception e) { result = \"ERROR: \" + e.getMessage() + \"（可重试）\"; }\n            }\n            history.add(new Msg(\"tool\", truncate(result, 2000)));  // ③ 观察回灌\n        }\n        return \"GAVE_UP: 达到最大步数 \" + maxSteps;      // ④ 明确放弃，不假装完成\n    }\n\n    private static String truncate(String s, int n) {\n        return s.length() <= n ? s : s.substring(0, n)\n             + \"\\n[已截断：原文 \" + s.length() + \" 字符，此处仅前 \" + n + \"]\";\n    }\n}"
+      },
+      "note": "这段代码故意没有做：预算记账、摘要压缩、检查点恢复、并发。它们都能在跑通之后再加。反过来做的话，你会在一个还没跑通的循环上调试记忆策略。"
+    },
+    "refs": [
+      {
+        "t": "一手来源",
+        "d": "ReAct: Synergizing Reasoning and Acting in Language Models（Yao et al., 2022）",
+        "url": "https://arxiv.org/abs/2210.03629"
+      },
+      {
+        "t": "项目页",
+        "d": "ReAct 官方项目页与示例",
+        "url": "https://react-lm.github.io/"
+      }
+    ],
+    "related": [
+      "react",
+      "termination",
+      "budget-control",
+      "tool-error-handling",
+      "context-compression",
+      "retry-backoff",
+      "harness"
+    ]
+  }
+}

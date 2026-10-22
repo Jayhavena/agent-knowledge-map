@@ -38,6 +38,7 @@ CHECKS = [
     ["node", os.path.join(BASE, "badge_test.js")],
     ["node", os.path.join(BASE, "css_collision_test.js")],
     ["node", os.path.join(BASE, "progress_test.js")],
+    ["node", os.path.join(BASE, "notes_test.js"), os.path.join(ROOT, "Agent知识地图.html")],
     ["python", os.path.join(BASE, "gate_audit.py")],
 ]
 
