@@ -272,8 +272,17 @@ pre.snip{font-family:var(--mono);font-size:11.5px;line-height:1.6;background:var
 /* drawer */
 .scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:.2s;z-index:50}
 .scrim.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);border-left:1px solid var(--line);z-index:60;transform:translateX(102%);transition:transform .26s cubic-bezier(.2,.8,.3,1);overflow-y:auto;box-shadow:-12px 0 40px var(--shadow)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);border-left:1px solid var(--line);z-index:60;transform:translateX(102%);transition:transform .26s cubic-bezier(.2,.8,.3,1), right .26s cubic-bezier(.2,.8,.3,1);overflow-y:auto;box-shadow:-12px 0 40px var(--shadow)}
 .drawer.on{transform:none}
+/* 概念详情：默认居中弹窗；也允许使用原有右侧栏 */
+.drawer.center-mode{top:50%;bottom:auto;left:50%;right:auto;width:min(760px,calc(100vw - 32px));max-height:min(86vh,calc(100dvh - 32px));border:1px solid var(--line);border-radius:14px;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,-50%);transition:opacity .16s ease;box-shadow:0 24px 68px var(--shadow2)}
+.drawer.center-mode.on{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,-50%)}
+.dw-mode{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--paper3);border:1px solid var(--line)}
+.dw-mode button{font-size:11px;line-height:1.4;padding:3px 8px;border-radius:5px;color:var(--ink3)}
+.dw-mode button.on{background:var(--paper);box-shadow:0 1px 4px var(--shadow);color:var(--ink);font-weight:600}
+.dw-mode button:focus-visible{outline:2px solid var(--ringLine);outline-offset:2px}
+@media (min-width:881px) and (max-width:1375px){.drawer.center-mode.note-open{left:calc((100vw - 320px)/2);width:min(760px,calc(100vw - 350px))}}
+@media (max-width:880px){.drawer.center-mode{width:calc(100vw - 24px);max-height:calc(100dvh - 24px)}.drawer.center-mode.note-open{left:50%;right:auto}}
 .dw-top{position:sticky;top:0;background:var(--headerBg2);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:18px 26px 14px;z-index:2}
 .dw-close{position:absolute;top:14px;right:20px;color:var(--ink3);font-size:20px;line-height:1}
 .dw-close:hover{color:var(--ink)}
@@ -406,15 +415,82 @@ footer b{color:var(--ink2)}
 .nores-in .btn:hover{border-color:var(--ink3)}
 .nores-in .ok{color:var(--okFg);font-size:11.5px}
 
-/* ---- v1.1: 概念笔记 ---- */
-.dw-note{margin-top:2px}
-.dw-note .nb{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12.5px;line-height:1.65;color:var(--ink);background:var(--paper2)}
-.dw-note .nb:focus{outline:none;border-color:var(--ringLine);box-shadow:0 0 0 3px var(--ring)}
-.dw-nh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-.dw-nh h4{margin:0}
-.flagbtn{font-size:11px;padding:3px 9px;border:1px solid var(--line);border-radius:99px;color:var(--ink3);background:var(--paper3)}
+/* ---- v1.1: 概念笔记（右侧笔记栏，边读边记） ---- */
+.dw-note-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 12px;border-radius:99px;border:1px solid var(--line);background:var(--paper3);color:var(--ink2);cursor:pointer;transition:.12s}
+.dw-note-toggle:hover{border-color:var(--ink);color:var(--ink)}
+.dw-note-toggle .ic{font-size:12px;line-height:1;opacity:.8}
+.dw-note-toggle .nd{width:0;height:6px;border-radius:50%;background:var(--l1);transition:width .12s;flex:0 0 auto}
+.dw-note-toggle.has{color:var(--ink)}
+.dw-note-toggle.has .nd{width:6px}
+.dw-note-toggle.on{border-color:var(--ringLine);color:var(--ink)}
+.drawer.note-open{right:320px}
+.drawer.center-mode.note-open{right:auto}
+.notepanel{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:100vw;background:var(--paper);border-left:1px solid var(--line);z-index:61;transform:translateX(103%);transition:transform .26s cubic-bezier(.2,.8,.3,1);display:flex;flex-direction:column;box-shadow:-10px 0 34px var(--shadow)}
+.notepanel.on{transform:none}
+.np-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 11px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.np-head h4{margin:0;font-size:11px;letter-spacing:.07em;color:var(--ink3);font-weight:600}
+.np-tools{display:flex;align-items:center;gap:10px}
+.np-close{color:var(--ink3);font-size:19px;line-height:1;cursor:pointer;background:none;border:none;padding:0 2px}
+.np-close:hover{color:var(--ink)}
+.np-body{padding:12px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:0}
+.notepanel .nb{width:100%;flex:1;min-height:140px;resize:none;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:12.5px;line-height:1.65;color:var(--ink);background:var(--paper2)}
+.notepanel .nb:focus{outline:none;border-color:var(--ringLine);box-shadow:0 0 0 3px var(--ring)}
+.flagbtn{font-size:11px;padding:3px 9px;border:1px solid var(--line);border-radius:99px;color:var(--ink3);background:var(--paper3);cursor:pointer;white-space:nowrap}
 .flagbtn.on{background:var(--warnBg);border-color:var(--warnFg);color:var(--warnFg);font-weight:600}
-.notehint{font-size:11px;color:var(--ink3);margin-top:6px;min-height:14px}
+.notehint{font-size:11px;color:var(--ink3);min-height:14px}
+@media (max-width:880px){
+  .drawer.note-open{right:0}
+  .notepanel{width:100%}
+}
+
+/* ---- 笔记位置：紧贴知识点（默认）——讲解区 + 笔记区同高双栏，整体居中 ---- */
+/* 仅在「居中」详情下生效；「侧边」详情保留原有双侧行为（见下方 narrow 兜底） */
+.drawer.tight, .notepanel.tight{
+  --dw: min(760px, calc(100vw - 362px));
+  --nw: 300px;
+  --np-gap: 14px;
+  --np-h: min(86vh, calc(100dvh - 32px));
+}
+.drawer.tight.center-mode.note-open{
+  left: calc(50% - (var(--nw) + var(--np-gap)) / 2);
+  width: var(--dw);
+  height: var(--np-h);
+}
+.notepanel.tight{
+  right: auto;
+  left: calc(50% + (var(--dw) - var(--nw) - var(--np-gap)) / 2 + var(--np-gap));
+  width: var(--nw);
+  top: 50%; bottom: auto;
+  height: var(--np-h);
+  transform: translateY(-50%);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 24px 68px var(--shadow2);
+  transition: opacity .16s ease;
+}
+.notepanel.tight.on{
+  transform: translateY(-50%);
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+@media (max-width: 920px){
+  /* 窄屏：退化为覆盖式笔记面板，正文与笔记各自可用 */
+  .drawer.tight.center-mode.note-open{
+    left: 50%;
+    width: calc(100vw - 24px);
+    height: auto;
+  }
+  .notepanel.tight{
+    right: 0; left: auto;
+    width: min(320px, 100%);
+    top: 0; bottom: 0; height: auto;
+    transform: translateX(103%);
+    opacity: 1; visibility: visible;
+    border: none; border-left: 1px solid var(--line); border-radius: 0;
+    box-shadow: -10px 0 34px var(--shadow);
+    transition: transform .26s cubic-bezier(.2,.8,.3,1);
+  }
+  .notepanel.tight.on{ transform: none; opacity: 1; }
+}
 
 /* ---- v1.1: 待整理概念清单 ---- */
 .pendlist{list-style:none;margin:0;padding:0}
@@ -587,9 +663,26 @@ pre.dcode .cl{color:var(--ink3)}
 </footer>
 
 <div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer">
+<aside class="drawer" id="drawer" role="dialog" aria-label="概念详情">
   <div class="dw-top" id="dwtop"></div>
   <div class="dw-body" id="dwbody"></div>
+</aside>
+<aside class="notepanel" id="notepanel" aria-label="我的笔记">
+  <div class="np-head">
+    <h4>我的笔记</h4>
+    <div class="np-tools">
+      <div class="dw-mode" role="group" aria-label="笔记位置">
+        <button id="npPosClose" type="button" title="紧贴知识点：讲解区与笔记区并排居中">紧贴</button>
+        <button id="npPosAside" type="button" title="屏幕右侧：笔记固定在屏幕右缘（原布局）">右侧</button>
+      </div>
+      <button class="flagbtn" id="dflag">☆ 待深入</button>
+      <button class="np-close" id="npclose">×</button>
+    </div>
+  </div>
+  <div class="np-body">
+    <textarea class="nb" id="dnote" placeholder="边读边记：它是什么、什么时候用、哪里还不懂…"></textarea>
+    <div class="notehint" id="dnhint">不会同步，也不会改动知识库文件</div>
+  </div>
 </aside>
 
 <div class="help" id="help">
@@ -1188,6 +1281,116 @@ pre.dcode .cl{color:var(--ink3)}
 
   // ---------- drawer ----------
   const drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim");
+  const DETAIL_MODE_KEY = "agentmap.detailMode.v1";
+  let detailMode = "center";
+  try { if (localStorage.getItem(DETAIL_MODE_KEY) === "side") detailMode = "side"; } catch(e){}
+  drawer.classList.toggle("center-mode", detailMode === "center");
+  function setDetailMode(mode){
+    if (mode !== "center" && mode !== "side") return;
+    detailMode = mode;
+    drawer.classList.toggle("center-mode", mode === "center");
+    try { localStorage.setItem(DETAIL_MODE_KEY, mode); } catch(e){}
+    syncDetailModeButtons();
+    if (typeof updateNoteLayout === "function") updateNoteLayout();
+  }
+  function syncDetailModeButtons(){
+    [["dwModeCenter", "center"], ["dwModeSide", "side"]].forEach(([id, mode]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.classList.toggle("on", detailMode === mode);
+      if (btn.setAttribute) btn.setAttribute("aria-pressed", String(detailMode === mode));
+      btn.onclick = () => setDetailMode(mode);
+    });
+  }
+  const notepanel = document.getElementById("notepanel");
+  const dnote = document.getElementById("dnote");
+  const dflag = document.getElementById("dflag");
+  const dnhint = document.getElementById("dnhint");
+  let noteOpen = false;
+
+  // ---------- 笔记位置偏好：紧贴知识点（默认）/ 屏幕右侧（旧行为）----------
+  // 紧贴：讲解区 + 笔记区同高双栏、整体居中；仅在「居中」详情下生效（侧边详情保持原双栏）
+  const NOTE_POS_KEY = "agentmap.notePos.v1";
+  let notePos = "close";
+  try { const v = localStorage.getItem(NOTE_POS_KEY); if (v === "aside" || v === "close") notePos = v; } catch(e){}
+
+  function updateNoteLayout(){
+    const tight = notePos === "close" && detailMode === "center";
+    drawer.classList.toggle("tight", tight);
+    notepanel.classList.toggle("tight", tight);
+  }
+  function applyNotePos(mode, save){
+    if (mode !== "close" && mode !== "aside") return;
+    notePos = mode;
+    if (save) { try { localStorage.setItem(NOTE_POS_KEY, mode); } catch(e){} }
+    updateNoteLayout();
+    [["npPosClose", "close"], ["npPosAside", "aside"]].forEach(([id, m]) => {
+      const b = document.getElementById(id);
+      if (!b) return;
+      b.classList.toggle("on", notePos === m);
+      if (b.setAttribute) b.setAttribute("aria-pressed", String(notePos === m));
+      b.onclick = () => applyNotePos(m, true);
+    });
+  }
+  applyNotePos(notePos, false);
+
+  // 笔记栏开合：只切类名，不重建正文、不碰滚动位置
+  function setNoteOpen(on){
+    noteOpen = on;
+    drawer.classList.toggle("note-open", on);
+    notepanel.classList.toggle("on", on);
+    const tb = document.getElementById("dwNoteToggle");
+    if (tb) tb.classList.toggle("on", on);
+  }
+
+  // 当前概念标题区「笔记」入口的小圆点：有笔记或待深入时点亮
+  function syncNoteIndicator(){
+    const id = S.sel;
+    if (!id) return;
+    const tb = document.getElementById("dwNoteToggle");
+    if (!tb) return;
+    tb.classList.toggle("has", !!(MEMO.notes[id] && MEMO.notes[id].trim()) || !!MEMO.flags[id]);
+  }
+
+  // 唯一的笔记编辑器：只换内容、不换 DOM，自动保存到 notes.v1
+  function renderNotePanel(n){
+    dnote.value = MEMO.notes[n.id] || "";
+    const flagged = !!MEMO.flags[n.id];
+    dflag.classList.toggle("on", flagged);
+    dflag.textContent = flagged ? "★ 待深入" : "☆ 待深入";
+    dnhint.textContent = (MEMO.notes[n.id] || "").trim() ? "已保存（本机浏览器）" : "不会同步，也不会改动知识库文件";
+    const tb = document.getElementById("dwNoteToggle");
+    if (tb){
+      tb.classList.toggle("on", noteOpen);
+      tb.classList.toggle("has", !!(MEMO.notes[n.id] && MEMO.notes[n.id].trim()) || flagged);
+      tb.onclick = () => setNoteOpen(!noteOpen);
+    }
+  }
+
+  function commitNote(){
+    const id = S.sel;
+    if (!id) return;
+    const v = dnote.value;
+    if (v.trim()) MEMO.notes[id] = v; else delete MEMO.notes[id];
+    saveMemo();
+    dnhint.textContent = v.trim() ? "已保存（本机浏览器）" : "不会同步，也不会改动知识库文件";
+    syncNoteIndicator();
+  }
+
+  dnote.oninput = commitNote;
+  dflag.onclick = () => {
+    const id = S.sel;
+    if (!id) return;
+    if (MEMO.flags[id]) delete MEMO.flags[id]; else MEMO.flags[id] = true;
+    saveMemo();
+    const on = !!MEMO.flags[id];
+    dflag.classList.toggle("on", on);
+    dflag.textContent = on ? "★ 待深入" : "☆ 待深入";
+    syncNoteIndicator();
+    refresh();
+  };
+  const npClose = document.getElementById("npclose");
+  if (npClose) npClose.onclick = () => setNoteOpen(false);
 
   function openNode(id){
     const n = byId[id]; if(!n) return;
@@ -1197,13 +1400,18 @@ pre.dcode .cl{color:var(--ink3)}
     const coordTxt = isStack(n)
       ? 'L6 &nbsp;·&nbsp; 系统层 / ' + esc(n.cluster || "其他") + '（不在环上）'
       : n.dot + ' &nbsp;·&nbsp; ' + esc(lay.name) + ' / ' + esc(lp ? lp.name : "—");
+    const noteTxt = MEMO.notes[n.id] || "";
+    const flagged = !!MEMO.flags[n.id];
+    const hasNote = !!(noteTxt && noteTxt.trim()) || flagged;
     document.getElementById("dwtop").innerHTML =
       '<button class="dw-close" id="dwclose">×</button>'
       + '<div class="dw-coord"><span class="sw" style="background:'+LAYER_HEX[lc]+'"></span>'
       + coordTxt + '</div>'
       + '<h2>'+esc(n.name)+'</h2>'
       + '<div class="dw-en">'+esc(n.en)+(n.alias&&n.alias.length?'  ·  '+esc(n.alias.join(" / ")):'')+'</div>'
-      + '<div class="dw-badges">'+badgeHTML(n)+'<span class="badge">'+n.facets.map(f=>F[f].name).join("·")+'面</span></div>';
+      + '<div class="dw-badges">'+badgeHTML(n)+'<span class="badge">'+n.facets.map(f=>F[f].name).join("·")+'面</span>'
+      + '<div class="dw-mode" role="group" aria-label="详情展示位置"><button id="dwModeCenter" type="button">居中</button><button id="dwModeSide" type="button">侧边</button></div>'
+      + '<button class="dw-note-toggle'+(noteOpen?' on':'')+(hasNote?' has':'')+'" id="dwNoteToggle" title="边读边记"><span class="ic">✎</span><span>笔记</span><span class="nd"></span></button></div>';
 
     const rels = (n.rel||[]).map(r=>byId[r]).filter(Boolean);
     const froms = (n.from||[]).map(([r,k]) => [byId[r], k, r]);
@@ -1252,15 +1460,6 @@ pre.dcode .cl{color:var(--ink3)}
        + ["未标","知道","会用","精通","待补"].map(s=>'<button data-st="'+s+'"'+(s===cur?' class="on"':'')+'>'+s+'</button>').join("")
        + '</div></div>';
 
-    // v1.1 我的笔记：只存在本机浏览器，不写回 JSON
-    const noteTxt = MEMO.notes[n.id] || "";
-    const flagged = !!MEMO.flags[n.id];
-    b += '<div class="dw-sec dw-note"><div class="dw-nh"><h4>我的笔记</h4>'
-       + '<button class="flagbtn'+(flagged?' on':'')+'" id="dflag">'+(flagged?'★ 待深入':'☆ 待深入')+'</button></div>'
-       + '<textarea class="nb" id="dnote" placeholder="用自己的话记一句：它是什么、什么时候用、哪里还不懂…">'+esc(noteTxt)+'</textarea>'
-       + '<div class="notehint" id="dnhint">'+(noteTxt?'已保存（本机浏览器）':'不会同步，也不会改动知识库文件')+'</div>'
-       + '</div>';
-
     const idx = NODES.findIndex(x=>x.id===n.id);
     b += '<div class="dw-nav"><button id="prevn">← '+esc(NODES[(idx-1+NODES.length)%NODES.length].name)+'</button>'
        + '<button id="nextn">'+esc(NODES[(idx+1)%NODES.length].name)+' →</button></div>';
@@ -1282,25 +1481,11 @@ pre.dcode .cl{color:var(--ink3)}
       refresh();
     });
 
-    // 笔记自动保存：每次输入直接落盘（笔记很短，够用且无需防抖）
-    const noteBox = document.getElementById("dnote");
-    const noteHint = document.getElementById("dnhint");
-    const commitNote = () => {
-      const v = noteBox ? noteBox.value : "";
-      if (v.trim()) MEMO.notes[n.id] = v; else delete MEMO.notes[n.id];
-      saveMemo();
-      if (noteHint) noteHint.textContent = v.trim() ? "已保存（本机浏览器）" : "不会同步，也不会改动知识库文件";
-    };
-    if (noteBox) noteBox.oninput = commitNote;
-    const flagBtn = document.getElementById("dflag");
-    if (flagBtn) flagBtn.onclick = () => {
-      if (MEMO.flags[n.id]) delete MEMO.flags[n.id]; else MEMO.flags[n.id] = true;
-      saveMemo();
-      const on = !!MEMO.flags[n.id];
-      flagBtn.classList.toggle("on", on);
-      flagBtn.textContent = on ? "★ 待深入" : "☆ 待深入";
-      refresh();
-    };
+    // 展示方式可切换并记住偏好；切换概念时也更新按钮状态
+    syncDetailModeButtons();
+    // 笔记栏：填充当前概念的笔记内容（编辑器是唯一的、静态的，只换内容不换 DOM）
+    renderNotePanel(n);
+
     document.getElementById("prevn").onclick = () => openNode(NODES[(idx-1+NODES.length)%NODES.length].id);
     document.getElementById("nextn").onclick = () => openNode(NODES[(idx+1)%NODES.length].id);
     drawer.classList.add("on"); scrim.classList.add("on"); drawer.scrollTop = 0;
@@ -1309,6 +1494,7 @@ pre.dcode .cl{color:var(--ink3)}
   }
   function closeDrawer(){
     drawer.classList.remove("on"); scrim.classList.remove("on");
+    setNoteOpen(false);
     S.sel=null; NSEL=null;
     syncHash();
     if (S.view==="graph") drawGraph();
@@ -1816,7 +2002,7 @@ pre.dcode .cl{color:var(--ink3)}
   applyHash();
   window.addEventListener("hashchange", applyHash);
 
-  window.__agentmap = { NODES, META, STATUS, MEMO, openNode, showView, applyImport, addPending, downloadProgress, renderProgress, saveMemo, saveStatus };
+  window.__agentmap = { NODES, META, STATUS, MEMO, openNode, closeDrawer, showView, applyImport, addPending, downloadProgress, renderProgress, saveMemo, saveStatus, setNoteOpen, commitNote, renderNotePanel, setDetailMode, applyNotePos, updateNoteLayout };
 })();
 </script>
 </body>
